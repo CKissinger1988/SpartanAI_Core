@@ -1,10 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Crosshair, Hash, ShieldAlert } from 'lucide-react';
+import { Crosshair, Hash, ShieldAlert, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { TerminalMessage } from '../types';
 
+interface MsfUpdateStatus {
+  state: 'idle' | 'checking' | 'updating' | 'complete' | 'error' | 'not_installed';
+  message: string;
+  msfVersion: string | null;
+  lastUpdated: string | null;
+}
+
 export const MetasploitFramework: React.FC = () => {
   const [input, setInput] = useState('');
+  const [updateStatus, setUpdateStatus] = useState<MsfUpdateStatus | null>(null);
   const [history, setHistory] = useState<TerminalMessage[]>([
     { id: '1', user: '', content: '       =[ metasploit v6.3.5-dev                         ]', type: 'banner', timestamp: '' },
     { id: '2', user: '', content: '+ -- --=[ 2294 exploits - 1201 auxiliary - 409 post       ]', type: 'banner', timestamp: '' },
@@ -12,6 +20,32 @@ export const MetasploitFramework: React.FC = () => {
     { id: '4', user: '', content: '+ -- --=[ 9 evasion                                       ]', type: 'banner', timestamp: '' },
     { id: '5', user: '', content: '', type: 'banner', timestamp: '' },
   ]);
+
+  // --- Silent MSF auto-update status poller ---
+  useEffect(() => {
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const res = await fetch('/api/msf/update/status');
+        if (!res.ok) return;
+        const data: MsfUpdateStatus = await res.json();
+        if (!cancelled) setUpdateStatus(data);
+
+        // Keep polling while the updater is still working
+        const terminal = ['complete', 'error', 'not_installed', 'idle'];
+        if (!terminal.includes(data.state) && !cancelled) {
+          setTimeout(poll, 3000);
+        }
+      } catch {
+        // Server not ready yet – retry
+        if (!cancelled) setTimeout(poll, 5000);
+      }
+    };
+
+    poll();
+    return () => { cancelled = true; };
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -135,10 +169,37 @@ export const MetasploitFramework: React.FC = () => {
         <div className="flex items-center gap-3">
           <Crosshair className="w-4 h-4 text-red-500" />
           <span className="text-[12px] text-red-500 uppercase tracking-[0.2em] font-bold">Metasploit Framework</span>
+          {updateStatus && updateStatus.msfVersion && (
+            <span className="text-[10px] text-slate-500 font-mono">v{updateStatus.msfVersion}</span>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-           <span className="text-[10px] text-red-500/70 font-mono tracking-widest">ACTIVE SESSIONS: 0</span>
+        <div className="flex items-center gap-4">
+          {/* Auto-update status badge */}
+          {updateStatus && (
+            <div className="flex items-center gap-1.5">
+              {(updateStatus.state === 'checking' || updateStatus.state === 'updating') && (
+                <>
+                  <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />
+                  <span className="text-[9px] text-amber-400/80 font-mono uppercase tracking-wider">
+                    {updateStatus.state === 'checking' ? 'Checking…' : 'Updating…'}
+                  </span>
+                </>
+              )}
+              {updateStatus.state === 'complete' && (
+                <span className="text-[9px] text-emerald-500/80 font-mono uppercase tracking-wider">DB Up-to-date</span>
+              )}
+              {updateStatus.state === 'not_installed' && (
+                <span className="text-[9px] text-slate-600 font-mono uppercase tracking-wider">MSF Not Detected</span>
+              )}
+              {updateStatus.state === 'error' && (
+                <span className="text-[9px] text-red-400/80 font-mono uppercase tracking-wider">Update Failed</span>
+              )}
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+            <span className="text-[10px] text-red-500/70 font-mono tracking-widest">ACTIVE SESSIONS: 0</span>
+          </div>
         </div>
       </div>
 
