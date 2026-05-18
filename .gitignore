@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+react-example-linux
+react-example-win.exe
+releases/react-example-linux
+releases/react-example-win.exe

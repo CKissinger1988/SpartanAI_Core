@@ -26,7 +26,7 @@ export interface TerminalMessage {
   id: string;
   user: string;
   content: string;
-  type: 'input' | 'output' | 'error' | 'system';
+  type: 'input' | 'output' | 'error' | 'system' | 'banner' | 'info' | 'prompt' | 'success' | 'meterpreter';
   timestamp: string;
 }
 
