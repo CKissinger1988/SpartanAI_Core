@@ -275,6 +275,45 @@ app.get("/api/msf/update/status", (req, res) => {
   res.json(getMsfUpdateStatus());
 });
 
+app.post("/api/security/scan", (req, res) => {
+  const { target } = req.body;
+  
+  let results: any[] = [];
+  if (target === 'LOCAL_SUBNET') {
+    results = [
+      { type: "HOST_DISCOVERY", status: "COMPLETE", severity: "none", findings: 5, details: ["Host 192.168.1.1 (Gateway)", "Host 192.168.1.10 (Workstation)", "Host 192.168.1.15 (Server)", "Host 192.168.1.20 (Printer)", "Host 192.168.1.50 (IoT Device)"] },
+      { type: "VULN_SCAN", status: "COMPLETE", severity: "high", findings: 2, details: ["192.168.1.15: outdated OpenSSH", "192.168.1.10: SMB v1 enabled"] }
+    ];
+  } else {
+    results = [
+      { type: "OS_FINGERPRINT", status: "VERIFIED", severity: "low", findings: 1, details: [`Target identified as ${target}`, "Linux Kernel 5.10 detected"] },
+      { type: "SSL_AUDIT", status: "FAILED", severity: "high", findings: 3, details: ["Expired certificate", "Self-signed root CA", "Weak cipher suite: TLS_RSA_WITH_AES_128_CBC_SHA"] },
+      { type: "PORT_SCAN", status: "COMPLETE", severity: "medium", findings: 12, details: ["Open ports: 22, 80, 443, 3000, 8080", "Filtered: 21, 23, 25"] },
+      { type: "SQL_INJECTION", status: "SAFE", severity: "none", findings: 0, details: ["No entry points detected"] }
+    ];
+  }
+
+  systemState.logs.unshift({
+    time: new Date().toISOString(),
+    message: `Security recon initiated on target: ${target}`,
+    level: "info"
+  });
+
+  if (target === 'LOCAL_SUBNET') {
+    idsAlerts.unshift({
+      id: Math.random().toString(36).substr(2, 9),
+      time: new Date().toISOString(),
+      source: 'INTERNAL_LAB',
+      threat: 'POLICY_VIOLATION: UNAUTHORIZED_LOCAL_SCAN',
+      severity: 'high',
+      status: 'blocked'
+    });
+    if (idsAlerts.length > 10) idsAlerts.pop();
+  }
+
+  res.json({ target, results });
+});
+
 app.get("/api/security/hsm/status", (req, res) => {
   res.json(hsm.getModuleInfo());
 });

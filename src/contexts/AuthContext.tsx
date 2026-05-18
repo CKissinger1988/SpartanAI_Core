@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Simulate user restoration from session
-    const savedUser = localStorage.getItem('hex_user');
+    const savedUser = localStorage.getItem('nexus_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -39,15 +39,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const mockUser = {
       uid: 'guest_operator_01',
       email: 'operator@nexusai.io',
-      displayName: 'HEX_OPERATOR'
+      displayName: 'NEXUS_OPERATOR'
     };
     setUser(mockUser);
-    localStorage.setItem('hex_user', JSON.stringify(mockUser));
+    localStorage.setItem('nexus_user', JSON.stringify(mockUser));
   };
 
   const logout = async () => {
     setUser(null);
-    localStorage.removeItem('hex_user');
+    localStorage.removeItem('nexus_user');
   };
 
   return (
