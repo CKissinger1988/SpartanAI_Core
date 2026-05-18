@@ -46,7 +46,7 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
             <div className="absolute -inset-1 bg-cyan-500/20 blur opacity-30 group-hover:opacity-50 transition-opacity rounded-2xl" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-xl font-bold tracking-[0.3em] text-white uppercase italic">HEXSTRIKE_OS</h1>
+            <h1 className="text-xl font-bold tracking-[0.3em] text-white uppercase italic">NEXUS_AI_OS</h1>
             <p className="text-[10px] font-mono text-cyan-500/50 uppercase tracking-widest">Initialization & Configuration Protocol</p>
           </div>
         </motion.div>

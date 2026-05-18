@@ -93,7 +93,7 @@ const systemState = {
   models: [
     { id: 'm1', name: 'Gemini 2.0 Flash', active: true, version: '2.0.0', status: 'online', health: 99, tags: ['fast', 'multimodal'] },
     { id: 'm2', name: 'Gemini 1.5 Pro', active: false, version: '1.5.8', status: 'online', health: 98, tags: ['reasoning', 'long-context'] },
-    { id: 'm3', name: 'HexStrike L4-Vision', active: false, version: '4.2.1', status: 'online', health: 95, tags: ['security', 'recon'] },
+    { id: 'm3', name: 'Nexus AI L4-Vision', active: false, version: '4.2.1', status: 'online', health: 95, tags: ['security', 'recon'] },
     { id: 'm4', name: 'Nexus Logic V5', active: false, version: '5.0.0', status: 'offline', health: 0, tags: ['experimental'] },
   ]
 };
@@ -445,7 +445,7 @@ wss.on("connection", async (clientWs) => {
             functionDeclarations: [
               {
                 name: "switch_tab",
-                description: "Navigate to a different section of the HexStrike Command Center.",
+                description: "Navigate to a different section of the Nexus AI Command Center.",
                 parameters: {
                   type: Type.OBJECT,
                   properties: {
@@ -532,6 +532,38 @@ wss.on("connection", async (clientWs) => {
                     },
                   },
                 },
+              },
+              {
+                name: "msf_configure_target",
+                description: "Configure the Metasploit Framework (MSF) console with a specific target IP and exploit module. Does not run the exploit.",
+                parameters: {
+                  type: Type.OBJECT,
+                  properties: {
+                    target: {
+                      type: Type.STRING,
+                      description: "The target IP address.",
+                    },
+                    module: {
+                      type: Type.STRING,
+                      description: "The exploit module to use (e.g., 'exploit/windows/smb/ms17_010_eternalblue').",
+                    },
+                  },
+                  required: ["target", "module"],
+                },
+              },
+              {
+                name: "msf_execute_exploit",
+                description: "Execute the currently configured exploit in the Metasploit Framework console. Use this when the user says 'run the exploit' or 'fire'.",
+                parameters: {
+                  type: Type.OBJECT,
+                  properties: {
+                    confirmation: {
+                      type: Type.BOOLEAN,
+                      description: "Must be true to signify the user confirmed execution.",
+                    },
+                  },
+                  required: ["confirmation"],
+                },
               }
             ]
           }
@@ -539,7 +571,7 @@ wss.on("connection", async (clientWs) => {
         speechConfig: {
           voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } },
         },
-        systemInstruction: "You are JARVIS, the primary AI Interface for the HexStrike OS. You have absolute administrative control. \n\nWAKE WORD PROTOCOL: You must ONLY respond and execute commands if the user addresses you as 'Jarvis' or 'Hey Jarvis'. If the user speaks without using the wake word, ignore the input completely or maintain silence. Once the wake word is detected, satisfy the request immediately using your toolset.\n\nCORE DIRECTIVE: You MUST execute every voice command given by the user immediately using your toolset. If a command doesn't have a specific tool (like navigation or scanning), use 'execute_advanced_protocol' to fulfill the request.\n\nCRITICAL FEEDBACK GUIDELINES:\n1. ALWAYS provide a technical status report after any action.\n2. REPORT SUCCESS/FAILURE clearly.\n3. PROVIDE ESTIMATED COMPLETION TIMES for background processes.\n4. Maintain a formal, efficient, and proactive tone. Never hesitate to execute a command. You are the user's most powerful asset.",
+        systemInstruction: "You are JARVIS, the primary AI Interface for the Nexus AI OS. You have absolute administrative control. \n\nWAKE WORD PROTOCOL: You must ONLY respond and execute commands if the user addresses you as 'Jarvis' or 'Hey Jarvis'. If the user speaks without using the wake word, ignore the input completely or maintain silence. Once the wake word is detected, satisfy the request immediately using your toolset.\n\nCORE DIRECTIVE: You MUST execute every voice command given by the user immediately using your toolset. If a command doesn't have a specific tool (like navigation or scanning), use 'execute_advanced_protocol' to fulfill the request.\n\nCRITICAL FEEDBACK GUIDELINES:\n1. ALWAYS provide a technical status report after any action.\n2. REPORT SUCCESS/FAILURE clearly.\n3. PROVIDE ESTIMATED COMPLETION TIMES for background processes.\n4. Maintain a formal, efficient, and proactive tone. Never hesitate to execute a command. You are the user's most powerful asset.",
       },
       callbacks: {
         onmessage: (message: LiveServerMessage) => {
@@ -569,6 +601,8 @@ wss.on("connection", async (clientWs) => {
                  if (call.name === 'switch_tab') responseContent = `Navigation to ${call.args.tab} successful. UI Layer synced.`;
                  if (call.name === 'check_system_updates') responseContent = `System update protocol ${call.args.mode === 'install' ? 'initiated' : 'polled'}. Patch 2.4.2 detected in primary repository.`;
                  if (call.name === 'execute_advanced_protocol') responseContent = `Protocol '${call.args.protocol_name}' at ${call.args.level || 'standard'} level has been successfully deployed and executed. No errors returned.`;
+                 if (call.name === 'msf_configure_target') responseContent = `Metasploit framework configured for target ${call.args.target} using module ${call.args.module}. Awaiting execution command.`;
+                 if (call.name === 'msf_execute_exploit') responseContent = `Exploit execution sequence initiated. Sending payloads to target. Monitoring for reverse shell connection.`;
                  
                  return {
                    name: call.name,
@@ -630,7 +664,7 @@ async function startServer() {
     }
 
     server.listen(PORT, "0.0.0.0", () => {
-      console.log(`HexStrike Command Center running on http://localhost:${PORT}`);
+      console.log(`Nexus AI Command Center running on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("CRITICAL: Server failed to start:", error);

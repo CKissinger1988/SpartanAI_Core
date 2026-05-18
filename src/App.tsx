@@ -8,14 +8,17 @@ import { DeepLearning } from './components/DeepLearning';
 import { BootSequence } from './components/BootSequence';
 import { KaliTerminal } from './components/KaliTerminal';
 import { RemoteDesktop } from './components/RemoteDesktop';
+import { MetasploitFramework } from './components/MetasploitFramework';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { Settings } from './components/Settings';
+import { Menu, X } from 'lucide-react';
 
 function AppContent() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string, text: string }[]>([]);
   const [isBooting, setIsBooting] = useState(true);
   const { user, loading } = useAuth();
@@ -32,6 +35,19 @@ function AppContent() {
       .catch(() => {
         // If server is not ready yet, we rely on BootSequence internal polling
       });
+
+    // Global event listener for tab switching
+    const handleSwitchTab = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.tab) {
+        setActiveTab(customEvent.detail.tab);
+      }
+    };
+    window.addEventListener('switch_tab', handleSwitchTab);
+
+    return () => {
+      window.removeEventListener('switch_tab', handleSwitchTab);
+    };
   }, []);
 
   const addNotification = (text: string) => {
@@ -78,6 +94,20 @@ function AppContent() {
           window.dispatchEvent(new CustomEvent('jarvis-exploit-trigger'));
         }, 1000);
         break;
+      case 'msf_configure_target':
+        setActiveTab('msf_framework');
+        addNotification(`JARVIS: Configuring MSF module for ${args.target}`);
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('msf-target-transfer', { 
+            detail: { target: args.target, module: args.module } 
+          }));
+        }, 500);
+        break;
+      case 'msf_execute_exploit':
+        setActiveTab('msf_framework');
+        addNotification(`JARVIS: Firing configured exploit sequence...`);
+        window.dispatchEvent(new CustomEvent('msf-execute-exploit'));
+        break;
       default:
         console.log("Unknown command:", command, args);
     }
@@ -92,6 +122,7 @@ function AppContent() {
       case 'deeplearning': return <DeepLearning />;
       case 'terminal': return <KaliTerminal />;
       case 'desktop': return <RemoteDesktop />;
+      case 'msf_framework': return <MetasploitFramework />;
       default: return <Dashboard onLaunchDesktop={() => setActiveTab('desktop')} />;
     }
   };
@@ -114,11 +145,14 @@ function AppContent() {
             key="interface"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-screen w-full bg-[#02040a] text-slate-300 font-sans flex flex-col overflow-hidden border-2 border-slate-900"
+            className="min-h-screen w-full bg-[#02040a] text-slate-300 font-sans flex flex-col border-2 border-slate-900"
           >
             {/* TOP NAVIGATION BAR */}
-            <nav className="h-12 border-b border-cyan-900/30 bg-black/40 flex items-center justify-between px-6 shrink-0 z-50">
+            <nav className="sticky top-0 h-12 border-b border-cyan-900/30 bg-black/80 backdrop-blur-md flex items-center justify-between px-4 md:px-6 shrink-0 z-50">
               <div className="flex items-center gap-4">
+                <button className="md:hidden text-cyan-500 hover:text-cyan-400" onClick={() => setIsMobileMenuOpen(true)}>
+                  <Menu className="w-5 h-5" />
+                </button>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
                   <span className="text-xs font-mono tracking-widest text-cyan-400">NEXUS_SECURITY_CONSOLE</span>
@@ -145,12 +179,36 @@ function AppContent() {
             </nav>
 
             {/* MAIN INTERFACE */}
-            <div className="flex flex-1 overflow-hidden">
-              <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onOpenSettings={() => setIsSettingsOpen(true)} />
+            <div className="flex flex-1 relative">
+              <div className="hidden md:block sticky top-12 self-start h-[calc(100vh-3rem)] shrink-0 z-40">
+                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onOpenSettings={() => setIsSettingsOpen(true)} />
+              </div>
+              
+              <AnimatePresence>
+                {isMobileMenuOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    className="fixed inset-0 z-[60] bg-black/90 md:hidden flex"
+                  >
+                    <Sidebar 
+                      activeTab={activeTab} 
+                      setActiveTab={(t) => { setActiveTab(t); setIsMobileMenuOpen(false); }} 
+                      onOpenSettings={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }} 
+                    />
+                    <div className="flex-1 p-4" onClick={() => setIsMobileMenuOpen(false)}>
+                      <button className="float-right text-white/50 hover:text-white">
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               
               <Settings open={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
               
-              <main className="flex-1 overflow-y-auto relative p-6 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.03)_0%,_transparent_50%)]">
+              <main className="flex-1 relative p-6 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.03)_0%,_transparent_50%)] overflow-x-hidden">
                 <div className="max-w-7xl mx-auto space-y-6">
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     {renderContent()}
@@ -178,7 +236,7 @@ function AppContent() {
             </div>
 
             {/* FOOTER BAR */}
-            <footer className="h-8 border-t border-slate-900 bg-black/80 flex items-center justify-between px-6 shrink-0 z-50">
+            <footer className="mt-auto h-8 border-t border-slate-900 bg-black/80 flex items-center justify-between px-6 shrink-0 z-50 relative">
               <div className="flex items-center gap-4 text-[9px] font-mono text-slate-500">
                 <span className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div> 

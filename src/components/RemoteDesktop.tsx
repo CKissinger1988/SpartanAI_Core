@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, Terminal, X, Minimize2, Maximize2, MonitorOff, ShieldCheck, Wifi, Battery, Clock, Search, Folder, Globe, Command, Key, Plus, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Monitor, Terminal, X, Minimize2, Maximize2, MonitorOff, ShieldCheck, Wifi, Battery, Clock, Search, Folder, Globe, Chrome, Command, Key, Plus, Trash2, Loader2, Eye, EyeOff, ExternalLink, Crosshair } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { sshKeyService, SSHKey } from '../services/sshKeyService';
 
@@ -11,11 +11,24 @@ export const RemoteDesktop: React.FC = () => {
   const [securityToken, setSecurityToken] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [terminalLogs, setTerminalLogs] = useState<{ text: string, type: 'command' | 'output' | 'error' | 'security' }[]>([
-    { text: 'HexStrike Secure Shell v2.5.0 initialized.', type: 'security' },
+    { text: 'Nexus AI Secure Shell v2.5.0 initialized.', type: 'security' },
     { text: 'Local Environment: Secure', type: 'security' }
   ]);
   const [terminalInput, setTerminalInput] = useState('');
   const [showTerminal, setShowTerminal] = useState(true);
+  const [isTerminalPoppedOut, setIsTerminalPoppedOut] = useState(false);
+  const [showFiles, setShowFiles] = useState(false);
+  const [showBrowser, setShowBrowser] = useState(false);
+  const [showBurp, setShowBurp] = useState(false);
+  const [showMetasploit, setShowMetasploit] = useState(false);
+  const [metasploitInput, setMetasploitInput] = useState('');
+  const [metasploitHistory, setMetasploitHistory] = useState([
+    { text: '       =[ metasploit v6.3.5-dev                         ]', type: 'banner' },
+    { text: '+ -- --=[ 2294 exploits - 1201 auxiliary - 409 post       ]', type: 'banner' },
+    { text: '+ -- --=[ 968 payloads - 45 encoders - 11 nops            ]', type: 'banner' },
+    { text: '+ -- --=[ 9 evasion                                       ]', type: 'banner' },
+    { text: '', type: 'banner' },
+  ]);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [hsmStatus, setHsmStatus] = useState<{ status: string, serial: string } | null>(null);
   
@@ -198,6 +211,52 @@ export const RemoteDesktop: React.FC = () => {
     }
 
     setTerminalInput('');
+  };
+
+  const handleMetasploitSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!metasploitInput.trim()) return;
+
+    const cmd = metasploitInput.trim();
+    setMetasploitHistory(prev => [...prev, { text: `msf6 > ${cmd}`, type: 'input' }]);
+
+    let output = '';
+    const lowerCmd = cmd.toLowerCase();
+
+    if (lowerCmd === 'help') {
+      output = `Core Commands\n=============\n\n    Command       Description\n    -------       -----------\n    ?             Help menu\n    banner        Display an awesome metasploit banner\n    cd            Change the current working directory\n    color         Toggle color\n    connect       Communicate with a host\n    exit          Exit the console\n    help          Help menu\n    info          Displays information about one or more modules\n    irb           Open an interactive Ruby shell in the current context\n    jobs          Displays and manages jobs\n    kill          Kill a job\n    load          Load a framework plugin\n    quit          Exit the console\n    route         Route traffic through a session\n    save          Saves the active datastores\n    search        Searches module names and descriptions\n    sessions      Dump session listings and display information about sessions\n    set           Sets a context-specific variable to a value\n    show          Displays modules of a given type, or all modules\n    sleep         Do nothing for the specified number of seconds\n    spool         Write console output into a file as well the screen\n    threads       View and manipulate background threads\n    unload        Unload a framework plugin\n    use           Interact with a module by name or search term/index\n    version       Show the framework and console library version numbers`;
+    } else if (lowerCmd.startsWith('use ')) {
+      const module = lowerCmd.split(' ')[1];
+      output = `[*] Using configured payload windows/x64/meterpreter/reverse_tcp`;
+      setMetasploitHistory(prev => [
+        ...prev, 
+        { text: output, type: 'info' },
+        { text: `msf6 exploit(${module.split('/').pop()}) > `, type: 'prompt' }
+      ]);
+      setMetasploitInput('');
+      return;
+    } else if (lowerCmd.startsWith('set ')) {
+      const [_, key, val] = lowerCmd.split(' ');
+      output = `${key.toUpperCase()} => ${val}`;
+    } else if (lowerCmd === 'run' || lowerCmd === 'exploit') {
+      output = `[*] Started reverse TCP handler on 192.168.1.105:4444 \n[*] 192.168.12.55:445 - Connecting to target for exploitation.\n[+] 192.168.12.55:445 - Connection established for exploitation.\n[+] 192.168.12.55:445 - Target OS selected valid for OS indicated by SMB reply\n[*] 192.168.12.55:445 - CORE raw buffer dump (42 bytes)\n[*] 192.168.12.55:445 - Target arch selected valid for arch indicated by DCE/RPC reply\n[*] 192.168.12.55:445 - Trying exploit with 12 Groom Allocations.\n[*] 192.168.12.55:445 - Sending all but last fragment of exploit packet\n[*] 192.168.12.55:445 - Starting non-paged pool grooming\n[+] 192.168.12.55:445 - Sending SMBv2 buffers\n[+] 192.168.12.55:445 - Closing SMBv1 connection creating free hole adjacent to SMBv2 buffer.\n[*] 192.168.12.55:445 - Sending final SMBv2 buffers.\n[*] 192.168.12.55:445 - Sending last fragment of exploit packet!\n[*] 192.168.12.55:445 - Receiving response from exploit packet\n[+] 192.168.12.55:445 - ETERNALBLUE overwrite completed successfully (0xC000000D)!\n[*] 192.168.12.55:445 - Sending egg to corrupted connection.\n[*] 192.168.12.55:445 - Triggering free of corrupted buffer.\n[*] Sending stage (200262 bytes) to 192.168.12.55\n[*] Meterpreter session 1 opened (192.168.1.105:4444 -> 192.168.12.55:49156)`;
+      setMetasploitHistory(prev => [
+        ...prev, 
+        { text: output, type: 'success' },
+        { text: `meterpreter > `, type: 'meterpreter' }
+      ]);
+      setMetasploitInput('');
+      return;
+    } else if (lowerCmd === 'sysinfo') {
+      output = `Computer        : TARGET-WIN-01\nOS              : Windows 10 (10.0 Build 19041).\nArchitecture    : x64\nSystem Language : en_US\nDomain          : WORKGROUP\nLogged On Users : 2\nMeterpreter     : x64/windows`;
+    } else if (lowerCmd === 'getuid') {
+      output = `Server username: NT AUTHORITY\\SYSTEM`;
+    } else {
+      output = `[-] Unknown command: ${cmd}.`;
+    }
+
+    setMetasploitHistory(prev => [...prev, { text: output, type: output.startsWith('[-]') ? 'error' : 'output' }]);
+    setMetasploitInput('');
   };
 
   if (!isConnected) {
@@ -390,10 +449,11 @@ export const RemoteDesktop: React.FC = () => {
 
         {/* DESKTOP ICONS */}
         <div className="p-4 grid grid-cols-1 w-24 gap-4">
-           <DesktopIcon icon={Folder} label="Home" color="text-amber-400" status="connected" />
-           <DesktopIcon icon={Search} label="Burp Suite" color="text-orange-500" status="disconnected" />
+           <DesktopIcon icon={Folder} label="Home" color="text-amber-400" onClick={() => setShowFiles(true)} status="connected" />
+           <DesktopIcon icon={Search} label="Burp Suite" color="text-orange-500" onClick={() => setShowBurp(true)} status="disconnected" />
            <DesktopIcon icon={Terminal} label="Terminal" color="text-slate-300" onClick={() => setShowTerminal(true)} status="connected" />
-           <DesktopIcon icon={Globe} label="Browser" color="text-cyan-400" status="connected" />
+           <DesktopIcon icon={Chrome} label="Browser" color="text-cyan-400" onClick={() => setShowBrowser(true)} status="connected" />
+           <DesktopIcon icon={Crosshair} label="Metasploit" color="text-red-500" onClick={() => setShowMetasploit(true)} status="connected" />
         </div>
 
         {/* WINDOWS */}
@@ -403,7 +463,7 @@ export const RemoteDesktop: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute top-12 left-32 w-2/3 h-2/3 bg-[#0c0c0c] border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md"
+              className={`bg-[#0c0c0c] border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md overflow-hidden min-w-[300px] md:min-w-[400px] min-h-[300px] transition-all ${isTerminalPoppedOut ? 'fixed inset-2 md:inset-4 z-[60]' : 'absolute inset-x-2 top-12 md:left-32 md:w-2/3 h-2/3 resize'}`}
             >
               {/* Terminal Title Bar */}
               <div className="h-9 bg-[#1a1a1a] border-b border-white/5 flex items-center justify-between px-3 shrink-0 rounded-t-lg">
@@ -412,8 +472,9 @@ export const RemoteDesktop: React.FC = () => {
                    <span className="text-[10px] text-white/50 font-mono tracking-tight">root@kali: ~/tools/recon</span>
                 </div>
                 <div className="flex items-center gap-3">
+                   <ExternalLink onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" title="Pop Out" />
                    <Minimize2 className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" />
-                   <Maximize2 className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" />
+                   <Maximize2 onClick={() => setIsTerminalPoppedOut(!isTerminalPoppedOut)} className="w-3 h-3 text-white/30 cursor-pointer hover:text-white" title="Maximize" />
                    <X onClick={() => setShowTerminal(false)} className="w-3.5 h-3.5 text-white/30 cursor-pointer hover:text-red-500" />
                 </div>
               </div>
@@ -476,15 +537,226 @@ export const RemoteDesktop: React.FC = () => {
               </div>
             </motion.div>
           )}
+
+          {showFiles && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute top-20 left-40 w-1/2 h-1/2 bg-[#1e1e1e] border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md"
+            >
+              <div className="h-9 bg-[#2d2d2d] border-b border-white/5 flex items-center justify-between px-3 shrink-0 rounded-t-lg">
+                <div className="flex items-center gap-3">
+                   <Folder className="w-3.5 h-3.5 text-amber-500" />
+                   <span className="text-[10px] text-white/70 font-sans tracking-tight">File Explorer - Home</span>
+                </div>
+                <div className="flex items-center gap-3">
+                   <X onClick={() => setShowFiles(false)} className="w-3.5 h-3.5 text-white/30 cursor-pointer hover:text-red-500" />
+                </div>
+              </div>
+              <div className="flex-1 p-4 flex items-center justify-center text-slate-500 text-xs italic">
+                Directory contents encrypted. Access denied.
+              </div>
+            </motion.div>
+          )}
+
+          {showBrowser && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-x-2 top-10 md:left-60 md:w-1/2 h-[60%] bg-white border border-white/10 rounded-lg shadow-2xl flex flex-col backdrop-blur-md z-[55] resize overflow-hidden min-w-[300px] min-h-[200px]"
+            >
+              <div className="h-9 bg-[#f0f0f0] border-b border-black/10 flex items-center justify-between px-3 shrink-0 rounded-t-lg text-black">
+                <div className="flex items-center gap-3">
+                   <Chrome className="w-3.5 h-3.5 text-blue-600" />
+                   <span className="text-[10px] font-sans tracking-tight">Google Chrome</span>
+                </div>
+                <div className="flex items-center gap-3">
+                   <X onClick={() => setShowBrowser(false)} className="w-3.5 h-3.5 text-black/50 cursor-pointer hover:text-red-500" />
+                </div>
+              </div>
+              <div className="flex-1 bg-slate-50 flex flex-col relative overflow-hidden">
+                {/* Browser Address Bar Area */}
+                <div className="bg-[#e0e0e0] h-9 flex items-center px-2 gap-2 shrink-0 border-b border-black/10">
+                   <div className="flex gap-1.5 px-2">
+                     <div className="w-3 h-3 rounded-full bg-slate-300 hover:bg-slate-400 transition-colors cursor-pointer" />
+                     <div className="w-3 h-3 rounded-full bg-slate-300 hover:bg-slate-400 transition-colors cursor-pointer" />
+                   </div>
+                   <form 
+                     className="flex-1 bg-white rounded-md h-6 flex items-center px-2 border border-slate-300 shadow-inner group focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400/50"
+                     onSubmit={(e) => {
+                       e.preventDefault();
+                       const form = e.target as HTMLFormElement;
+                       const input = form.elements.namedItem('url') as HTMLInputElement;
+                       let val = input.value;
+                       if (!val.startsWith('http://') && !val.startsWith('https://')) {
+                         val = 'https://' + val;
+                         input.value = val;
+                       }
+                       // For functional purposes, we can force a re-render of the iframe by appending a dummy hash if needed, but standard iframe src update works.
+                       form.setAttribute('data-url', val);
+                       const iframe = form.parentElement?.nextElementSibling as HTMLIFrameElement;
+                       if (iframe) iframe.src = val;
+                     }}
+                   >
+                     <input 
+                       name="url"
+                       defaultValue="https://example.com"
+                       className="w-full h-full bg-transparent border-none outline-none text-[11px] text-slate-700 font-sans"
+                     />
+                   </form>
+                </div>
+                {/* Page Content */}
+                <iframe 
+                  src="https://example.com" 
+                  className="w-full h-full border-none bg-white"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                  title="Browser Content"
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {showBurp && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute top-24 left-24 w-1/2 h-1/2 bg-[#2d2d2d] border border-orange-500/30 rounded-lg shadow-2xl flex flex-col backdrop-blur-md"
+            >
+              <div className="h-9 bg-[#ff6633] border-b border-black/20 flex items-center justify-between px-3 shrink-0 rounded-t-lg">
+                <div className="flex items-center gap-3">
+                   <Search className="w-3.5 h-3.5 text-white" />
+                   <span className="text-[10px] text-white font-sans tracking-tight font-bold">Burp Suite Professional</span>
+                </div>
+                <div className="flex items-center gap-3">
+                   <X onClick={() => setShowBurp(false)} className="w-3.5 h-3.5 text-white/70 cursor-pointer hover:text-red-900" />
+                </div>
+              </div>
+              <div className="flex-1 p-0 flex flex-col bg-[#1e1e1e] overflow-hidden">
+                <div className="h-8 bg-[#333] border-b border-black/20 flex items-center px-2 gap-4 text-[10px] text-slate-300">
+                   <span className="font-bold text-orange-400 border-b-2 border-orange-400 pb-1">Proxy</span>
+                   <span>Target</span>
+                   <span>Intruder</span>
+                   <span>Repeater</span>
+                   <span>Sequencer</span>
+                </div>
+                <div className="h-8 bg-[#2d2d2d] border-b border-black/20 flex items-center px-2 gap-2 text-[10px]">
+                   <button className="bg-orange-500 text-white px-2 py-1 rounded font-bold hover:bg-orange-400 transition-colors shadow-lg">Intercept is on</button>
+                   <button className="bg-[#444] text-white px-2 py-1 rounded hover:bg-[#555] transition-colors">Forward</button>
+                   <button className="bg-[#444] text-white px-2 py-1 rounded hover:bg-[#555] transition-colors">Drop</button>
+                   <span className="ml-auto text-emerald-500 font-mono flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> 127.0.0.1:8080
+                   </span>
+                </div>
+                <div className="flex-1 p-2 font-mono text-[9px] text-emerald-400 bg-black/50 overflow-y-auto">
+                   <div className="text-white">GET /api/v1/auth/session HTTP/1.1</div>
+                   <div>Host: target-system.local</div>
+                   <div>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)</div>
+                   <div>Accept: application/json</div>
+                   <div>Authorization: Bearer [REDACTED]</div>
+                   <div>Connection: close</div>
+                   <br/>
+                   <div className="text-slate-500 italic">// Awaiting modification...</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {showMetasploit && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-x-2 top-16 md:left-48 md:w-3/4 h-3/4 bg-[#0a0a0a] border border-red-500/30 rounded-lg shadow-2xl flex flex-col backdrop-blur-md z-[55] resize overflow-hidden min-w-[300px] md:min-w-[500px] min-h-[350px]"
+            >
+              {/* Terminal Title Bar */}
+              <div className="h-9 bg-[#111] border-b border-red-500/20 flex items-center justify-between px-3 shrink-0 rounded-t-lg">
+                <div className="flex items-center gap-3">
+                   <Crosshair className="w-3.5 h-3.5 text-red-500" />
+                   <span className="text-[10px] text-white/50 font-mono tracking-tight">msfconsole</span>
+                </div>
+                <div className="flex items-center gap-3">
+                   <X onClick={() => setShowMetasploit(false)} className="w-3.5 h-3.5 text-white/30 cursor-pointer hover:text-red-500" />
+                </div>
+              </div>
+              
+              {/* Terminal Content */}
+              <div className="flex-1 p-4 font-mono text-[11px] overflow-y-auto space-y-1 custom-scrollbar">
+                 {metasploitHistory.map((log, i) => (
+                   <div key={i} className="flex flex-col">
+                     {log.type === 'input' && (
+                       <div className="flex gap-2">
+                         <span className="text-red-400 font-bold underline decoration-red-500/30">msf6</span>
+                         <span className="text-white">&gt; {log.text.replace('msf6 > ', '')}</span>
+                       </div>
+                     )}
+                     {log.type === 'prompt' && (
+                       <div className="flex gap-2 mt-2">
+                         <span className="text-red-400 font-bold underline decoration-red-500/30">{log.text.replace(' > ', '')}</span>
+                         <span className="text-white">&gt; </span>
+                       </div>
+                     )}
+                     {log.type === 'meterpreter' && (
+                       <div className="flex gap-2 mt-2">
+                         <span className="text-red-400 font-bold underline decoration-red-500/30">meterpreter</span>
+                         <span className="text-white">&gt; </span>
+                       </div>
+                     )}
+                     {log.type === 'output' && (
+                       <div className="text-slate-300 py-0.5 whitespace-pre-wrap break-all">
+                         {log.text}
+                       </div>
+                     )}
+                     {log.type === 'info' && (
+                       <div className="text-cyan-400 py-0.5 font-bold">
+                         {log.text}
+                       </div>
+                     )}
+                     {log.type === 'success' && (
+                       <div className="text-emerald-500 py-0.5 font-bold whitespace-pre-wrap break-all">
+                         {log.text}
+                       </div>
+                     )}
+                     {log.type === 'error' && (
+                       <div className="text-red-500 py-0.5 font-bold">
+                         {log.text}
+                       </div>
+                     )}
+                     {log.type === 'banner' && (
+                       <pre className="text-red-500 font-bold opacity-80 leading-tight select-none">
+                         {log.text}
+                       </pre>
+                     )}
+                   </div>
+                 ))}
+                 
+                 <form onSubmit={handleMetasploitSubmit} className="flex gap-2 pt-2 items-center">
+                    <span className="text-red-400 font-bold underline decoration-red-500/30">msf6</span>
+                    <span className="text-white">&gt;</span>
+                    <input 
+                      type="text"
+                      value={metasploitInput}
+                      onChange={(e) => setMetasploitInput(e.target.value)}
+                      className="flex-1 bg-transparent border-none outline-none text-white font-mono"
+                      autoFocus
+                    />
+                    <div className="w-1.5 h-3 bg-red-500 animate-pulse" />
+                 </form>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
       {/* KALI BOTTOM DOCK */}
-      <div className="h-12 absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 bg-black/40 border border-white/10 rounded-2xl backdrop-blur-xl shadow-xl">
+      <div className="h-12 absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 bg-black/40 border border-white/10 rounded-2xl backdrop-blur-xl shadow-xl z-50">
          <DockIcon icon={Terminal} onClick={() => setShowTerminal(true)} hasIndicator={showTerminal} />
-         <DockIcon icon={Folder} />
-         <DockIcon icon={Globe} />
-         <DockIcon icon={ShieldCheck} />
+         <DockIcon icon={Folder} onClick={() => setShowFiles(true)} hasIndicator={showFiles} />
+         <DockIcon icon={Chrome} onClick={() => setShowBrowser(true)} hasIndicator={showBrowser} />
+         <DockIcon icon={Search} onClick={() => setShowBurp(true)} hasIndicator={showBurp} />
+         <DockIcon icon={Crosshair} onClick={() => setShowMetasploit(true)} hasIndicator={showMetasploit} />
       </div>
 
       {/* SSH KEY MANAGER MODAL */}

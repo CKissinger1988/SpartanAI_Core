@@ -1,71 +1,63 @@
-# SentinelAI Security Suite
+# Nexus AI Security Suite
 
-An advanced, unified AI-powered security operations and threat management suite. SentinelAI provides real-time monitoring, AI-driven threat prediction, and a comprehensive security laboratory environment.
+**Nexus AI Security Suite** is an advanced, simulated penetration testing and security operations dashboard designed for training, demonstration, and conceptual architectural testing. It provides a highly interactive and visually immersive interface replicating real-world defensive and offensive cyber environments.
 
-## Features & Capabilities
+**Disclaimer:** This application is entirely simulated. It does not contain actual exploit payloads, nor does it perform real network reconnaissance or unauthorized access. It is designed purely for educational and conceptual demonstration purposes.
 
-- **AI-Powered Threat Analysis**: Leverage Google Gemini to analyze network traffic and identify anomalies.
-- **Unified Security Dashboard**: Real-time monitoring of system intrusions, scan results, and threat levels.
-- **Security Laboratory**: A sandboxed environment for testing vulnerabilities and counter-exploits.
-- **Jarvis Voice Interface**: Command and control your security operations through natural language interactions.
-- **Real-Time IDS/IPS Simulation**: Monitor and neutralize simulated threats in your perimeter.
+## 🚀 Features
+- **Cloud Desktop**: An embedded window manager that simulates a remote Kali Linux environment, complete with a functional terminal UI.
+- **Jarvis AI Assistant**: A voice-activated AI engine powered by Google Gemini that can interact with the suite, configure simulated exploits, and provide real-time situational awareness.
+- **Metasploit Framework UI**: A simulated, high-fidelity replica of the `msfconsole`, seamlessly integrated into the dashboard.
+- **Security Recon Lab**: Analyze mock network scans, identify simulated vulnerabilities, and automatically stage mock exploit pipelines.
+- **Responsive Layout**: Fluid design built with Tailwind CSS, ensuring the dashboard scales from desktop monitors down to mobile devices.
 
-## Installation
+## 🛠️ Installation & Setup
 
-### Prerequisites
+Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-* [Node.js](https://nodejs.org/) (Version 22+ recommended)
-* npm (included with Node.js)
-
-### Common Setup
-
-1. **Clone the repository**:
+1. **Clone the Repository**
    ```bash
-   git clone [YOUR_REPO_URL]
-   cd sentinelai-security-suite
+   git clone https://github.com/CKissinger1988/NexusAI-Security-Suite.git
+   cd NexusAI-Security-Suite
    ```
 
-2. **Install dependencies**:
+2. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. **Configure Environment Variables**:
-   Copy `.env.example` to `.env` and configure your API keys (specifically `GEMINI_API_KEY`).
+3. **Environment Configuration**
+   To enable the Jarvis Voice AI features, you must provide a valid Gemini API key. Create a `.env` file in the root directory:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
 
-### Linux Setup
-
-Follow the Common Setup steps above. Ensure you have `build-essential` installed for any necessary native compilations.
-
-```bash
-# Example for Debian/Ubuntu
-sudo apt update
-sudo apt install build-essential
-npm install
-npm run dev
-```
-
-### Windows Setup
-
-Follow the Common Setup steps above. It is recommended to use Powershell or Git Bash.
-
-1. Ensure Node.js is correctly installed in your PATH.
-2. If issues arise with native dependencies, run the terminal as Administrator.
+4. **Start the Application (Development Mode)**
+   This will spin up both the Vite frontend server and the Express backend simultaneously:
    ```bash
-   npm install
    npm run dev
    ```
+   The application will be accessible at `http://localhost:5173` (Frontend) and the backend API at `http://localhost:3000`.
 
-## Development
+## 📦 Building for Production / Releases
 
-- Start development server: `npm run dev`
-- Build for production: `npm run build`
-- Run production build: `npm run start`
+To create an optimized production build for deployment:
 
-## Technologies
+1. **Build the Application**
+   ```bash
+   npm run build
+   ```
+   This will compile the React application and place the static assets into the `dist/` directory.
 
-- React 19 / Vite
-- Express (Backend API Proxy)
-- Tailwind CSS
-- Google Gemini API
-- Recharts (Data Visualization)
+2. **Run the Production Server**
+   ```bash
+   npm run start
+   ```
+   The Express server will serve the optimized frontend files on `http://localhost:3000`. 
+   *Note: Ensure your production environment sets the `NODE_ENV=production` environment variable.*
+
+## 📂 Project Structure
+- `src/components`: React components including the simulated desktop, terminal, and AI chat interfaces.
+- `src/contexts`: React context providers for global state (e.g., AuthContext).
+- `server.ts`: Express backend handling simulated security tool endpoints and the WebSocket connection for the Gemini Live API.
+- `index.css`: Global styles, including custom animations and the Tailwind configuration.

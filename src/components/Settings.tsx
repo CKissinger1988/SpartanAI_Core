@@ -33,27 +33,56 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
             </div>
             
             <div className="p-6 space-y-6">
-              {/* API KEY STATUS */}
+              {/* AI INTEGRATIONS */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-slate-300">
                   <Brain className="w-4 h-4 text-cyan-500" />
-                  <span className="text-xs font-bold uppercase tracking-tighter">AI Integration (Gemini)</span>
+                  <span className="text-xs font-bold uppercase tracking-tighter">AI Integrations</span>
                 </div>
-                <div className="bg-black/40 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs font-mono">
-                  <span className="text-slate-500">API_KEY_STATUS</span>
-                  <span className="text-emerald-500">CONFIGURED (Managed by Platform)</span>
+                <div className="bg-black/40 rounded-lg border border-slate-800 divide-y divide-slate-800/50 text-xs font-mono overflow-hidden">
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">Gemini</span>
+                    <span className="text-emerald-500">CONFIGURED</span>
+                  </div>
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">Grok</span>
+                    <span className="text-amber-500 text-[10px] px-2 py-0.5 border border-amber-500/20 rounded bg-amber-500/10 cursor-pointer hover:bg-amber-500/20 transition-colors">CONNECT</span>
+                  </div>
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">Antigravity</span>
+                    <span className="text-amber-500 text-[10px] px-2 py-0.5 border border-amber-500/20 rounded bg-amber-500/10 cursor-pointer hover:bg-amber-500/20 transition-colors">CONNECT</span>
+                  </div>
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">Codex</span>
+                    <span className="text-amber-500 text-[10px] px-2 py-0.5 border border-amber-500/20 rounded bg-amber-500/10 cursor-pointer hover:bg-amber-500/20 transition-colors">CONNECT</span>
+                  </div>
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">Copilot</span>
+                    <span className="text-amber-500 text-[10px] px-2 py-0.5 border border-amber-500/20 rounded bg-amber-500/10 cursor-pointer hover:bg-amber-500/20 transition-colors">CONNECT</span>
+                  </div>
                 </div>
               </div>
 
-              {/* ENCRYPTION KEY STATUS */}
+              {/* ENCRYPTED STORAGE STATUS */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-slate-300">
                   <Key className="w-4 h-4 text-emerald-500" />
                   <span className="text-xs font-bold uppercase tracking-tighter">Encrypted Storage</span>
                 </div>
-                <div className="bg-black/40 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs font-mono">
-                  <span className="text-slate-500">ENCRYPTION_KEY</span>
-                  <span className="text-emerald-500">32-BYTE MASTER KEY SET</span>
+                <div className="bg-black/40 rounded-lg border border-slate-800 divide-y divide-slate-800/50 text-xs font-mono overflow-hidden">
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">ENCRYPTION_KEY</span>
+                    <span className="text-emerald-500">32-BYTE MASTER KEY SET</span>
+                  </div>
+                  <div className="p-3 flex justify-between items-center">
+                    <span className="text-slate-500">STORAGE_LOCATION</span>
+                    <select className="bg-slate-900 text-cyan-400 border border-slate-700 rounded px-2 py-1 outline-none text-[10px] cursor-pointer">
+                      <option value="local">LOCAL_ENCLAVE</option>
+                      <option value="cloud">CLOUD_VAULT_AWS</option>
+                      <option value="hsm">HARDWARE_SECURITY_MODULE</option>
+                      <option value="decentralized">DECENTRALIZED_NODE</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

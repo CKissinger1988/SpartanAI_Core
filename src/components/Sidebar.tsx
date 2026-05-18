@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Terminal, Shield, Brain, Cpu, Mic, Settings, LayoutDashboard, LogOut, Monitor, Cpu as HsmIcon } from 'lucide-react';
+import { Terminal, Shield, Brain, Cpu, Mic, Settings, LayoutDashboard, LogOut, Monitor, Cpu as HsmIcon, Crosshair } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -33,19 +33,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
     { id: 'terminal', icon: Terminal, label: 'KALI_CONS' },
     { id: 'models', icon: Brain, label: 'NEURAL_MOD' },
     { id: 'security', icon: Shield, label: 'SEC_RECON' },
+    { id: 'msf_framework', icon: Crosshair, label: 'MSF_FRAMEWORK' },
     { id: 'deeplearning', icon: Cpu, label: 'MATRIX_CORE' },
   ];
 
   return (
-    <div className="w-20 lg:w-64 bg-[#02040a]/80 border-r border-slate-800/50 flex flex-col transition-all duration-300 z-40 backdrop-blur-md">
-      <div className="p-6 flex items-center gap-3">
+    <div className="w-20 lg:w-48 h-full bg-[#02040a]/80 border-r border-slate-800/50 flex flex-col transition-all duration-300 backdrop-blur-md overflow-y-auto overflow-x-hidden hide-scrollbar">
+      <div className="p-4 px-6 flex items-center gap-3">
         <div className="w-8 h-8 bg-cyan-600 rounded flex items-center justify-center glow-cyan">
           <Shield className="w-5 h-5 text-white" />
         </div>
-        <span className="hidden lg:block font-bold text-lg tracking-tighter text-white">HEXSTRIKE</span>
+        <span className="hidden lg:block font-bold text-lg tracking-tighter text-white">NEXUS AI</span>
       </div>
 
-      <nav className="flex-1 mt-6">
+      <nav className="flex-1 mt-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -53,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-4 px-6 py-4 transition-colors relative group ${
+              className={`w-full flex items-center gap-4 px-6 py-3 transition-colors relative group ${
                 isActive ? 'text-cyan-400 bg-cyan-500/5' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
@@ -70,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
         })}
       </nav>
 
-      <div className="p-6 border-t border-slate-800/30 space-y-4">
+      <div className="p-4 px-6 border-t border-slate-800/30 space-y-3">
         {hsmOnline && (
           <div className="hidden lg:flex items-center gap-3 px-3 py-2 bg-emerald-500/5 border border-emerald-500/20 rounded-xl mb-4">
             <HsmIcon className="w-3.5 h-3.5 text-emerald-500" />

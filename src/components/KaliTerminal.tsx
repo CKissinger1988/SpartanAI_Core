@@ -7,14 +7,14 @@ export const KaliTerminal: React.FC = () => {
   const [history, setHistory] = useState<TerminalMessage[]>([
     {
       id: '1',
-      user: 'root@hexstrike',
-      content: 'HexStrike OS Terminal v2.5.0 [PRODUCTION]',
+      user: 'root@nexusai',
+      content: 'Nexus AI OS Terminal v2.5.0 [PRODUCTION]',
       type: 'system',
       timestamp: new Date().toLocaleTimeString()
     },
     {
       id: '2',
-      user: 'root@hexstrike',
+      user: 'root@nexusai',
       content: 'Authorized personnel only. Binary integrity check passed.',
       type: 'system',
       timestamp: new Date().toLocaleTimeString()
@@ -34,7 +34,7 @@ export const KaliTerminal: React.FC = () => {
       ...history,
       {
         id: Date.now().toString(),
-        user: 'root@hexstrike',
+        user: 'root@nexusai',
         content: cmd,
         type: 'input',
         timestamp: new Date().toLocaleTimeString()
@@ -58,7 +58,7 @@ export const KaliTerminal: React.FC = () => {
     } else if (c === 'date') {
       output = new Date().toString();
     } else if (c === 'uname -a') {
-      output = 'Linux hexstrike 5.15.0-kali7-amd64 #1 SMP PREEMPT_DYNAMIC Debian 5.15.35-1kali1 (2022-05-04) x86_64 GNU/Linux';
+      output = 'Linux nexusai 5.15.0-kali7-amd64 #1 SMP PREEMPT_DYNAMIC Debian 5.15.35-1kali1 (2022-05-04) x86_64 GNU/Linux';
     } else if (c === 'apt update' || c === 'sudo apt update') {
       output = 'Hit:1 http://http.kali.org/kali kali-rolling InRelease\nReading package lists... Done\nBuilding dependency tree... Done\nReading state information... Done\nAll packages are up to date.';
     } else if (c.startsWith('apt install') || c.startsWith('sudo apt install')) {
@@ -66,7 +66,7 @@ export const KaliTerminal: React.FC = () => {
     } else if (c === 'nmap') {
       output = 'Nmap 7.92 ( https://nmap.org )\nUsage: nmap [Scan Type(s)] [Options] {target specification}';
     } else if (c.startsWith('cat')) {
-      output = 'hexstrike_v2.4.1_stable_build_unlocked';
+      output = 'nexusai_v2.4.1_stable_build_unlocked';
     } else if (c === 'clear') {
       setHistory([]);
       return;
@@ -87,7 +87,7 @@ export const KaliTerminal: React.FC = () => {
     setTimeout(() => {
       setHistory(prev => [...prev, {
         id: (Date.now() + 1).toString(),
-        user: 'root@hexstrike',
+        user: 'root@nexusai',
         content: output,
         type: type,
         timestamp: new Date().toLocaleTimeString()
@@ -116,7 +116,7 @@ export const KaliTerminal: React.FC = () => {
           </div>
           <span className="text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-2">
             <TerminalIcon className="w-3 h-3" />
-            root@hexstrike: ~
+            root@nexusai: ~
           </span>
         </div>
         <div className="flex items-center gap-4 text-slate-600">
@@ -141,7 +141,7 @@ export const KaliTerminal: React.FC = () => {
               {msg.type === 'input' ? (
                 <div className="flex items-start gap-2">
                    <span className="text-emerald-500 font-bold shrink-0">┌──(</span>
-                   <span className="text-cyan-400 font-bold shrink-0">root㉿hexstrike</span>
+                   <span className="text-cyan-400 font-bold shrink-0">root㉿nexusai</span>
                    <span className="text-emerald-500 font-bold shrink-0">)-[</span>
                    <span className="text-white shrink-0">~</span>
                    <span className="text-emerald-500 font-bold shrink-0">]</span>
@@ -167,7 +167,7 @@ export const KaliTerminal: React.FC = () => {
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="p-4 bg-black/40 border-t border-slate-800 flex items-center gap-2 group shrink-0">
-        <span className="text-emerald-500 font-bold text-xs shrink-0 tracking-tighter">root@hexstrike#</span>
+        <span className="text-emerald-500 font-bold text-xs shrink-0 tracking-tighter">root@nexusai#</span>
         <input 
           autoFocus
           className="bg-transparent border-none outline-none flex-1 text-cyan-400 text-xs font-mono placeholder:text-slate-700"

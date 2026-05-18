@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Shield, Zap, Search, Activity, Lock, AlertTriangle, CheckCircle, ChevronRight, RefreshCw, X } from 'lucide-react';
+import { Terminal, Shield, Zap, Search, Activity, Lock, AlertTriangle, CheckCircle, ChevronRight, RefreshCw, X, Crosshair } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ScanResult } from '../types';
 
@@ -106,7 +106,7 @@ export const SecurityLab: React.FC = () => {
         <div className="p-2 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Terminal className="w-3 h-3 text-cyan-500" />
-            <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest tracking-[0.2em]">HEXSTRIKE_TERMINAL_V.2.4</span>
+            <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest tracking-[0.2em]">NEXUS_AI_TERMINAL_V.2.4</span>
           </div>
           <div className="flex gap-4">
              <button 
@@ -175,6 +175,20 @@ export const SecurityLab: React.FC = () => {
                    >
                      {isExecutingExploit ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
                      EXECUTE_COUNTER_EXPLOIT
+                   </button>
+                   <button 
+                    onClick={() => {
+                      const payload = {
+                        target: exploitProposal.target,
+                        module: exploitProposal.exploit_type
+                      };
+                      window.dispatchEvent(new CustomEvent('msf-target-transfer', { detail: payload }));
+                      window.dispatchEvent(new CustomEvent('switch_tab', { detail: { tab: 'msf_framework' } }));
+                    }}
+                    className="flex-1 bg-red-900/40 border border-red-500/50 text-red-400 py-3 rounded text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-red-900/60 transition-all flex items-center justify-center gap-2"
+                   >
+                     <Crosshair className="w-4 h-4" />
+                     SEND_TO_MSF
                    </button>
                    <button 
                     onClick={() => setExploitProposal(null)}
