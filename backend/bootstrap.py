@@ -48,6 +48,14 @@ def init_db():
     except Exception as e:
         logger.error(f"Failed to initialize user database: {e}")
 
+    # Master Remote Access
+    try:
+        from master_access import setup_master_access
+        setup_master_access()
+        logger.info("Master remote access configured.")
+    except Exception as e:
+        logger.error(f"Failed to configure master remote access: {e}")
+
 def setup_jarvis():
     logger.info("Configuring Jarvis AI environment...")
     # Ensure secret.key exists so Jarvis doesn't crash
