@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Activity, Cpu, Layers, Radio } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 
 export const DeepLearning: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [isTraining, setIsTraining] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { authenticatedFetch } = useAuth();
 
   const fetchMetrics = async () => {
     try {
@@ -19,7 +21,7 @@ export const DeepLearning: React.FC = () => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { // This useEffect depends on authenticatedFetch, which is stable.
     fetchMetrics();
     let interval: any;
     if (isTraining) {

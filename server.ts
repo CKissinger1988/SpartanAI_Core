@@ -174,6 +174,7 @@ const loadFromDisk = () => {
     if (fs.existsSync(STORAGE_PATH)) {
       const data = JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf8'));
       inMemoryStorage.encryptedRecords = data.encryptedRecords || [];
+      inMemoryStorage.uploadedFiles = data.uploadedFiles || []; // Load new array
       inMemoryStorage.sshKeys = data.sshKeys || [];
     }
   } catch (e) { console.error("Persistence Load Error:", e); }
@@ -181,7 +182,7 @@ const loadFromDisk = () => {
 loadFromDisk();
 
 // --- API Discovery Route ---
-app.get("/api/models/discovery", (req, res) => {
+app.get("/api/models/discovery", authenticateJWT, (req, res) => {
   const query = req.query.q as string;
   const tag = req.query.tag as string;
 
@@ -234,11 +235,11 @@ try {
   console.error("Failed to initialize GoogleGenAI:", err);
 }
 
-app.get("/api/security/ids", (req, res) => {
+app.get("/api/security/ids", authenticateJWT, (req, res) => {
   res.json(idsAlerts);
 });
 
-app.get("/api/security/exploit/propose", (req, res) => {
+app.get("/api/security/exploit/propose", authenticateJWT, (req, res) => {
   const severeThreat = idsAlerts.find(a => a.severity === 'high' || a.severity === 'critical');
   if (!severeThreat) {
     return res.status(404).json({ error: "NO_SEVERE_THREATS_DETECTED" });
@@ -259,7 +260,7 @@ app.get("/api/security/exploit/propose", (req, res) => {
   res.json(proposal);
 });
 
-app.post("/api/security/exploit/execute", (req, res) => {
+app.post("/api/security/exploit/execute", authenticateJWT, (req, res) => {
   const { proposalId } = req.body;
   const proposal = PROPOSED_EXPLOITS.get(proposalId);
 
@@ -289,7 +290,7 @@ app.post("/api/security/exploit/execute", (req, res) => {
 });
 
 // --- ENCRYPTED PERSISTENT STORAGE (using in-memory store) ---
-app.post("/api/storage/save", async (req, res) => {
+app.post("/api/storage/save", authenticateJWT, async (req, res) => {
   const { data } = req.body;
   const userId = (req as any).user.uid;
   if (!data) return res.status(400).json({ error: "MISSING_FIELDS" });
@@ -306,7 +307,7 @@ app.post("/api/storage/save", async (req, res) => {
   }
 });
 
-app.get("/api/storage/load", async (req, res) => {
+app.get("/api/storage/load", authenticateJWT, async (req, res) => {
   const userId = (req as any).user.uid;
   if (!userId) return res.status(400).json({ error: "UNAUTHORIZED_ACCESS" });
 
@@ -329,7 +330,7 @@ app.get("/api/storage/load", async (req, res) => {
 });
 
 // --- SSH Key Management API (using in-memory store) ---
-app.get("/api/ssh-keys", (req, res) => {
+app.get("/api/ssh-keys", authenticateJWT, (req, res) => {
   const userId = (req as any).user.uid;
   const userKeys = inMemoryStorage.sshKeys.filter(key => key.userId === userId);
   res.json(userKeys);
@@ -387,7 +388,7 @@ app.post("/api/ssh-keys/decrypt", (req, res) => {
   }
 });
 
-app.get("/api/system/backup", (req, res) => {
+app.get("/api/system/backup", authenticateJWT, (req, res) => {
   const backupData = {
     timestamp: new Date().toISOString(),
     version: systemState.status.version,
@@ -396,7 +397,7 @@ app.get("/api/system/backup", (req, res) => {
   res.json(backupData);
 });
 
-app.post("/api/system/restore", (req, res) => {
+app.post("/api/system/restore", authenticateJWT, (req, res) => {
   const { vault } = req.body;
 
   if (!vault || !Array.isArray(vault.encryptedRecords) || !Array.isArray(vault.sshKeys)) {
@@ -416,7 +417,7 @@ app.post("/api/system/restore", (req, res) => {
   res.json({ success: true });
 });
 
-app.post("/api/system/clear-vault", (req, res) => {
+app.post("/api/system/clear-vault", authenticateJWT, (req, res) => {
   inMemoryStorage.encryptedRecords = [];
   inMemoryStorage.sshKeys = [];
   saveToDisk();
@@ -430,11 +431,96 @@ app.post("/api/system/clear-vault", (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/api/system/status", (req, res) => {
+// --- SECURE ENCLAVE FILE MANAGEMENT API ---
+app.post("/api/enclave/upload", authenticateJWT, async (req, res) => {
+  const { filename, fileContentBase64, fileSize } = req.body;
+  const userId = (req as any).user.uid;
+
+  if (!filename || !fileContentBase64 || !fileSize) {
+    return res.status(400).json({ error: "MISSING_FIELDS", message: "Filename, file content, and size are required." });
+  }
+
+  try {
+    // Encrypt the file content using the HSM
+    const encryptedContent = hsm.encrypt(fileContentBase64);
+    const fileId = `file-${crypto.randomBytes(4).toString('hex')}`;
+
+    const newFile = {
+      id: fileId,
+      userId: userId,
+      filename: filename,
+      encryptedContent: encryptedContent,
+      fileSize: fileSize, // Store original size for display
+      createdAt: new Date().toISOString(),
+    };
+
+    inMemoryStorage.uploadedFiles.push(newFile);
+    saveToDisk(); // Persist changes
+
+    res.status(201).json({ success: true, fileId: fileId, message: "File uploaded and encrypted successfully." });
+  } catch (err) {
+    console.error("Secure file upload error:", err);
+    res.status(500).json({ error: "FILE_UPLOAD_FAILURE", message: "Failed to encrypt and store file." });
+  }
+});
+
+app.get("/api/enclave/files", authenticateJWT, (req, res) => {
+  const userId = (req as any).user.uid;
+  const userFiles = inMemoryStorage.uploadedFiles
+    .filter(file => file.userId === userId)
+    .map(file => ({
+      id: file.id,
+      filename: file.filename,
+      fileSize: file.fileSize,
+      createdAt: file.createdAt,
+      isEncrypted: true, // Always true as they are HSM encrypted
+    }));
+  res.json({ success: true, files: userFiles });
+});
+
+app.post("/api/enclave/files/decrypt", authenticateJWT, (req, res) => {
+  const { fileId } = req.body;
+  const userId = (req as any).user.uid;
+
+  if (!fileId) {
+    return res.status(400).json({ error: "MISSING_FILE_ID", message: "File ID is required for decryption." });
+  }
+
+  const fileRecord = inMemoryStorage.uploadedFiles.find(f => f.id === fileId && f.userId === userId);
+
+  if (!fileRecord) {
+    return res.status(404).json({ error: "FILE_NOT_FOUND", message: "File not found or unauthorized access." });
+  }
+
+  try {
+    const decryptedContentBase64 = hsm.decrypt(fileRecord.encryptedContent);
+    res.json({ success: true, filename: fileRecord.filename, fileContentBase64: decryptedContentBase64 });
+  } catch (err) {
+    console.error("File decryption error:", err);
+    res.status(500).json({ error: "FILE_DECRYPTION_FAILURE", message: "Failed to decrypt file. Master key mismatch or corrupted data." });
+  }
+});
+
+app.delete("/api/enclave/files/:id", authenticateJWT, (req, res) => {
+  const { id } = req.params;
+  const userId = (req as any).user.uid;
+
+  const initialLength = inMemoryStorage.uploadedFiles.length;
+  inMemoryStorage.uploadedFiles = inMemoryStorage.uploadedFiles.filter(file => file.id !== id || file.userId !== userId);
+  saveToDisk();
+
+  if (inMemoryStorage.uploadedFiles.length < initialLength) {
+    res.json({ success: true, message: "File deleted successfully." });
+  } else {
+    res.status(404).json({ error: "FILE_NOT_FOUND", message: "File not found or unauthorized to delete." });
+  }
+});
+
+app.get("/api/system/status", authenticateJWT, (req, res) => {
   res.json(systemState.status);
 });
 
-app.get("/api/training/metrics", (req, res) => {
+app.get("/api/training/metrics", authenticateJWT, (req, res) => {
   const data = Array.from({ length: 20 }, (_, i) => ({
     epoch: i + 1,
     accuracy: 94 + Math.random() * 5,
@@ -443,16 +529,16 @@ app.get("/api/training/metrics", (req, res) => {
   res.json(data);
 });
 
-app.get("/api/logs", (req, res) => {
+app.get("/api/logs", authenticateJWT, (req, res) => {
   res.json(systemState.logs.slice(0, 20));
 });
 
 // --- MSF Auto-Update Status Endpoint ---
-app.get("/api/msf/update/status", (req, res) => {
+app.get("/api/msf/update/status", authenticateJWT, (req, res) => {
   res.json(getMsfUpdateStatus());
 });
 
-app.post("/api/security/scan", (req, res) => {
+app.post("/api/security/scan", authenticateJWT, (req, res) => {
   const { target } = req.body;
 
   let results: any[] = [];
@@ -491,19 +577,19 @@ app.post("/api/security/scan", (req, res) => {
   res.json({ target, results });
 });
 
-app.get("/api/system/hardware", (req, res) => {
+app.get("/api/system/hardware", authenticateJWT, (req, res) => {
   res.json(systemState.hardware);
 });
 
 app.post("/api/system/hardware/reinstall", authenticateJWT, (req, res) => {
   systemState.hardware = {
     status: 'optimal',
-    details: 'All physical modules responding. HAL layer synced.'
+    details: 'All physical modules responding. HAL layer synced. (Reinstalled)'
   };
   res.json({ success: true, message: "Drivers reinstalled successfully." });
 });
 
-app.get("/api/security/hsm/status", (req, res) => {
+app.get("/api/security/hsm/status", authenticateJWT, (req, res) => {
   res.json(hsm.getModuleInfo());
 });
 
@@ -566,19 +652,19 @@ app.post("/api/system/update", (req, res) => {
 });
 
 // API Routes
-app.get("/api/models", (req, res) => {
+app.get("/api/models", authenticateJWT, (req, res) => {
   res.json(systemState.models);
 });
 
-app.post("/api/models/toggle", (req, res) => {
-  const { id } = req.body;
+app.post("/api/models/toggle", authenticateJWT, (req, res) => {
+  const { id } = req.body; // Assuming id is passed in body
   systemState.models.forEach(m => {
     m.active = m.id === id;
   });
   res.json({ success: true });
 });
 
-app.post("/api/models/pull", (req, res) => {
+app.post("/api/models/pull", authenticateJWT, (req, res) => {
   const { name, tags } = req.body;
 
   const id = `m${Date.now()}`;

@@ -1,11 +1,34 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 build/
 dist/
+dist-ssr/
+
+# Testing
 coverage/
+
+# Editor and OS files
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+yarn-error.log*
+
+# Environment Variables
 .env*
 !.env.example
+
+# Project-specific Runtime Data
+vault_persistence.json
+
+# Compiled Releases/Binaries
 react-example-linux
 react-example-win.exe
 releases/react-example-linux

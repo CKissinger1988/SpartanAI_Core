@@ -33,6 +33,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const nextStartTimeRef = useRef<number>(0);
+  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
   const pendingDiagnosisRef = useRef<string[] | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +79,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
     return () => window.removeEventListener('nexus-system-failure', handleSystemFailure);
   }, [isListening, triggerAutoRepair]);
 
-  // Voice Synthesis for System Announcements
+  // Voice Synthesis for System Announcements (Jarvis Persona)
   useEffect(() => {
     if (threatLevel !== prevThreatLevelRef.current) {
       const speak = (text: string) => {
@@ -124,7 +125,15 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const startJarvis = async () => {
+  const startJarvis = useCallback(async () => {
+    // Dependencies for useCallback
+    const currentSelectedVoice = selectedVoice;
+    const currentWakeWordSensitivity = wakeWordSensitivity;
+    const currentAllowWakeWordBypassOnCritical = allowWakeWordBypassOnCritical;
+    const currentToken = token;
+    const currentTriggerAutoRepair = triggerAutoRepair;
+    const currentOnCommandRef = onCommandRef.current;
+
     try {
       setError(null);
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -132,7 +141,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       wsRef.current = ws;
 
       // Heartbeat to keep connection alive
-      const heartbeat = setInterval(() => {
+      heartbeatRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'text', data: 'KEEP_ALIVE' }));
       }, 30000);
 
@@ -152,7 +161,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       nextStartTimeRef.current = 0;
 
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 32; // Provides 16 frequency bins
+      analyser.fftSize = 32; // Provides 16 frequency bins for visualizer
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       analyserRef.current = analyser;
@@ -160,7 +169,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       ws.onopen = async () => {
         setIsListening(true);
         // Automatically instruct Jarvis to fix boot issues if any were detected
-        triggerAutoRepair();
+        currentTriggerAutoRepair();
 
         const constraints = {
           audio: selectedInput ? { deviceId: { exact: selectedInput } } : true
@@ -210,7 +219,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
         } else if (msg.type === "text") {
           setMessages(prev => [...prev.slice(-20), { role: 'jarvis', text: msg.data }]);
         } else if (msg.type === "command") {
-          onCommandRef.current?.(msg.command, msg.args);
+          currentOnCommandRef?.(msg.command, msg.args);
         } else if (msg.type === "interrupted") {
           stopPlayback();
         } else if (msg.type === "error") {
@@ -233,12 +242,16 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       setError(err.message || "Failed to start JARVIS");
       setIsListening(false);
     }
-  };
+  }, [selectedInput, selectedOutput, selectedVoice, wakeWordSensitivity, allowWakeWordBypassOnCritical, token, triggerAutoRepair]);
 
   const stopJarvis = () => {
     setIsListening(false);
     setVolume(0);
     setFrequencies(new Uint8Array(16).fill(0));
+    if (heartbeatRef.current) {
+      clearInterval(heartbeatRef.current);
+      heartbeatRef.current = null;
+    }
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     wsRef.current?.close();
     processorRef.current?.disconnect();
@@ -254,8 +267,7 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
   useEffect(() => {
     startJarvis();
     return () => stopJarvis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [startJarvis]);
 
   // Fix: Handle browser audio auto-play restrictions for commercial release
   useEffect(() => {

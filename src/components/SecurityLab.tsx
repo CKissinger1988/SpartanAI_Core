@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Terminal, Shield, Zap, Search, Activity, Lock, AlertTriangle, CheckCircle, ChevronRight, RefreshCw, X, Crosshair } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ScanResult } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 export const SecurityLab: React.FC = () => {
   const [target, setTarget] = useState('');
@@ -10,6 +11,7 @@ export const SecurityLab: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [exploitProposal, setExploitProposal] = useState<any | null>(null);
   const [isExecutingExploit, setIsExecutingExploit] = useState(false);
+  const { authenticatedFetch } = useAuth();
 
   useEffect(() => {
     const handleJarvisTrigger = () => {
@@ -21,7 +23,7 @@ export const SecurityLab: React.FC = () => {
 
   const fetchExploitProposal = async () => {
     try {
-      const res = await fetch('/api/security/exploit/propose');
+      const res = await authenticatedFetch('/api/security/exploit/propose', { method: 'GET' });
       if (res.ok) {
         const data = await res.json();
         setExploitProposal(data);
@@ -37,7 +39,7 @@ export const SecurityLab: React.FC = () => {
     if (!exploitProposal) return;
     setIsExecutingExploit(true);
     try {
-      const res = await fetch('/api/security/exploit/execute', {
+      const res = await authenticatedFetch('/api/security/exploit/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ proposalId: exploitProposal.id })
@@ -73,7 +75,7 @@ export const SecurityLab: React.FC = () => {
     }, 1000);
 
     try {
-      const res = await fetch('/api/security/scan', {
+      const res = await authenticatedFetch('/api/security/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target })

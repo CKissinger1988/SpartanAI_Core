@@ -1,37 +1,16 @@
-export interface ModelConfig {
+export interface SSHKey {
   id: string;
-  name: string;
-  active: boolean;
-  version: string;
-  status: 'online' | 'offline' | 'degraded';
-  health: number;
-  tags: string[];
+  userId: string;
+  label: string;
+  encryptedKey: string;
+  createdAt: string;
 }
 
-export interface SecurityFinding {
-  type: string;
-  status: string;
-  findings: number;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  details: string[];
-}
-
-export interface ScanResult {
-  status: string;
-  timestamp: string;
-  results: SecurityFinding[];
-}
-
-export interface TerminalMessage {
+// New interface for uploaded files
+export interface UploadedFile {
   id: string;
-  user: string;
-  content: string;
-  type: 'input' | 'output' | 'error' | 'system' | 'banner' | 'info' | 'prompt' | 'success' | 'meterpreter';
-  timestamp: string;
-}
-
-export interface TrainingMetric {
-  epoch: number;
-  accuracy: number;
-  loss: number;
+  filename: string;
+  fileSize: number;
+  createdAt: string;
+  isEncrypted: boolean;
 }

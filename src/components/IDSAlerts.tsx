@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ShieldAlert, Zap, Globe, Target, Terminal, CheckCircle2, AlertOctagon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface IDSAlert {
   id: string;
@@ -14,11 +15,12 @@ interface IDSAlert {
 export const IDSAlerts: React.FC = () => {
   const [alerts, setAlerts] = useState<IDSAlert[]>([]);
 
+  const { authenticatedFetch } = useAuth();
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const res = await fetch('/api/security/ids');
-        const data = await res.json();
+        const res = await authenticatedFetch('/api/security/ids', { method: 'GET' });
+        const data = await res.json(); // Assuming authenticatedFetch returns a Response object
         setAlerts(data);
       } catch (err) {
         console.error("Failed to fetch IDS alerts");
@@ -51,7 +53,7 @@ export const IDSAlerts: React.FC = () => {
 
   const simulateAttack = async () => {
     try {
-      await fetch('/api/security/scan', {
+      await authenticatedFetch('/api/security/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target: 'LOCAL_SUBNET' })

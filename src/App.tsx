@@ -90,7 +90,7 @@ function AppContent() {
         // 1. Core API Check
         setSystemCheck(prev => ({ ...prev, progress: 20, currentStep: 'Verifying Core Systems...' }));
         try {
-          const res = await authenticatedFetch('/api/system/status');
+          const res = await authenticatedFetch('/api/system/status', { method: 'GET' });
           const data = await res.json();
           if (res.ok) {
             speak(`Core systems online. Nexus version ${data.version} operational.`);
@@ -106,7 +106,7 @@ function AppContent() {
         // 2. HSM Check
         setSystemCheck(prev => ({ ...prev, progress: 40, currentStep: 'Verifying HSM Authentication...' }));
         try {
-          const res = await authenticatedFetch('/api/security/hsm/status');
+          const res = await authenticatedFetch('/api/security/hsm/status', { method: 'GET' });
           const data = await res.json();
           if (data.status === 'OPERATIONAL') {
             speak("Hardware Security Module authenticated. FIPS level 3 verified.");
@@ -126,7 +126,7 @@ function AppContent() {
         // 3. Metasploit Status
         setSystemCheck(prev => ({ ...prev, progress: 60, currentStep: 'Syncing Metasploit Framework...' }));
         try {
-          const res = await authenticatedFetch('/api/msf/update/status');
+          const res = await authenticatedFetch('/api/msf/update/status', { method: 'GET' });
           const data = await res.json();
           if (data.state !== 'not_installed') {
             speak("Metasploit framework link established.");
@@ -146,7 +146,7 @@ function AppContent() {
         // 4. Model Registry
         setSystemCheck(prev => ({ ...prev, progress: 80, currentStep: 'Syncing Neural Repository...' }));
         try {
-          const res = await authenticatedFetch('/api/models');
+          const res = await authenticatedFetch('/api/models', { method: 'GET' });
           const data = await res.json();
           speak(`Neural repository synced. ${data.length} models available.`);
           setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Neural Models', status: 'online' }] }));
@@ -159,7 +159,7 @@ function AppContent() {
         // 5. Hardware & Drivers
         setSystemCheck(prev => ({ ...prev, progress: 100, currentStep: 'Probing Hardware Integrity...' }));
         try {
-          const res = await authenticatedFetch('/api/system/hardware');
+          const res = await authenticatedFetch('/api/system/hardware', { method: 'GET' });
           const data = await res.json();
           if (data.status === 'optimal') {
             speak("Hardware abstraction layer verified. Latest kernel drivers active with persistence.");
@@ -268,7 +268,7 @@ function AppContent() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard onLaunchDesktop={() => setActiveTab('desktop')} systemCheck={systemCheck} />;
+      case 'dashboard': return <Dashboard onLaunchDesktop={() => setActiveTab('enclave')} systemCheck={systemCheck} />;
       case 'jarvis': return <JarvisVoice onCommand={handleJarvisCommand} />;
       case 'models': return <ModelManager />;
       case 'security': return <SecurityLab />;

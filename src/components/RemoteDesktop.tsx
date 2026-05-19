@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Terminal, X, MonitorOff, ShieldCheck, Wifi, Battery, Clock, Search, Folder, Globe, Chrome, Key, Plus, Trash2, Loader2, Eye, EyeOff, Crosshair, RefreshCw, CheckCircle2, ShieldAlert, Cpu, Activity, Server } from 'lucide-react';
+import { Terminal, X, MonitorOff, ShieldCheck, Wifi, Battery, Clock, Search, Folder, Globe, Chrome, Key, Plus, Trash2, Loader2, Eye, EyeOff, Crosshair, RefreshCw, CheckCircle2, ShieldAlert, Cpu, Activity, Server, Command, UploadCloud, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
+import { saveAs } from 'file-saver'; // For file download functionality
 import { useAuth } from '../contexts/AuthContext';
 import { SSHKey } from '../types';
 
@@ -83,9 +85,18 @@ const FileExplorer: React.FC<{
   selectedFile: any;
   setSelectedFile: (f: any) => void;
   credentialsDecrypted: boolean;
+  uploadedFiles: any[]; // New prop for uploaded files
+  isUploading: boolean;
+  uploadProgress: number;
+  onUploadFile: (file: File) => void;
+  onDeleteUploadedFile: (fileId: string) => void;
+  onDownloadUploadedFile: (fileId: string, filename: string) => void;
+  decryptedFileContent: { id: string, filename: string, content: string } | null;
+  onDecryptUploadedFile: (fileId: string) => void;
+  isDecryptingUploadedFile: boolean;
   isDecryptingCredentials: boolean;
   onDecryptCredentials: () => void;
-}> = ({ isDecrypted, isDecrypting, onMount, onClose, currentPath, setCurrentPath, selectedFile, setSelectedFile, credentialsDecrypted, isDecryptingCredentials, onDecryptCredentials }) => (
+}> = ({ isDecrypted, isDecrypting, onMount, onClose, currentPath, setCurrentPath, selectedFile, setSelectedFile, credentialsDecrypted, isDecryptingCredentials, onDecryptCredentials, uploadedFiles, isUploading, uploadProgress, onUploadFile, onDeleteUploadedFile, onDownloadUploadedFile, decryptedFileContent, onDecryptUploadedFile, isDecryptingUploadedFile }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9, y: 20 }}
     animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -147,6 +158,19 @@ const FileExplorer: React.FC<{
                       </button>
                     </div>
                   ) : <div className="flex-1 p-2 bg-black/40 rounded-xl font-mono text-[9px] text-emerald-400 overflow-y-auto">{selectedFile.content}</div>}
+
+                  {/* Display decrypted content for uploaded files */}
+                  {selectedFile.id && selectedFile.isEncrypted && !decryptedFileContent && (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-4 bg-black/40 border border-red-500/10 rounded-xl space-y-3">
+                      <Key className="w-4 h-4 text-red-400 animate-pulse" /><div className="text-[10px] font-bold text-red-400 uppercase">HSM Encrypted File</div>
+                      <button onClick={() => onDecryptUploadedFile(selectedFile.id)} disabled={isDecryptingUploadedFile} className="px-4 py-2 bg-red-600/90 text-white rounded-lg font-bold text-[9px] uppercase font-mono">
+                        {isDecryptingUploadedFile ? 'Decrypting...' : 'Decrypt File'}
+                      </button>
+                    </div>
+                  )}
+                  {selectedFile.id && decryptedFileContent && decryptedFileContent.id === selectedFile.id && (
+                    <div className="flex-1 p-2 bg-black/40 rounded-xl font-mono text-[9px] text-emerald-400 overflow-y-auto">{atob(decryptedFileContent.content)}</div>
+                  )}
                 </div>
               ) : <div className="flex-1 flex items-center justify-center text-slate-600 italic text-[10px]">Select a file</div>}
             </div>
@@ -456,6 +480,11 @@ export const RemoteDesktop: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<any | null>(null);
   const [credentialsFileDecrypted, setCredentialsFileDecrypted] = useState(false);
   const [isDecryptingCredentialsFile, setIsDecryptingCredentialsFile] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [decryptedFileContent, setDecryptedFileContent] = useState<{ id: string, filename: string, content: string } | null>(null);
+  const [isDecryptingUploadedFile, setIsDecryptingUploadedFile] = useState(false);
   const { user, authenticatedFetch } = useAuth();
 
   const handleMountDirectory = async () => {
@@ -478,6 +507,7 @@ export const RemoteDesktop: React.FC = () => {
         setIsDecryptingFiles(false);
         appendTerminalLog({ text: `HSM_MOUNT_SIG: ${signature.slice(0, 16)}...`, type: 'security' });
         appendTerminalLog({ text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Sector decrypted successfully (AES-XTS-512).', type: 'security' });
+        fetchUploadedFiles(); // Fetch uploaded files after decryption
         appendTerminalLog({ text: '[SEC_KERNEL] MOUNT_SUCCESS: 4 directory nodes mounted under /home/root/.', type: 'security' });
       }, 1200);
     } catch (err) {
@@ -486,6 +516,7 @@ export const RemoteDesktop: React.FC = () => {
         setIsDecryptingFiles(false);
         appendTerminalLog({ text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Sector decrypted successfully (AES-XTS-512) via fallback key.', type: 'security' });
         appendTerminalLog({ text: '[SEC_KERNEL] MOUNT_SUCCESS: 4 directory nodes mounted under /home/root/.', type: 'security' });
+        fetchUploadedFiles(); // Fetch uploaded files even if fallback
       }, 1200);
     }
   };
@@ -539,6 +570,21 @@ export const RemoteDesktop: React.FC = () => {
     }, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchUploadedFiles = async () => {
+    if (!user) return;
+    try {
+      const res = await authenticatedFetch('/api/enclave/files', { method: 'GET' });
+      if (!res.ok) throw new Error('Failed to fetch uploaded files');
+      const data = await res.json();
+      setUploadedFiles(data.files);
+    } catch (err) {
+      console.error("Error fetching uploaded files:", err);
+      appendTerminalLog({ text: `Error fetching uploaded files: ${err instanceof Error ? err.message : String(err)}`, type: 'error' });
+    }
+  };
+
+  useEffect(() => { fetchUploadedFiles(); }, [user]);
 
   const fetchKeys = async () => {
     setIsKeysLoading(true);
@@ -624,6 +670,94 @@ export const RemoteDesktop: React.FC = () => {
     }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!user) {
+      appendTerminalLog({ text: 'Authentication required to upload files.', type: 'error' });
+      return;
+    }
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64Content = (reader.result as string).split(',')[1];
+        const payload = {
+          filename: file.name,
+          fileContentBase64: base64Content,
+          fileSize: file.size,
+        };
+
+        const res = await authenticatedFetch('/api/enclave/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          onUploadProgress: (progressEvent: ProgressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'File upload failed');
+        }
+
+        appendTerminalLog({ text: `File '${file.name}' uploaded and encrypted successfully.`, type: 'security' });
+        fetchUploadedFiles();
+      };
+    } catch (err) {
+      console.error("File upload error:", err);
+      appendTerminalLog({ text: `File upload failed: ${err instanceof Error ? err.message : String(err)}`, type: 'error' });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleDeleteUploadedFile = async (fileId: string) => {
+    if (!user) return;
+    if (!window.confirm('Are you sure you want to delete this encrypted file?')) return;
+
+    try {
+      const res = await authenticatedFetch(`/api/enclave/files/${fileId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete file');
+      appendTerminalLog({ text: `File (ID: ${fileId}) deleted successfully.`, type: 'security' });
+      fetchUploadedFiles();
+      if (selectedFile?.id === fileId) setSelectedFile(null);
+      if (decryptedFileContent?.id === fileId) setDecryptedFileContent(null);
+    } catch (err) {
+      console.error("File delete error:", err);
+      appendTerminalLog({ text: `File deletion failed: ${err instanceof Error ? err.message : String(err)}`, type: 'error' });
+    }
+  };
+
+  const handleDownloadUploadedFile = async (fileId: string, filename: string) => {
+    if (!user) return;
+    try {
+      const res = await authenticatedFetch('/api/enclave/files/decrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId }),
+      });
+      if (!res.ok) throw new Error('Failed to decrypt and download file');
+      const data = await res.json();
+      const byteCharacters = atob(data.fileContentBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+      saveAs(blob, filename);
+      appendTerminalLog({ text: `File '${filename}' decrypted and downloaded.`, type: 'security' });
+    } catch (err) {
+      console.error("File download error:", err);
+      appendTerminalLog({ text: `File download failed: ${err instanceof Error ? err.message : String(err)}`, type: 'error' });
+    }
+  };
+
   // Security Helper: Output Encoding / Sanitization
   const encodeOutput = (text: string) => {
     return text
@@ -698,6 +832,30 @@ export const RemoteDesktop: React.FC = () => {
     }
   };
 
+  const handleDecryptUploadedFile = async (fileId: string) => {
+    if (!user) return;
+    setIsDecryptingUploadedFile(true);
+    setDecryptedFileContent(null);
+
+    try {
+      const res = await authenticatedFetch('/api/enclave/files/decrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId }),
+      });
+      if (!res.ok) throw new Error('Failed to decrypt file');
+      const data = await res.json();
+      setDecryptedFileContent({ id: fileId, filename: data.filename, content: data.fileContentBase64 });
+      appendTerminalLog({ text: `File '${data.filename}' decrypted successfully.`, type: 'security' });
+    } catch (err) {
+      console.error("File decryption error:", err);
+      appendTerminalLog({ text: `File decryption failed: ${err instanceof Error ? err.message : String(err)}`, type: 'error' });
+    } finally {
+      setIsDecryptingUploadedFile(false);
+    }
+  };
+
+
   const handleTerminalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!terminalInput.trim()) return;
@@ -739,11 +897,20 @@ export const RemoteDesktop: React.FC = () => {
       if (!isFilesDecrypted) {
         appendTerminalLog({ text: 'ls: cannot open directory \'.\': Directory contents encrypted. Access denied.', type: 'error' });
       } else {
-        appendTerminalLog({ text: 'drwxr-xr-x  2 root root  4096 May 18 19:05  recon_data/\ndrwxr-xr-x  2 root root  4096 May 18 19:05  exploit_payloads/\n-rw-r--r--  1 root root  1228 May 18 19:05  README.txt\n-rw-r--r--  1 root root   512 May 18 19:05  credentials.db.enc', type: 'output' });
+        const fileList = uploadedFiles.map(f => `-rw-r--r--  1 root root  ${f.fileSize} ${new Date(f.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ${new Date(f.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}  ${f.filename}`).join('\n');
+        const staticFiles = 'drwxr-xr-x  2 root root  4096 May 18 19:05  recon_data/\ndrwxr-xr-x  2 root root  4096 May 18 19:05  exploit_payloads/\n-rw-r--r--  1 root root  1228 May 18 19:05  README.txt\n-rw-r--r--  1 root root   512 May 18 19:05  credentials.db.enc';
+        appendTerminalLog({ text: `${fileList}\n${staticFiles}`, type: 'output' });
       }
     } else if (cmd === 'cat') {
       if (!isFilesDecrypted) {
         appendTerminalLog({ text: 'cat: directory contents encrypted. Access denied.', type: 'error' });
+      } else if (uploadedFiles.some(f => f.filename.toLowerCase() === args[1].toLowerCase())) {
+        const fileToCat = uploadedFiles.find(f => f.filename.toLowerCase() === args[1].toLowerCase());
+        if (fileToCat) {
+          appendTerminalLog({ text: `File '${fileToCat.filename}' is encrypted. Use 'decrypt ${fileToCat.filename}' to view content.`, type: 'output' });
+        } else {
+          appendTerminalLog({ text: `cat: ${args[1]}: No such file or directory.`, type: 'error' });
+        }
       } else if (args.length < 2) {
         appendTerminalLog({ text: 'usage: cat <filename>', type: 'error' });
       } else {
@@ -761,6 +928,24 @@ export const RemoteDesktop: React.FC = () => {
         }
       }
     } else if (cmd === 'decrypt') {
+      if (uploadedFiles.some(f => f.filename.toLowerCase() === args[1].toLowerCase())) {
+        const fileToDecrypt = uploadedFiles.find(f => f.filename.toLowerCase() === args[1].toLowerCase());
+        if (fileToDecrypt) {
+          appendTerminalLog({ text: `[*] Sending cryptovariable '${fileToDecrypt.filename}' to HSM for decryption...`, type: 'security' });
+          authenticatedFetch('/api/enclave/files/decrypt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileId: fileToDecrypt.id }),
+          }).then(res => res.json()).then(data => {
+            appendTerminalLog({ text: `Decrypted content of '${fileToDecrypt.filename}':\n${atob(data.fileContentBase64)}`, type: 'output' });
+            appendTerminalLog({ text: `[SEC_KERNEL] HSM_DECRYPT_EVENT: Decryption of '${fileToDecrypt.filename}' successful.`, type: 'security' });
+          }).catch(err => {
+            appendTerminalLog({ text: `Decryption failed for '${fileToDecrypt.filename}': ${err.message}`, type: 'error' });
+          });
+        } else {
+          appendTerminalLog({ text: `decrypt: ${args[1]}: No such file.`, type: 'error' });
+        }
+      }
       if (!isFilesDecrypted) {
         appendTerminalLog({ text: 'decrypt: directory contents encrypted. Access denied.', type: 'error' });
       } else if (args.length < 2) {
@@ -882,7 +1067,7 @@ export const RemoteDesktop: React.FC = () => {
           {showFiles && (
             <div className={getZIndex('files')} onClick={() => setFocusedApp('files')}>
               <FileExplorer isDecrypted={isFilesDecrypted} isDecrypting={isDecryptingFiles} onMount={handleMountDirectory} onClose={() => setShowFiles(false)} currentPath={currentDirPath} setCurrentPath={setCurrentDirPath} selectedFile={selectedFile} setSelectedFile={setSelectedFile} credentialsDecrypted={credentialsFileDecrypted} isDecryptingCredentials={isDecryptingCredentialsFile} onDecryptCredentials={() => { setIsDecryptingCredentialsFile(true); setTimeout(() => setCredentialsFileDecrypted(true), 1000); }} />
-            </div>
+              <FileExplorer isDecrypted={isFilesDecrypted} isDecrypting={isDecryptingFiles} onMount={handleMountDirectory} onClose={() => setShowFiles(false)} currentPath={currentDirPath} setCurrentPath={setCurrentDirPath} selectedFile={selectedFile} setSelectedFile={setSelectedFile} credentialsDecrypted={credentialsFileDecrypted} isDecryptingCredentials={isDecryptingCredentialsFile} onDecryptCredentials={() => { setIsDecryptingCredentialsFile(true); setTimeout(() => setCredentialsFileDecrypted(true), 1000); }} uploadedFiles={uploadedFiles} isUploading={isUploading} uploadProgress={uploadProgress} onUploadFile={handleFileUpload} onDeleteUploadedFile={handleDeleteUploadedFile} onDownloadUploadedFile={handleDownloadUploadedFile} decryptedFileContent={decryptedFileContent} onDecryptUploadedFile={handleDecryptUploadedFile} isDecryptingUploadedFile={isDecryptingUploadedFile} />            </div>
           )}
           {showBrowser && <div className={getZIndex('browser')} onClick={() => setFocusedApp('browser')}><BrowserWindow onClose={() => setShowBrowser(false)} /></div>}
           {showBurp && <div className={getZIndex('burp')} onClick={() => setFocusedApp('burp')}><BurpSuite onClose={() => setShowBurp(false)} /></div>}

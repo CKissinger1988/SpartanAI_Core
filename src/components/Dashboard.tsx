@@ -21,8 +21,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLaunchDesktop, systemChe
     const fetchData = async () => {
       try {
         const [statusRes, logsRes] = await Promise.all([
-          fetch('/api/system/status'),
-          fetch('/api/logs')
+          authenticatedFetch('/api/system/status', { method: 'GET' }),
+          authenticatedFetch('/api/logs', { method: 'GET' })
         ]);
 
         if (statusRes.ok) setSystemStatus(await statusRes.json());
@@ -39,7 +39,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLaunchDesktop, systemChe
 
   const initiateUpdate = async () => {
     try {
-      await fetch('/api/system/update', { method: 'POST' });
+      await authenticatedFetch('/api/system/update', { method: 'POST' });
     } catch (err) {
       console.error("Failed to initiate update");
     }

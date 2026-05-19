@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   X, Shield, Brain, Key, Download, Upload, Trash2, Mic
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { AudioSettingsPanel } from './AudioSettingsPanel';
 import { useAudioSettings } from '../contexts/AudioSettingsContext';
 
@@ -16,6 +17,7 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
   const { selectedVoice, setSelectedVoice, wakeWordSensitivity, setWakeWordSensitivity, allowWakeWordBypassOnCritical, setAllowWakeWordBypassOnCritical } = useAudioSettings();
   const [stealthMode, setStealthMode] = React.useState(localStorage.getItem('nexus_stealth_mode') === 'true');
   const [secondaryKey, setSecondaryKey] = React.useState(localStorage.getItem('nexus_secondary_key') || 'NEXUS-7742-X');
+  const { authenticatedFetch } = useAuth();
 
   const handleStealthToggle = () => {
     const newValue = !stealthMode;
@@ -40,7 +42,7 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
         const content = e.target?.result as string;
         const backupData = JSON.parse(content);
 
-        const res = await fetch('/api/system/restore', {
+        const res = await authenticatedFetch('/api/system/restore', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(backupData)
@@ -61,7 +63,7 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
 
   const handleExportBackup = async () => {
     try {
-      const res = await fetch('/api/system/backup');
+      const res = await authenticatedFetch('/api/system/backup', { method: 'GET' });
       if (!res.ok) throw new Error("BACKUP_FETCH_FAILED");
 
       const data = await res.json();
@@ -84,7 +86,7 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
     if (!confirmed) return;
 
     try {
-      const res = await fetch('/api/system/clear-vault', { method: 'POST' });
+      const res = await authenticatedFetch('/api/system/clear-vault', { method: 'POST' });
       if (!res.ok) throw new Error("CLEAR_VAULT_FAILED");
 
       window.dispatchEvent(new CustomEvent('system-notification', {

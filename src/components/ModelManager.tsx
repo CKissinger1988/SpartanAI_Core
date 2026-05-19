@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ModelConfig } from '../types';
 import { Brain, ToggleLeft, ToggleRight, CheckCircle2, Shield, Search, CloudDownload, Sparkles, Filter, Globe, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../contexts/AuthContext';
 
 export const ModelManager: React.FC = () => {
   const [models, setModels] = useState<ModelConfig[]>([]);
@@ -10,14 +11,15 @@ export const ModelManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [activeView, setActiveView] = useState<'installed' | 'discovery'>('installed');
+  const { authenticatedFetch } = useAuth();
 
   useEffect(() => {
     fetchModels();
   }, []);
-
+  
   const fetchModels = async () => {
     try {
-      const res = await fetch('/api/models');
+      const res = await authenticatedFetch('/api/models', { method: 'GET' });
       const data = await res.json();
       setModels(data);
     } catch (err) {
@@ -29,7 +31,7 @@ export const ModelManager: React.FC = () => {
 
   const findModels = async (query: string, tag: string = '') => {
     try {
-      const url = `/api/models/discovery?q=${query}&tag=${tag}`;
+      const url = `/api/models/discovery?q=${query}&tag=${tag}`; // This endpoint is now authenticated
       const res = await fetch(url);
       const data = await res.json();
       setRegistryModels(data);
@@ -46,7 +48,7 @@ export const ModelManager: React.FC = () => {
 
   const toggleModel = async (id: string) => {
     try {
-      await fetch('/api/models/toggle', {
+      await authenticatedFetch('/api/models/toggle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -60,7 +62,7 @@ export const ModelManager: React.FC = () => {
   const pullModel = async (model: any) => {
     try {
       setLoading(true);
-      await fetch('/api/models/pull', {
+      await authenticatedFetch('/api/models/pull', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

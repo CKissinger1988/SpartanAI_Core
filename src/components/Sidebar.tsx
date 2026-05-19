@@ -16,7 +16,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
   useEffect(() => {
     const checkHSM = async () => {
       try {
-        const res = await fetch('/api/security/hsm/status');
+        const res = await authenticatedFetch('/api/security/hsm/status', { method: 'GET' });
         const data = await res.json();
         setHsmOnline(data.status === 'OPERATIONAL');
       } catch {

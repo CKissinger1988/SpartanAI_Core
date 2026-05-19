@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, Hash, ChevronRight, Download, Trash2, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+// Assuming TerminalMessage is defined in src/types.ts
 import { TerminalMessage } from '../types';
 
 export const KaliTerminal: React.FC = () => {
