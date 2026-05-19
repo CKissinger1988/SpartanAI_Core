@@ -14,3 +14,4 @@ MASTER_UPLINK.json
 backend/*.db
 backend/users.db
 backend/exploits.db
+backend/nexus_c2.db

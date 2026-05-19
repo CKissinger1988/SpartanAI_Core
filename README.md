@@ -9,10 +9,12 @@ A rock-solid, secure offensive/defensive OS interface built for deep system inte
 - **Tool Vault (TOOL_VAULT):** Direct dashboard for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution.
 - **Exploit DB (EXPLOIT_DB):** Managed database of CVEs and MSF exploits. Supports automated synchronization with upstream databases and local repository scanning.
 - **System Monitoring:** Real-time telemetry of CPU and Memory load.
+- **Master Command Console (ToxicSavage Only):** A centralized Command & Control (C2) dashboard to scan, sort, and connect to all global instances.
 - **Hardened Architecture:** 
   - **Context Isolation:** Prevents the renderer process from accessing Node.js internals directly.
   - **Preload Bridge:** A secure, strictly defined API bridge between the frontend and the backend.
   - **Sandboxed Execution:** Minimizes attack surface for offensive payloads.
+  - **Global Orchestration:** Instances autonomously report to a secure C2 registry via Tor for remote management.
 
 ## 🛠️ Commands & Functions
 

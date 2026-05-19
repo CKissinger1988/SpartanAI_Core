@@ -5,6 +5,7 @@ import ToolDashboard from './ToolDashboard';
 import ExploitDB from './ExploitDB';
 import MatrixBackground from './MatrixBackground';
 import LoginComponent from './LoginComponent';
+import MasterConsole from './MasterConsole';
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI) 
     ? window.electronAPI.ipcRenderer 
@@ -90,6 +91,12 @@ const SentinelHub = () => {
                 <button style={buttonStyle('Tools')} onClick={() => setActiveTab('Tools')}>[%] TOOL_VAULT</button>
                 <button style={buttonStyle('Exploits')} onClick={() => setActiveTab('Exploits')}>[!] EXPLOIT_DB</button>
                 
+                {user.role === 'master_admin' && (
+                    <button style={{...buttonStyle('Master'), borderColor: '#00ff00', color: '#00ff00'}} onClick={() => setActiveTab('Master')}>
+                        [!] MASTER_CONSOLE
+                    </button>
+                )}
+
                 <button 
                     style={{...buttonStyle(''), marginTop: '20px', color: '#ff0000', borderColor: '#550000'}} 
                     onClick={() => setUser(null)}
@@ -102,7 +109,7 @@ const SentinelHub = () => {
                     DEEP LEARNING: SYNCED<br/>
                     STATUS: SECURE<br/>
                     UPLINK: ACTIVE<br/>
-                    VER: 2.1.0-AUTH
+                    VER: 2.2.0-C2
                 </div>
             </nav>
             <main style={{ flex: 1, padding: '20px', overflow: 'hidden', position: 'relative', background: 'rgba(0,0,0,0.7)' }}>
@@ -111,6 +118,7 @@ const SentinelHub = () => {
                 {activeTab === 'Chat' && <ChatComponent />}
                 {activeTab === 'Tools' && <ToolDashboard />}
                 {activeTab === 'Exploits' && <ExploitDB />}
+                {activeTab === 'Master' && <MasterConsole />}
             </main>
         </div>
     );

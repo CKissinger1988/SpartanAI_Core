@@ -61,6 +61,20 @@ function createWindow() {
   // Unified AI Handler (Jarvis/Gemini)
   ipcMain.handle('ai.command', async (event, command) => {
     return new Promise((resolve) => {
+      // Internal Command Handling
+      if (command === 'internal.c2_list') {
+        let options = {
+          mode: 'text',
+          pythonPath: 'python',
+          scriptPath: path.join(__dirname, '..', 'backend'),
+          args: ['list']
+        };
+        PythonShell.run('c2_registry.py', options).then(results => {
+          resolve(results[results.length - 1]);
+        }).catch(err => resolve(JSON.stringify({ status: "error", message: err.message })));
+        return;
+      }
+
       // Check if command is a technical OS command or an AI request
       const isAI = /^(jarvis|gemini|ask|analyze|explain)/i.test(command);
 
