@@ -142,14 +142,14 @@ function createWindow() {
     });
   });
 
-  // Trigger backend init on launch
-  const scripts = [
-    os.platform() === 'win32' ? 'init.py' : 'init_linux.py',
+  // Trigger backend bootstrap on launch
+  const initScripts = [
+    'bootstrap.py',
     'ai_init.py'
   ];
 
-  scripts.forEach(script => {
-    const proc = spawn('python3', [path.join(__dirname, '..', 'backend', script)]);
+  initScripts.forEach(script => {
+    const proc = spawn('python', [path.join(__dirname, '..', 'backend', script)]);
     proc.stdout.on('data', (data) => console.log(`${script}: ${data}`));
     proc.stderr.on('data', (data) => console.error(`${script} ERROR: ${data}`));
   });

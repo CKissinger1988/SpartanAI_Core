@@ -53,13 +53,12 @@ In the **TOOL_VAULT**, you can trigger:
    npm install
    ```
 
-3. **Initialize Backends:**
-   ```bash
-   # Windows
-   python backend/init.py
-   # Linux
-   python backend/init_linux.py
-   ```
+3. **Auto-Configuration:**
+   The application now features a self-configuring backend. Upon the first launch, it will automatically:
+   - Initialize the Exploit Database.
+   - Import high-profile 2025/2026 exploit signatures.
+   - Generate necessary security keys for the Jarvis AI engine.
+   - Verify the OS environment (WSL Kali detection).
 
 4. **Build the Frontend:**
    ```bash
