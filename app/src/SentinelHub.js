@@ -109,7 +109,7 @@ const SentinelHub = () => {
                     DEEP LEARNING: SYNCED<br/>
                     STATUS: SECURE<br/>
                     UPLINK: ACTIVE<br/>
-                    VER: 2.2.0-C2
+                    VER: 3.0.0-PROD
                 </div>
             </nav>
             <main style={{ flex: 1, padding: '20px', overflow: 'hidden', position: 'relative', background: 'rgba(0,0,0,0.7)' }}>

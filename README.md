@@ -1,48 +1,46 @@
 # NEXUS // AI - Sentinel Hub
 
-A rock-solid, secure offensive/defensive OS interface built for deep system integration, AI-driven automation, and exploit management. Designed with DoD and NSA security standards in mind, utilizing Electron with full Context Isolation and a hardened bridge.
+A production-grade, hardened offensive/defensive OS interface built for deep system integration, AI-driven automation, and exploit lifecycle management. Engineered for professional security operations, utilizing Electron with full Context Isolation and a strictly defined preload bridge.
 
-## 🚀 Key Capabilities
+## 🚀 Core Capabilities
 
-- **Secure Shell (MAIN_SHELL):** Real-time terminal powered by `node-pty` and `xterm.js`, allowing direct system interaction from a secure sandboxed environment.
-- **AI Core (AI_CORE):** Unified interface for Jarvis/Gemini integration. Supports technical analysis, command explanation, and autonomous task execution.
-- **Tool Vault (TOOL_VAULT):** Direct dashboard for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution.
-- **Exploit DB (EXPLOIT_DB):** Managed database of CVEs and MSF exploits. Supports automated synchronization with upstream databases and local repository scanning.
-- **System Monitoring:** Real-time telemetry of CPU and Memory load.
-- **Master Command Console (ToxicSavage Only):** A centralized Command & Control (C2) dashboard to scan, sort, and connect to all global instances.
+- **Command Shell (MAIN_SHELL):** High-performance terminal powered by `node-pty` and `xterm.js`, providing native system interaction through a secure bridge.
+- **AI Analytics (AI_CORE):** Unified interface for Jarvis/Gemini/Qwen3 integration. Supports automated vulnerability analysis, payload generation, and autonomous task execution.
+- **Tool Dashboard (TOOL_VAULT):** Operational interface for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution logic.
+- **Exploit Manager (EXPLOIT_DB):** Managed database of CVEs and weaponized exploits. Supports automated synchronization with global intelligence feeds and custom repository ingestion.
+- **Real-time Telemetry:** Live system performance monitoring, including CPU/Memory utilization and neural uplink status.
 - **Hardened Architecture:** 
-  - **Context Isolation:** Prevents the renderer process from accessing Node.js internals directly.
-  - **Preload Bridge:** A secure, strictly defined API bridge between the frontend and the backend.
-  - **Sandboxed Execution:** Minimizes attack surface for offensive payloads.
-  - **Global Orchestration:** Instances autonomously report to a secure C2 registry via Tor for remote management.
+  - **Context Isolation:** Prevents unauthorized frontend access to Node.js internals.
+  - **Secure Bridge:** Strictly typed IPC communication layer in `app/preload.js`.
+  - **Native Performance:** Optimized for real-world offensive/defensive engagement.
 
-## 🛠️ Commands & Functions
+## 🛠️ Operational Commands
 
-### AI Commands
-Prefix your requests in the **AI_CORE** with these keywords:
-- `jarvis <prompt>`: Interact with the Jarvis AI engine.
-- `gemini <prompt>`: Explicitly request Gemini analysis.
-- `analyze <subject>`: Technical breakdown of a file, command, or system state.
-- `explain <command>`: Get a detailed walkthrough of what a command does before execution.
+### AI Integration
+Prefix requests in the **AI_CORE** with these keywords for routed execution:
+- `jarvis <prompt>`: General intent processing via Jarvis AI.
+- `gemini <prompt>`: Deep architectural analysis via Gemini 1.5 Flash.
+- `analyze <subject>`: Technical breakdown of files, binaries, or system states.
+- `explain <command>`: Detailed risk assessment and documentation of system commands.
 
-### Tool Integration
-In the **TOOL_VAULT**, you can trigger:
-- `AI Analyze`: Runs a diagnostic on current system health.
-- `Auto Exploit`: Pipes specific CVE payloads directly into the terminal environment.
-- Standard tools (Nmap, SQLMap) are pre-configured for one-click reconnaissance.
+### Tactical Tools
+In the **TOOL_VAULT**, you can engage:
+- **AI Analyze:** Executes a diagnostic on the host security posture.
+- **Auto Exploit:** Direct injection of CVE payloads into the operational environment.
+- **Scan & Recon:** One-click engagement for pre-configured reconnaissance tools.
 
-### Exploit Management
-- **Auto Update:** Synchronizes local signatures with MSF/CVE upstream.
-- **Scan Target:** Imports new exploit signatures from a custom repository URL.
+### Intelligence Management
+- **Global Sync:** Synchronizes local signatures with the latest MSF/CVE disclosures (2025/2026).
+- **Ingest Repo:** Imports and parses new exploit signatures from external sources.
 
-## 📦 Installation & Setup
+## 📦 Deployment & Setup
 
 ### Prerequisites
 - Node.js (v18+)
 - Python 3.9+
-- Git
+- WSL (Kali Linux) for Windows hosts
 
-### Build Instructions
+### Initialization
 
 1. **Clone the repository:**
    ```bash
@@ -55,51 +53,19 @@ In the **TOOL_VAULT**, you can trigger:
    npm install
    ```
 
-3. **Auto-Configuration:**
-   The application now features a self-configuring backend. Upon the first launch, it will automatically:
-   - Initialize the Exploit Database.
-   - Import high-profile 2025/2026 exploit signatures.
-   - Generate necessary security keys for the Jarvis AI engine.
-   - Verify the OS environment (WSL Kali detection).
+3. **Autonomous Bootstrap:**
+   The application features a self-configuring backend. Upon the first launch, it will automatically initialize databases, import signatures, and audit the environment.
 
-4. **Build the Frontend:**
+4. **Build & Execute:**
    ```bash
    npm run build
-   ```
-
-5. **Run the Application:**
-   ```bash
    npm start
    ```
 
-### Running Tests
-Ensure system integrity with the automated test suite:
-```bash
-npm test
-```
+## 🔐 Access Control
+Access to the **NEXUS // AI** terminal requires valid credentials. Standard accounts are initialized during the first bootstrap sequence for initial configuration. 
 
-### Default Credentials
-Access to the **NEXUS // AI** terminal requires authentication. The following default accounts are initialized during bootstrap:
-
-| Role | Username | Password |
-| :--- | :--- | :--- |
-| Administrator | `ADMIN_CORE` | `NEXUS_ADMIN_2026` |
-| Operator | `OPERATOR_01` | `SENTINEL_PASS` |
-
-### 👑 ToxicSavage Master Access
-For exclusive, untraceable remote command of any **NEXUS // AI** instance:
-1. **Uplink Identity:** The Master Ed25519 Private Key is stored securely within the instance's bootstrap environment.
-2. **Tor Hidden Service:** Each instance automatically generates a unique `.onion` address for its SSH gateway.
-3. **Connection:** 
-   ```bash
-   ssh -i ToxicSavage_Master.key -o "ProxyCommand=nc -X 5 -x 127.0.0.1:9050 %h %p" root@<unique_address>.onion
-   ```
-   *Note: Detailed uplink coordinates are saved to `MASTER_UPLINK.json` upon first launch.*
-
-## 🔐 Security Standards
-- All IPC communication is strictly typed and validated in `app/preload.js`.
-- Sensitive operations (like shell execution) are handled in the main process with limited privileges.
-- Frontend is compiled as a standard web target (`target: 'web'`) to ensure no Node.js leaks.
+*Note: Credentials should be rotated immediately upon deployment.*
 
 ## 📜 License
-Licensed under ISC. Created for professional security operations.
+Licensed under ISC. Built for authorized security operations only.

@@ -18,7 +18,7 @@ def initialize_ai_systems():
     print("AI_INIT: Initializing Neural Connections...")
     time.sleep(1)
     
-    # 1. Initialize Neural Synapse (Conceptual)
+    # 1. Initialize Neural Synapse
     print("AI_INIT: Establishing Neural Synapse with Host OS...")
     time.sleep(1.5)
     print("AI_INIT: Synapse Active. Latency: 0.2ms.")

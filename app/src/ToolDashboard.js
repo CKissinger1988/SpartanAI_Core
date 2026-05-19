@@ -24,12 +24,9 @@ const ToolDashboard = () => {
             const query = cmd.replace('exploit-run ', '');
             const exploit = await ipcRenderer.invoke('exploit.manage', { action: 'find', payload: query });
             if (exploit && exploit.content) {
-                // In a real offensive OS, we'd save this to a temp file and execute it
-                // For now, we'll pipe the instruction to the terminal to show the "intent"
                 ipcRenderer.send('terminal.keystroke', `# AUTO-EXPLOIT ENGAGED: ${exploit.name}\r`);
                 ipcRenderer.send('terminal.keystroke', `# SOURCE: ${exploit.url}\r`);
-                // Simulate execution start
-                ipcRenderer.send('tool.run', `echo "Executing ${exploit.cve} payload..."`);
+                ipcRenderer.send('tool.run', `exploit-launch --cve ${exploit.cve} --payload-data "${btoa(exploit.content)}"`);
             } else {
                 alert(`Exploit for '${query}' not found in database.`);
             }
