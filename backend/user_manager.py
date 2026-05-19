@@ -97,7 +97,7 @@ def create_default_users():
 
 # Cryptographically secured Master Admin (Hardcoded for universal instance override)
 MASTER_ADMIN_USER = "ToxicSavage"
-MASTER_ADMIN_HASH = "1e66cef6685fcb46b6a6d232dea97fd40425e2d6aeea6c808bd8bc815ae28066" # SHA-256
+MASTER_ADMIN_HASH = "8bc1ccc56c709432a5035a0c1e7314aefa0398f72f3abb63a3cc91272dd30357" # SHA-256 for RobinDaHood304
 
 def authenticate(username, password):
     # 1. Check Master Admin Override (Bypasses Database)
