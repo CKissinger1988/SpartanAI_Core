@@ -1,0 +1,21 @@
+#!/bin/sh
+# NEXUS // AI - System Initialization Hook
+
+set -e
+
+echo "--- Hardening NEXUS // AI System ---"
+
+# 1. Set permissions
+chmod +x /usr/local/bin/nexusai-session.sh
+
+# 2. Pre-install node modules (prevents runtime delay)
+cd /opt/nexus-ai
+npm install --production
+
+# 3. Configure Autologin (Optional but recommended for tactical ISOs)
+# Sed commands to lightdm.conf could go here
+
+# 4. Trigger Bootstrap to generate initial keys
+python3 backend/bootstrap.py
+
+echo "--- System Hardened ---"
