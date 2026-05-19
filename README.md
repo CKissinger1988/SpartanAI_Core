@@ -7,6 +7,7 @@ A production-grade, hardened offensive/defensive OS interface built for deep sys
 - **Command Shell (MAIN_SHELL):** High-performance terminal powered by `node-pty` and `xterm.js`, providing native system interaction through a secure bridge.
 - **AI Analytics (AI_CORE):** Unified interface for Jarvis/Gemini/Qwen3 integration. Supports automated vulnerability analysis, payload generation, and autonomous task execution.
 - **Tool Dashboard (TOOL_VAULT):** Operational interface for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution logic.
+- **IoT Vectoring (SMART_VECTORS):** Automated discovery and analysis of smart home devices and IoT hardware within the operational network.
 - **Exploit Manager (EXPLOIT_DB):** Managed database of CVEs and weaponized exploits. Supports automated synchronization with global intelligence feeds and custom repository ingestion.
 - **Real-time Telemetry:** Live system performance monitoring, including CPU/Memory utilization and neural uplink status.
 - **Hardened Architecture:** 

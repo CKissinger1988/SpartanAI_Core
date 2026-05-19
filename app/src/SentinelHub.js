@@ -6,6 +6,7 @@ import ExploitDB from './ExploitDB';
 import MatrixBackground from './MatrixBackground';
 import LoginComponent from './LoginComponent';
 import MasterConsole from './MasterConsole';
+import IoTDashboard from './IoTDashboard';
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI) 
     ? window.electronAPI.ipcRenderer 
@@ -90,6 +91,7 @@ const SentinelHub = () => {
                 <button style={buttonStyle('Chat')} onClick={() => setActiveTab('Chat')}>[@] AI_CORE</button>
                 <button style={buttonStyle('Tools')} onClick={() => setActiveTab('Tools')}>[%] TOOL_VAULT</button>
                 <button style={buttonStyle('Exploits')} onClick={() => setActiveTab('Exploits')}>[!] EXPLOIT_DB</button>
+                <button style={buttonStyle('IoT')} onClick={() => setActiveTab('IoT')}>[&] SMART_VECTORS</button>
                 
                 {user.role === 'master_admin' && (
                     <button style={{...buttonStyle('Master'), borderColor: '#00ff00', color: '#00ff00'}} onClick={() => setActiveTab('Master')}>
@@ -109,7 +111,7 @@ const SentinelHub = () => {
                     DEEP LEARNING: SYNCED<br/>
                     STATUS: SECURE<br/>
                     UPLINK: ACTIVE<br/>
-                    VER: 3.0.0-PROD
+                    VER: 3.1.0-IoT
                 </div>
             </nav>
             <main style={{ flex: 1, padding: '20px', overflow: 'hidden', position: 'relative', background: 'rgba(0,0,0,0.7)' }}>
@@ -118,6 +120,7 @@ const SentinelHub = () => {
                 {activeTab === 'Chat' && <ChatComponent />}
                 {activeTab === 'Tools' && <ToolDashboard />}
                 {activeTab === 'Exploits' && <ExploitDB />}
+                {activeTab === 'IoT' && <IoTDashboard />}
                 {activeTab === 'Master' && <MasterConsole />}
             </main>
         </div>

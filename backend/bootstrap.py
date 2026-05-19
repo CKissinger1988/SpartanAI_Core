@@ -89,8 +89,19 @@ def check_os_environment():
             else:
                 logger.warning(f"System tool NOT found: {tool}")
 
+def setup_dependencies():
+    logger.info("Verifying Python dependencies...")
+    req_file = os.path.join(BASE_DIR, '..', 'requirements.txt')
+    if os.path.exists(req_file):
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", req_file], capture_output=True, check=True)
+            logger.info("Python dependencies verified.")
+        except Exception as e:
+            logger.warning(f"Auto-dependency installation failed: {e}. Some features may require manual pip install.")
+
 def bootstrap():
     logger.info("--- NEXUS // AI BOOTSTRAP STARTING ---")
+    setup_dependencies()
     init_db()
     setup_jarvis()
     check_os_environment()

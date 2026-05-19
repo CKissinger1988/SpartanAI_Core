@@ -151,6 +151,33 @@ function createWindow() {
     });
   });
 
+  // IoT & Smart Home Handler
+  ipcMain.handle('iot.manage', async (event, { action, params }) => {
+    return new Promise((resolve) => {
+      let args = [action];
+      if (action === 'control') {
+        args.push(params.ip, params.port, params.path, params.method);
+      }
+
+      let options = {
+        mode: 'text',
+        pythonPath: 'python',
+        scriptPath: path.join(__dirname, '..', 'backend'),
+        args: args
+      };
+
+      PythonShell.run('iot_manager.py', options).then(results => {
+        try {
+          resolve(JSON.parse(results[results.length - 1]));
+        } catch (e) {
+          resolve({ status: 'error', message: 'IoT engine failure' });
+        }
+      }).catch(err => {
+        resolve({ status: 'error', message: err.message });
+      });
+    });
+  });
+
   // Exploit DB Handler
   ipcMain.handle('exploit.manage', async (event, { action, payload }) => {
     return new Promise((resolve) => {
