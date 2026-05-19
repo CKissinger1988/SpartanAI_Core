@@ -1,0 +1,86 @@
+# NEXUS // AI - Sentinel Hub
+
+A rock-solid, secure offensive/defensive OS interface built for deep system integration, AI-driven automation, and exploit management. Designed with DoD and NSA security standards in mind, utilizing Electron with full Context Isolation and a hardened bridge.
+
+## 🚀 Key Capabilities
+
+- **Secure Shell (MAIN_SHELL):** Real-time terminal powered by `node-pty` and `xterm.js`, allowing direct system interaction from a secure sandboxed environment.
+- **AI Core (AI_CORE):** Unified interface for Jarvis/Gemini integration. Supports technical analysis, command explanation, and autonomous task execution.
+- **Tool Vault (TOOL_VAULT):** Direct dashboard for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution.
+- **Exploit DB (EXPLOIT_DB):** Managed database of CVEs and MSF exploits. Supports automated synchronization with upstream databases and local repository scanning.
+- **System Monitoring:** Real-time telemetry of CPU and Memory load.
+- **Hardened Architecture:** 
+  - **Context Isolation:** Prevents the renderer process from accessing Node.js internals directly.
+  - **Preload Bridge:** A secure, strictly defined API bridge between the frontend and the backend.
+  - **Sandboxed Execution:** Minimizes attack surface for offensive payloads.
+
+## 🛠️ Commands & Functions
+
+### AI Commands
+Prefix your requests in the **AI_CORE** with these keywords:
+- `jarvis <prompt>`: Interact with the Jarvis AI engine.
+- `gemini <prompt>`: Explicitly request Gemini analysis.
+- `analyze <subject>`: Technical breakdown of a file, command, or system state.
+- `explain <command>`: Get a detailed walkthrough of what a command does before execution.
+
+### Tool Integration
+In the **TOOL_VAULT**, you can trigger:
+- `AI Analyze`: Runs a diagnostic on current system health.
+- `Auto Exploit`: Pipes specific CVE payloads directly into the terminal environment.
+- Standard tools (Nmap, SQLMap) are pre-configured for one-click reconnaissance.
+
+### Exploit Management
+- **Auto Update:** Synchronizes local signatures with MSF/CVE upstream.
+- **Scan Target:** Imports new exploit signatures from a custom repository URL.
+
+## 📦 Installation & Setup
+
+### Prerequisites
+- Node.js (v18+)
+- Python 3.9+
+- Git
+
+### Build Instructions
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd ckiss
+   ```
+
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Initialize Backends:**
+   ```bash
+   # Windows
+   python backend/init.py
+   # Linux
+   python backend/init_linux.py
+   ```
+
+4. **Build the Frontend:**
+   ```bash
+   npm run build
+   ```
+
+5. **Run the Application:**
+   ```bash
+   npm start
+   ```
+
+### Running Tests
+Ensure system integrity with the automated test suite:
+```bash
+npm test
+```
+
+## 🔐 Security Standards
+- All IPC communication is strictly typed and validated in `app/preload.js`.
+- Sensitive operations (like shell execution) are handled in the main process with limited privileges.
+- Frontend is compiled as a standard web target (`target: 'web'`) to ensure no Node.js leaks.
+
+## 📜 License
+Licensed under ISC. Created for professional security operations.
