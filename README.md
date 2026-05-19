@@ -64,9 +64,15 @@ In the **TOOL_VAULT**, you can engage:
    ```
 
 ## 🔐 Access Control
-Access to the **NEXUS // AI** terminal requires valid credentials. Standard accounts are initialized during the first bootstrap sequence for initial configuration. 
+Access to the **NEXUS // AI** terminal requires valid credentials. 
 
-*Note: Credentials should be rotated immediately upon deployment.*
+**First Boot Security:**
+To ensure maximum security out-of-the-box, the application no longer ships with static default passwords. Upon the very first successful bootstrap:
+1. The system generates unique, high-entropy passwords for both the `ADMIN_CORE` and `OPERATOR_01` accounts.
+2. These credentials are saved to a local file named `INITIAL_CREDENTIALS.txt` in the project root.
+3. **Requirement:** Retrieve your login keys from this file and rotate them immediately after your first uplink.
+
+*Note: `INITIAL_CREDENTIALS.txt` is automatically excluded from source control to prevent exposure.*
 
 ## 📜 License
 Licensed under ISC. Built for authorized security operations only.

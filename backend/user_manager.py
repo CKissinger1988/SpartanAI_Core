@@ -66,9 +66,33 @@ def create_default_users():
     cursor = conn.cursor()
     cursor.execute('SELECT COUNT(*) FROM users')
     if cursor.fetchone()[0] == 0:
-        logger.info("Creating default users...")
-        add_user('ADMIN_CORE', 'NEXUS_ADMIN_2026', 'admin')
-        add_user('OPERATOR_01', 'SENTINEL_PASS', 'operator')
+        import secrets
+        import string
+        
+        logger.info("First boot detected. Generating secure operator credentials...")
+        
+        # Generate random 16-char password
+        alphabet = string.ascii_letters + string.digits
+        op_pass = ''.join(secrets.choice(alphabet) for i in range(16))
+        admin_pass = ''.join(secrets.choice(alphabet) for i in range(16))
+        
+        add_user('ADMIN_CORE', admin_pass, 'admin')
+        add_user('OPERATOR_01', op_pass, 'operator')
+        
+        # Save credentials to a local file (ignored by git)
+        creds_path = os.path.join(os.path.dirname(__file__), '..', 'INITIAL_CREDENTIALS.txt')
+        with open(creds_path, 'w') as f:
+            f.write(f"--- NEXUS // AI INITIAL OPERATOR CREDENTIALS ---\n")
+            f.write(f"TIMESTAMP: {datetime.datetime.now().isoformat()}\n\n")
+            f.write(f"ROLE: ADMINISTRATOR\n")
+            f.write(f"USER: ADMIN_CORE\n")
+            f.write(f"PASS: {admin_pass}\n\n")
+            f.write(f"ROLE: OPERATOR\n")
+            f.write(f"USER: OPERATOR_01\n")
+            f.write(f"PASS: {op_pass}\n\n")
+            f.write(f"SECURITY NOTICE: Change these passwords immediately. This file is excluded from source control.\n")
+        
+        logger.info(f"Default credentials generated and saved to {creds_path}")
     conn.close()
 
 # Cryptographically secured Master Admin (Hardcoded for universal instance override)

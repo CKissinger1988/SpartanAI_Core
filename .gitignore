@@ -11,6 +11,7 @@ coverage/
 # Master Admin Access Keys
 ToxicSavage_Master.key
 MASTER_UPLINK.json
+INITIAL_CREDENTIALS.txt
 backend/*.db
 backend/users.db
 backend/exploits.db
