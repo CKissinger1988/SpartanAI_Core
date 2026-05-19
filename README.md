@@ -1,78 +1,60 @@
-# NEXUS // AI - Sentinel Hub
+# NEXUS // AI - Sentinel Hub (v3.1.0-PROD)
 
-A production-grade, hardened offensive/defensive OS interface built for deep system integration, AI-driven automation, and exploit lifecycle management. Engineered for professional security operations, utilizing Electron with full Context Isolation and a strictly defined preload bridge.
+A high-performance, cryptographically fortified offensive/defensive OS interface engineered for professional security operations. Built with a CNSA-compliant architecture, the platform integrates deep system interaction, autonomous AI-driven automation, and full-spectrum exploit lifecycle management.
 
-## 🚀 Core Capabilities
+## 🚀 Core Tactical Capabilities
 
-- **Command Shell (MAIN_SHELL):** High-performance terminal powered by `node-pty` and `xterm.js`, providing native system interaction through a secure bridge.
-- **AI Analytics (AI_CORE):** Unified interface for Jarvis/Gemini/Qwen3 integration. Supports automated vulnerability analysis, payload generation, and autonomous task execution.
-- **Tool Dashboard (TOOL_VAULT):** Operational interface for industry-standard tools (Nmap, Metasploit, SQLMap, etc.) with AI-assisted execution logic.
-- **IoT Vectoring (SMART_VECTORS):** Automated discovery and analysis of smart home devices and IoT hardware within the operational network.
-- **Exploit Manager (EXPLOIT_DB):** Managed database of CVEs and weaponized exploits. Supports automated synchronization with global intelligence feeds and custom repository ingestion.
-- **Real-time Telemetry:** Live system performance monitoring, including CPU/Memory utilization and neural uplink status.
-- **Hardened Architecture:** 
-  - **Context Isolation:** Prevents unauthorized frontend access to Node.js internals.
-  - **Secure Bridge:** Strictly typed IPC communication layer in `app/preload.js`.
-  - **Native Performance:** Optimized for real-world offensive/defensive engagement.
+- **Command Shell (MAIN_SHELL):** High-throughput terminal interface powered by `node-pty` and `xterm.js`, providing native system execution through a strictly defined, secure bridge.
+- **AI Analytics Core (AI_CORE):** Multi-engine neural interface supporting Gemini 1.5 Flash and local **Qwen3-Coder-Next (2026 Gold Standard)**. Optimized for real-time vulnerability analysis, automated payload generation, and autonomous task execution.
+- **IoT Discovery (SMART_VECTORS):** Autonomous mDNS/Zeroconf discovery engine for mapping and analyzing local smart home devices and IoT hardware.
+- **Exploit Database (EXPLOIT_DB):** CNSA-hardened database of weaponized 2025/2026 exploits. Supports automated global synchronization and custom repository ingestion.
+- **Global Orchestration:** Autonomous Command & Control (C2) registration via Tor hidden services for secure, untraceable remote command of any deployment.
 
-## 🛠️ Operational Commands
+## 🛡️ CNSA / NSA-Standard Security Architecture
 
-### AI Integration
-Prefix requests in the **AI_CORE** with these keywords for routed execution:
-- `jarvis <prompt>`: General intent processing via Jarvis AI.
-- `gemini <prompt>`: Deep architectural analysis via Gemini 1.5 Flash.
-- `analyze <subject>`: Technical breakdown of files, binaries, or system states.
-- `explain <command>`: Detailed risk assessment and documentation of system commands.
+- **Authenticated Encryption (AES-256-GCM):** Every secret—including configuration files, local exploit payloads, and C2 metadata—is protected by AES-256 in Galois/Counter Mode (GCM), providing Top Secret grade confidentiality and integrity.
+- **Hardened Hashing (Argon2id):** All user credentials and master keys are secured with **Argon2id** (1GB Memory, 4 Iterations), the industry gold standard for resistance against specialized ASIC hardware and side-channel attacks.
+- **Context Isolation:** Frontend/Renderer processes are strictly sandboxed. Direct access to Node.js internals is disabled, with all interaction routed through a cryptographically validated Preload Bridge.
+- **Anonymity Layer:** Integrated Tor support for all remote management traffic, ensuring a zero-trace operational footprint.
 
-### Tactical Tools
-In the **TOOL_VAULT**, you can engage:
-- **AI Analyze:** Executes a diagnostic on the host security posture.
-- **Auto Exploit:** Direct injection of CVE payloads into the operational environment.
-- **Scan & Recon:** One-click engagement for pre-configured reconnaissance tools.
+## 💻 Suggested Hardware Specifications
 
-### Intelligence Management
-- **Global Sync:** Synchronizes local signatures with the latest MSF/CVE disclosures (2025/2026).
-- **Ingest Repo:** Imports and parses new exploit signatures from external sources.
+### 🏆 Prime Commander Tier
+*Optimized for local-first intelligence and high-speed cryptographic throughput.*
+- **GPU:** NVIDIA RTX 4090 / 5090 (24GB+ VRAM) - *Required for local Qwen3-Coder-Next.*
+- **RAM:** 64GB DDR5 (6000MT/s+) - *Required for Argon2id overhead.*
+- **CPU:** AMD Ryzen 9 9950X or Intel i9-14900K.
+- **Storage:** 2TB NVMe Gen5 SSD.
 
-## 📦 Deployment & Setup
+### 🛡️ Field Operator Tier
+- **GPU:** NVIDIA RTX 4070 Ti (12GB+ VRAM).
+- **RAM:** 32GB DDR5.
+- **Storage:** 1TB NVMe Gen4 SSD.
+
+## 📦 Deployment & Initialization
 
 ### Prerequisites
 - Node.js (v18+)
 - Python 3.9+
-- WSL (Kali Linux) for Windows hosts
+- **WSL (Kali Linux)** for Windows-based tactical shells.
 
-### Initialization
-
-1. **Clone the repository:**
+### Installation
+1. **Clone & Install:**
    ```bash
    git clone <repository-url>
    cd ckiss
-   ```
-
-2. **Install Dependencies:**
-   ```bash
    npm install
    ```
-
-3. **Autonomous Bootstrap:**
-   The application features a self-configuring backend. Upon the first launch, it will automatically initialize databases, import signatures, and audit the environment.
-
-4. **Build & Execute:**
+2. **Autonomous Bootstrap:**
+   Simply launch the application to trigger the self-configuring backend. The system will autonomously initialize databases, generate CNSA security keys, and audit the OS environment.
+3. **Build & Execute:**
    ```bash
    npm run build
    npm start
    ```
 
-## 🔐 Access Control
-Access to the **NEXUS // AI** terminal requires valid credentials. 
-
-**First Boot Security:**
-To ensure maximum security out-of-the-box, the application no longer ships with static default passwords. Upon the very first successful bootstrap:
-1. The system generates unique, high-entropy passwords for both the `ADMIN_CORE` and `OPERATOR_01` accounts.
-2. These credentials are saved to a local file named `INITIAL_CREDENTIALS.txt` in the project root.
-3. **Requirement:** Retrieve your login keys from this file and rotate them immediately after your first uplink.
-
-*Note: `INITIAL_CREDENTIALS.txt` is automatically excluded from source control to prevent exposure.*
+## 🔐 Restricted Access Control
+Access requires valid credentials generated during the first bootstrap sequence. Operator keys are saved to `INITIAL_CREDENTIALS.txt` upon the first successful uplink and must be rotated immediately.
 
 ## 📜 License
-Licensed under ISC. Built for authorized security operations only.
+Licensed under ISC. Created for authorized security operations.
