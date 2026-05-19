@@ -17,6 +17,50 @@ const ChatComponent = () => {
         }
     }, [messages]);
 
+    const [isListening, setIsListening] = useState(false);
+    const recognition = useRef(null);
+
+    useEffect(() => {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition.current = new SpeechRecognition();
+            recognition.current.continuous = false;
+            recognition.current.interimResults = false;
+            recognition.current.lang = 'en-US';
+
+            recognition.current.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                setMessages(prev => [...prev, { sender: 'OPERATOR', text: `[VOICE]: ${transcript}` }]);
+                executeVoiceCommand(transcript);
+                setIsListening(false);
+            };
+
+            recognition.current.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                setIsListening(false);
+            };
+        }
+    }, []);
+
+    const toggleVoice = () => {
+        if (isListening) {
+            recognition.current.stop();
+            setIsListening(false);
+        } else {
+            recognition.current.start();
+            setIsListening(true);
+        }
+    };
+
+    const executeVoiceCommand = async (text) => {
+        try {
+            const response = await ipcRenderer.invoke('ai.command', text);
+            setMessages(prev => [...prev, { sender: 'SYSTEM', text: response }]);
+        } catch (error) {
+            setMessages(prev => [...prev, { sender: 'SYSTEM', text: `VOICE ERROR: ${error.message}` }]);
+        }
+    };
+
     const sendMessage = async () => {
         if (!input.trim()) return;
         const currentInput = input;
@@ -83,6 +127,19 @@ const ChatComponent = () => {
                     onChange={(e) => setInput(e.target.value)} 
                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()} 
                 />
+                <button 
+                    onClick={toggleVoice}
+                    style={{ 
+                        background: isListening ? '#ff0000' : '#005500', 
+                        color: '#fff', 
+                        border: '1px solid #00ff00', 
+                        padding: '0 20px', 
+                        cursor: 'pointer', 
+                        fontWeight: 'bold' 
+                    }}
+                >
+                    {isListening ? 'LISTENING...' : 'VOICE'}
+                </button>
                 <button 
                     onClick={sendMessage}
                     style={{ background: '#00ff00', color: '#000', border: 'none', padding: '0 30px', cursor: 'pointer', fontWeight: 'bold' }}
