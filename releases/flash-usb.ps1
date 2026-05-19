@@ -22,7 +22,7 @@ if (-not $isAdmin) {
 # 2. Probe removable USB storage
 Write-Host "[*] Probing system WMI and checking for removable USB storage devices..." -ForegroundColor Yellow
 
-$disks = Get-Disk | Where-Host { $_.BusType -eq "USB" -and $_.OperationalStatus -eq "Online" }
+$disks = Get-Disk | Where-Object { $_.BusType -eq "USB" -and $_.OperationalStatus -eq "Online" }
 
 if ($disks.Count -eq 0) {
     Write-Error "No active removable USB storage devices detected! Please plug in a USB flash drive and try again."
@@ -104,7 +104,8 @@ if (Test-Path $PersistDriveLetter) {
     # Copy build scripts & wrappers
     Copy-Item -Path (Join-Path $ReleasesPath "*") -Destination $DestPath -Recurse -Force
     Write-Host "[+] Automated setup scripts successfully copied to dynamic persistence partition: $DestPath" -ForegroundColor Green
-} else {
+}
+else {
     Write-Warning "Could not access persistence partition letter to write setup files."
 }
 

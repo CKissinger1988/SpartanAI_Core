@@ -21,7 +21,20 @@ export const KaliTerminal: React.FC = () => {
     }
   ]);
   const [input, setInput] = useState('');
+  const [stealthMode, setStealthMode] = useState(localStorage.getItem('nexus_stealth_mode') === 'true');
+  const [secondaryKey, setSecondaryKey] = useState(localStorage.getItem('nexus_secondary_key') || 'NEXUS-7742-X');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleStealthUpdate = (e: any) => {
+      if (e.detail) {
+        setStealthMode(e.detail.enabled);
+        setSecondaryKey(e.detail.key);
+      }
+    };
+    window.addEventListener('stealth-mode-update', handleStealthUpdate);
+    return () => window.removeEventListener('stealth-mode-update', handleStealthUpdate);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -30,6 +43,26 @@ export const KaliTerminal: React.FC = () => {
   }, [history]);
 
   const processCommand = (cmd: string) => {
+    const isStealth = stealthMode;
+    const timestamp = new Date().toLocaleTimeString();
+
+    if (isStealth) {
+      const encryptedCmd = btoa(cmd + secondaryKey).slice(0, 16);
+      setHistory(prev => [...prev, {
+        id: `stealth-${Date.now()}`,
+        user: 'root@nexusai',
+        content: `[STEALTH_MODE] Encrypting traffic with key: ${secondaryKey.slice(0, 3)}***`,
+        type: 'system',
+        timestamp
+      }, {
+        id: `cipher-${Date.now()}`,
+        user: 'root@nexusai',
+        content: `TX_CIPHER: ${encryptedCmd}...`,
+        type: 'system',
+        timestamp
+      }]);
+    }
+
     const newHistory: TerminalMessage[] = [
       ...history,
       {
@@ -110,9 +143,9 @@ export const KaliTerminal: React.FC = () => {
       <div className="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
-             <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-             <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
-             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
           </div>
           <span className="text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-2">
             <TerminalIcon className="w-3 h-3" />
@@ -120,19 +153,19 @@ export const KaliTerminal: React.FC = () => {
           </span>
         </div>
         <div className="flex items-center gap-4 text-slate-600">
-           <Download className="w-3 h-3 cursor-pointer hover:text-cyan-500 transition-colors" />
-           <Trash2 onClick={() => setHistory([])} className="w-3 h-3 cursor-pointer hover:text-red-500 transition-colors" />
+          <Download className="w-3 h-3 cursor-pointer hover:text-cyan-500 transition-colors" />
+          <Trash2 onClick={() => setHistory([])} className="w-3 h-3 cursor-pointer hover:text-red-500 transition-colors" />
         </div>
       </div>
 
       {/* Terminal Output Area */}
-      <div 
+      <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800"
       >
         <AnimatePresence>
           {history.map((msg) => (
-            <motion.div 
+            <motion.div
               key={msg.id}
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
@@ -140,25 +173,24 @@ export const KaliTerminal: React.FC = () => {
             >
               {msg.type === 'input' ? (
                 <div className="flex items-start gap-2">
-                   <span className="text-emerald-500 font-bold shrink-0">┌──(</span>
-                   <span className="text-cyan-400 font-bold shrink-0">root㉿nexusai</span>
-                   <span className="text-emerald-500 font-bold shrink-0">)-[</span>
-                   <span className="text-white shrink-0">~</span>
-                   <span className="text-emerald-500 font-bold shrink-0">]</span>
+                  <span className="text-emerald-500 font-bold shrink-0">┌──(</span>
+                  <span className="text-cyan-400 font-bold shrink-0">root㉿nexusai</span>
+                  <span className="text-emerald-500 font-bold shrink-0">)-[</span>
+                  <span className="text-white shrink-0">~</span>
+                  <span className="text-emerald-500 font-bold shrink-0">]</span>
                 </div>
               ) : null}
-              
+
               <div className={`flex items-start gap-2 ${msg.type === 'input' ? 'pl-4' : ''}`}>
-                 {msg.type === 'input' && <span className="text-emerald-500 font-bold">└─<Hash className="w-3 h-3 inline pb-0.5" /></span>}
-                 {msg.type === 'error' && <ShieldAlert className="w-3 h-3 text-red-500 mt-1 shrink-0" />}
-                 <pre className={`whitespace-pre-wrap break-all ${
-                   msg.type === 'input' ? 'text-white font-bold' :
-                   msg.type === 'error' ? 'text-red-400 italic' :
-                   msg.type === 'system' ? 'text-cyan-500 font-bold italic' :
-                   'text-slate-400'
-                 }`}>
-                   {msg.content}
-                 </pre>
+                {msg.type === 'input' && <span className="text-emerald-500 font-bold">└─<Hash className="w-3 h-3 inline pb-0.5" /></span>}
+                {msg.type === 'error' && <ShieldAlert className="w-3 h-3 text-red-500 mt-1 shrink-0" />}
+                <pre className={`whitespace-pre-wrap break-all ${msg.type === 'input' ? 'text-white font-bold' :
+                    msg.type === 'error' ? 'text-red-400 italic' :
+                      msg.type === 'system' ? 'text-cyan-500 font-bold italic' :
+                        'text-slate-400'
+                  }`}>
+                  {msg.content}
+                </pre>
               </div>
             </motion.div>
           ))}
@@ -168,7 +200,7 @@ export const KaliTerminal: React.FC = () => {
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="p-4 bg-black/40 border-t border-slate-800 flex items-center gap-2 group shrink-0">
         <span className="text-emerald-500 font-bold text-xs shrink-0 tracking-tighter">root@nexusai#</span>
-        <input 
+        <input
           autoFocus
           className="bg-transparent border-none outline-none flex-1 text-cyan-400 text-xs font-mono placeholder:text-slate-700"
           placeholder="Execute system protocol..."

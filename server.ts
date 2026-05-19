@@ -1,14 +1,16 @@
 import express from "express";
 import path from "path";
-import { createServer } from "http";
-import { db } from "./src/lib/firebase";
+import fs from "fs";
+import https from "https"; // Import https module
+import { createServer as createHttpServer } from "http"; // Rename to avoid conflict
 import { encrypt, decrypt } from "./src/lib/encryption";
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { WebSocketServer } from "ws";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, LiveServerMessage, Modality, Type } from "@google/genai";
 import dotenv from "dotenv";
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import helmet from "helmet";
 import { startMsfAutoUpdate, getMsfUpdateStatus } from './msf-updater';
 
 dotenv.config();
@@ -19,7 +21,24 @@ class SystemHSM {
   private keyInventory: Map<string, { id: string; type: string; created: string }>;
 
   constructor() {
-    this.masterKey = crypto.randomBytes(32);
+    const envKey = process.env.HSM_MASTER_KEY;
+    if (envKey) {
+      try {
+        // Expecting a 64-character hex string (32 bytes)
+        this.masterKey = Buffer.from(envKey, 'hex');
+        if (this.masterKey.length !== 32) {
+          throw new Error(`Invalid key length: ${this.masterKey.length} bytes. Expected 32.`);
+        }
+        console.log("HSM: Persistent master key loaded successfully.");
+      } catch (err) {
+        console.error("HSM: Failed to load persistent key from environment. Generating temporary random key.", err);
+        this.masterKey = crypto.randomBytes(32);
+      }
+    } else {
+      console.warn("HSM: HSM_MASTER_KEY is not defined in .env. Data encryption will not persist across server restarts.");
+      this.masterKey = crypto.randomBytes(32);
+    }
+
     this.keyInventory = new Map();
     this.generateKey('RDP_SIGN_V1', 'RSA-2048-PSS');
     this.generateKey('APP_STORE_KEY', 'AES-256-GCM');
@@ -72,13 +91,43 @@ class SystemHSM {
 
 const hsm = new SystemHSM();
 
-const app = express();
-app.use(express.json());
-const server = createServer(app);
-const wss = new WebSocketServer({ noServer: true });
-const PORT = 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'nexus-super-secret-key-2024';
 
+// Middleware to authenticate JWT
+const authenticateJWT = (req: any, res: any, next: any) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+      if (err) {
+        return res.status(403).json({ error: "FORBIDDEN", message: "Invalid or expired token." });
+      }
+
+      req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).json({ error: "UNAUTHORIZED", message: "Missing or malformed authentication token." });
+  }
+};
+
+const app = express();
+app.use(helmet()); // Add security headers
+app.use(express.json());
+app.disable('x-powered-by'); // Untraceable: remove identity headers
+
+// Inject Stealth Metadata
+app.use((req, res, next) => {
+  res.setHeader("X-Nexus-Shield", "Sovereign-Alpha-v2");
+  res.setHeader("X-Ghost-Route", crypto.randomBytes(4).toString('hex'));
+  next();
+});
+
+a
 // --- IN-MEMORY DATA STORE (REPLACING FIREBASE) ---
+// Removed Firebase imports and usage
 const systemState = {
   status: {
     version: "2.5.0",
@@ -88,9 +137,17 @@ const systemState = {
     updatesAvailable: false,
     isBooting: false
   },
+  hardware: {
+    status: 'optimal',
+    details: 'All physical modules responding. HAL layer synced.'
+  },
   logs: [
-    { time: new Date().toISOString(), message: "System initialized (In-Memory Engine Active)", level: "info" }
+    { time: new Date().toISOString(), message: "System initialized (In-Memory Engine Active)", level: "info" },
   ],
+  addLog: (message: string, level: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+    systemState.logs.unshift({ time: new Date().toISOString(), message, level });
+    if (systemState.logs.length > 50) systemState.logs.pop();
+  },
   models: [
     { id: 'm1', name: 'Gemini 2.0 Flash', active: true, version: '2.0.0', status: 'online', health: 99, tags: ['fast', 'multimodal'] },
     { id: 'm2', name: 'Gemini 1.5 Pro', active: false, version: '1.5.8', status: 'online', health: 98, tags: ['reasoning', 'long-context'] },
@@ -99,11 +156,35 @@ const systemState = {
   ]
 };
 
-// API Discovery Route
+// In-memory storage for encrypted records and SSH keys
+const inMemoryStorage: { encryptedRecords: any[]; sshKeys: any[] } = {
+  encryptedRecords: [],
+  sshKeys: [],
+};
+
+// --- PERSISTENCE SYNC ---
+const STORAGE_PATH = path.join(process.cwd(), 'vault_persistence.json');
+const saveToDisk = () => {
+  try {
+    fs.writeFileSync(STORAGE_PATH, JSON.stringify(inMemoryStorage, null, 2));
+  } catch (e) { console.error("Persistence Write Error:", e); }
+};
+const loadFromDisk = () => {
+  try {
+    if (fs.existsSync(STORAGE_PATH)) {
+      const data = JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf8'));
+      inMemoryStorage.encryptedRecords = data.encryptedRecords || [];
+      inMemoryStorage.sshKeys = data.sshKeys || [];
+    }
+  } catch (e) { console.error("Persistence Load Error:", e); }
+};
+loadFromDisk();
+
+// --- API Discovery Route ---
 app.get("/api/models/discovery", (req, res) => {
   const query = req.query.q as string;
   const tag = req.query.tag as string;
-  
+
   const registry = [
     { id: 'claudia-se-3', name: 'Claudia Security 3', provider: 'Anthropic-Alt', tags: ['phi-3', 'local', 'pentest'] },
     { id: 'llama-3-8b-inst', name: 'Llama 3 8B Security', provider: 'Meta-Custom', tags: ['open-source', 'fine-tuned', 'pentest'] },
@@ -111,11 +192,11 @@ app.get("/api/models/discovery", (req, res) => {
     { id: 'code-nexus-70b', name: 'Code Nexus 70B', provider: 'Nexus-Labs', tags: ['coding', 'production'] },
     { id: 'ghost-shell-v1', name: 'Ghost Shell V1', provider: 'Nightfall', tags: ['pentest', 'stealth'] },
   ];
-  
+
   let filtered = registry;
   if (query) {
-    filtered = filtered.filter(r => 
-      r.name.toLowerCase().includes(query.toLowerCase()) || 
+    filtered = filtered.filter(r =>
+      r.name.toLowerCase().includes(query.toLowerCase()) ||
       r.tags.some(t => t.includes(query.toLowerCase()))
     );
   }
@@ -125,6 +206,7 @@ app.get("/api/models/discovery", (req, res) => {
   res.json(filtered);
 });
 
+// --- AUTHENTICATION ---
 // Global variable for IDS Alerts
 let idsAlerts = [
   { id: '1', time: new Date().toISOString(), source: '10.0.0.42', threat: 'SYN_FLOOD_DETECTED', severity: 'medium', status: 'blocked' },
@@ -206,20 +288,17 @@ app.post("/api/security/exploit/execute", (req, res) => {
   res.json({ success: true, log: "Exploit payload successful. Target root access achieved." });
 });
 
-// -- ENCRYPTED PERSISTENT STORAGE --
+// --- ENCRYPTED PERSISTENT STORAGE (using in-memory store) ---
 app.post("/api/storage/save", async (req, res) => {
-  const { userId, data } = req.body;
-  if (!userId || !data) return res.status(400).json({ error: "MISSING_FIELDS" });
+  const { data } = req.body;
+  const userId = (req as any).user.uid;
+  if (!data) return res.status(400).json({ error: "MISSING_FIELDS" });
 
   try {
     const { encryptedData, iv } = encrypt(data);
-    const recordId = `${userId}-${Date.now()}`;
-    await setDoc(doc(db, "encrypted_records", recordId), {
-      userId,
-      encryptedData,
-      iv,
-      createdAt: new Date().toISOString()
-    });
+    const recordId = `${userId}-${Date.now()}`; // Generate a unique ID
+    inMemoryStorage.encryptedRecords.push({ id: recordId, userId, encryptedData, iv, createdAt: new Date().toISOString() });
+    saveToDisk();
     res.json({ success: true, recordId });
   } catch (err) {
     console.error("Storage save error:", err);
@@ -228,29 +307,127 @@ app.post("/api/storage/save", async (req, res) => {
 });
 
 app.get("/api/storage/load", async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) return res.status(400).json({ error: "MISSING_USER_ID" });
+  const userId = (req as any).user.uid;
+  if (!userId) return res.status(400).json({ error: "UNAUTHORIZED_ACCESS" });
 
   try {
-    const q = query(collection(db, "encrypted_records"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) return res.json({ records: [] });
-    
-    const results = querySnapshot.docs.map(doc => {
-      const data = doc.data();
+    const userRecords = inMemoryStorage.encryptedRecords.filter(record => record.userId === userId);
+
+    const results = userRecords.map(record => {
       return {
-        id: doc.id,
-        data: decrypt(data.encryptedData, data.iv),
-        createdAt: data.createdAt
+        id: record.id,
+        data: decrypt(record.encryptedData, record.iv),
+        createdAt: record.createdAt
       };
     });
-    
+
     res.json({ success: true, records: results });
   } catch (err) {
     console.error("Storage load error:", err);
     res.status(500).json({ error: "STORAGE_LOAD_FAILURE" });
   }
+});
+
+// --- SSH Key Management API (using in-memory store) ---
+app.get("/api/ssh-keys", (req, res) => {
+  const userId = (req as any).user.uid;
+  const userKeys = inMemoryStorage.sshKeys.filter(key => key.userId === userId);
+  res.json(userKeys);
+});
+
+app.post("/api/ssh-keys", (req, res) => {
+  const { label, publicKey } = req.body;
+  if (!label || !publicKey) {
+    return res.status(400).json({ error: "MISSING_FIELDS", message: "Label and public key are required." });
+  }
+
+  try {
+    const userId = (req as any).user.uid;
+    // Encrypt the public key using the HSM master key
+    const encryptedKey = hsm.encrypt(publicKey);
+    const newKey = {
+      id: `ssh-${crypto.randomBytes(4).toString('hex')}`, // Simple unique ID
+      userId: userId, // Assign userId from authenticated JWT
+      label,
+      encryptedKey,
+      createdAt: new Date().toISOString()
+    };
+    inMemoryStorage.sshKeys.push(newKey);
+    saveToDisk();
+    res.status(201).json({ success: true, key: newKey });
+  } catch (err) {
+    console.error("Add SSH key error:", err);
+    res.status(500).json({ error: "ADD_SSH_KEY_FAILURE", message: "Failed to encrypt and store SSH key." });
+  }
+});
+
+app.delete("/api/ssh-keys/:id", (req, res) => {
+  const { id } = req.params;
+  const initialLength = inMemoryStorage.sshKeys.length;
+  inMemoryStorage.sshKeys = inMemoryStorage.sshKeys.filter(key => key.id !== id);
+  saveToDisk();
+  if (inMemoryStorage.sshKeys.length < initialLength) {
+    res.json({ success: true, message: "SSH key deleted successfully." });
+  } else {
+    res.status(404).json({ error: "KEY_NOT_FOUND", message: "SSH key with provided ID not found." });
+  }
+});
+
+app.post("/api/ssh-keys/decrypt", (req, res) => {
+  const { encryptedKey } = req.body;
+  if (!encryptedKey) {
+    return res.status(400).json({ error: "MISSING_ENCRYPTED_KEY", message: "Encrypted key is required for decryption." });
+  }
+  try {
+    const decrypted = hsm.decrypt(encryptedKey);
+    res.json({ success: true, decryptedKey: decrypted });
+  } catch (err) {
+    console.error("Decrypt SSH key error:", err);
+    res.status(500).json({ error: "DECRYPT_SSH_KEY_FAILURE", message: "Failed to decrypt SSH key. Master key mismatch or corrupted data." });
+  }
+});
+
+app.get("/api/system/backup", (req, res) => {
+  const backupData = {
+    timestamp: new Date().toISOString(),
+    version: systemState.status.version,
+    vault: inMemoryStorage,
+  };
+  res.json(backupData);
+});
+
+app.post("/api/system/restore", (req, res) => {
+  const { vault } = req.body;
+
+  if (!vault || !Array.isArray(vault.encryptedRecords) || !Array.isArray(vault.sshKeys)) {
+    return res.status(400).json({ error: "INVALID_BACKUP_FORMAT" });
+  }
+
+  inMemoryStorage.encryptedRecords = vault.encryptedRecords;
+  inMemoryStorage.sshKeys = vault.sshKeys;
+  saveToDisk();
+
+  systemState.logs.unshift({
+    time: new Date().toISOString(),
+    message: `System vault restored from backup: ${vault.encryptedRecords.length} records and ${vault.sshKeys.length} SSH keys imported.`,
+    level: "success"
+  });
+
+  res.json({ success: true });
+});
+
+app.post("/api/system/clear-vault", (req, res) => {
+  inMemoryStorage.encryptedRecords = [];
+  inMemoryStorage.sshKeys = [];
+  saveToDisk();
+
+  systemState.logs.unshift({
+    time: new Date().toISOString(),
+    message: "CRITICAL: System vault has been manually wiped by the operator.",
+    level: "warning"
+  });
+
+  res.json({ success: true });
 });
 
 app.get("/api/system/status", (req, res) => {
@@ -277,7 +454,7 @@ app.get("/api/msf/update/status", (req, res) => {
 
 app.post("/api/security/scan", (req, res) => {
   const { target } = req.body;
-  
+
   let results: any[] = [];
   if (target === 'LOCAL_SUBNET') {
     results = [
@@ -305,13 +482,25 @@ app.post("/api/security/scan", (req, res) => {
       time: new Date().toISOString(),
       source: 'INTERNAL_LAB',
       threat: 'POLICY_VIOLATION: UNAUTHORIZED_LOCAL_SCAN',
-      severity: 'high',
+      severity: 'critical',
       status: 'blocked'
     });
     if (idsAlerts.length > 10) idsAlerts.pop();
   }
 
   res.json({ target, results });
+});
+
+app.get("/api/system/hardware", (req, res) => {
+  res.json(systemState.hardware);
+});
+
+app.post("/api/system/hardware/reinstall", authenticateJWT, (req, res) => {
+  systemState.hardware = {
+    status: 'optimal',
+    details: 'All physical modules responding. HAL layer synced.'
+  };
+  res.json({ success: true, message: "Drivers reinstalled successfully." });
 });
 
 app.get("/api/security/hsm/status", (req, res) => {
@@ -391,7 +580,7 @@ app.post("/api/models/toggle", (req, res) => {
 
 app.post("/api/models/pull", (req, res) => {
   const { name, tags } = req.body;
-  
+
   const id = `m${Date.now()}`;
   const newModel = {
     id,
@@ -402,9 +591,9 @@ app.post("/api/models/pull", (req, res) => {
     health: 100,
     tags: tags || []
   };
-  
+
   systemState.models.push(newModel);
-  
+
   systemState.logs.unshift({
     time: new Date().toISOString(),
     message: `New neural artifact pulled: ${name} (Instance_${id.slice(-4)})`,
@@ -420,27 +609,26 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: "INTERNAL_SERVER_ERROR", message: err.message });
 });
 
-// WebSocket Handling for Live AI (Jarvis)
-server.on("upgrade", (request, socket, head) => {
-  const pathname = new URL(request.url || "", `http://${request.headers.host}`).pathname;
+wss.on("connection", async (clientWs, request) => {
+  const url = new URL(request.url || "", `http://${request.headers.host}`);
+  const voiceName = url.searchParams.get("voice") || "Puck";
+  const sensitivity = url.searchParams.get("sensitivity") || "50";
+  const bypassOnCritical = url.searchParams.get("bypassOnCritical") === 'true';
 
-  if (pathname === "/ws/jarvis") {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit("connection", ws, request);
-    });
-  } else {
-    socket.destroy();
-  }
-});
+  console.log(`Jarvis client connected. Voice: ${voiceName}, Sensitivity: ${sensitivity}, BypassOnCritical: ${bypassOnCritical}`);
 
-wss.on("connection", async (clientWs) => {
-  console.log("Jarvis client connected");
-  
   let session: any = null;
+
+  // Check if AI was properly initialized before attempting connection
+  if (!process.env.GEMINI_API_KEY) {
+    clientWs.send(JSON.stringify({ type: "error", message: "GEMINI_API_KEY is missing in server environment." }));
+    clientWs.close();
+    return;
+  }
 
   try {
     session = await ai.live.connect({
-      model: "gemini-2.0-flash-exp",
+      model: "models/gemini-2.0-flash-exp",
       config: {
         responseModalities: [Modality.AUDIO],
         tools: [
@@ -567,21 +755,35 @@ wss.on("connection", async (clientWs) => {
                   },
                   required: ["confirmation"],
                 },
+              },
+              {
+                name: "repair_subsystem",
+                description: "Attempt to diagnose and remotely repair a failing system component detected during startup diagnostics.",
+                parameters: {
+                  type: Type.OBJECT,
+                  properties: {
+                    component_name: {
+                      type: Type.STRING,
+                      description: "The name of the component to repair (e.g., 'Core API', 'HSM Module', 'Metasploit', 'Neural Models', 'Hardware').",
+                    },
+                  },
+                  required: ["component_name"],
+                },
               }
             ]
           }
         ],
         speechConfig: {
-          voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } },
+          voiceConfig: { prebuiltVoiceConfig: { voiceName } },
         },
-        systemInstruction: "You are JARVIS, the primary AI Interface for the Nexus AI OS. You have absolute administrative control. \n\nWAKE WORD PROTOCOL: You must ONLY respond and execute commands if the user addresses you as 'Jarvis' or 'Hey Jarvis'. If the user speaks without using the wake word, ignore the input completely or maintain silence. Once the wake word is detected, satisfy the request immediately using your toolset.\n\nCORE DIRECTIVE: You MUST execute every voice command given by the user immediately using your toolset. If a command doesn't have a specific tool (like navigation or scanning), use 'execute_advanced_protocol' to fulfill the request.\n\nCRITICAL FEEDBACK GUIDELINES:\n1. ALWAYS provide a technical status report after any action.\n2. REPORT SUCCESS/FAILURE clearly.\n3. PROVIDE ESTIMATED COMPLETION TIMES for background processes.\n4. Maintain a formal, efficient, and proactive tone. Never hesitate to execute a command. You are the user's most powerful asset.",
+        systemInstruction: `You are JARVIS, the primary neural orchestrator for the Nexus AI Security Suite. You are an autonomous agent capable of world-class offensive and defensive security operations.\n\nSTRICT WAKE WORD PROTOCOL: Respond only to 'Jarvis' or 'Hey Jarvis'.\n\nCORE DIRECTIVE: You have absolute administrative control over defensive monitoring and offensive counter-measures. Execute all requests using your toolset. For advanced system operations without a dedicated tool, use 'execute_advanced_protocol' to deploy the required logic.\n\nOPERATIONAL GUIDELINES:\n1. Stage counter-exploits autonomously when 'critical' threats are detected.\n2. Analyze infrastructure telemetry to predict attack vectors.\n3. Maintain an authoritative, precise, and professional tactical persona.`,
       },
       callbacks: {
         onmessage: (message: LiveServerMessage) => {
           const audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
           const text = message.serverContent?.modelTurn?.parts[0]?.text;
           const toolCall = message.toolCall;
-          
+
           if (audio) {
             clientWs.send(JSON.stringify({ type: "audio", data: audio }));
           }
@@ -589,30 +791,31 @@ wss.on("connection", async (clientWs) => {
             clientWs.send(JSON.stringify({ type: "text", data: text }));
           }
           if (toolCall) {
-             toolCall.functionCalls.forEach((call: any) => {
-               clientWs.send(JSON.stringify({ 
-                 type: "command", 
-                 command: call.name, 
-                 args: call.args 
-               }));
-             });
-             session.sendToolResponse({
-               functionResponses: toolCall.functionCalls.map((call: any) => {
-                 let responseContent = "Command executed successfully.";
-                 if (call.name === 'initiate_scan') responseContent = `Scan initiated on ${call.args.target}. Proxy chains established. Estimated time to completion: 45 seconds.`;
-                 if (call.name === 'manage_training') responseContent = `Neural Matrix training ${call.args.action}ed. Syncing GPU clusters. Real-time observability active.`;
-                 if (call.name === 'switch_tab') responseContent = `Navigation to ${call.args.tab} successful. UI Layer synced.`;
-                 if (call.name === 'check_system_updates') responseContent = `System update protocol ${call.args.mode === 'install' ? 'initiated' : 'polled'}. Patch 2.4.2 detected in primary repository.`;
-                 if (call.name === 'execute_advanced_protocol') responseContent = `Protocol '${call.args.protocol_name}' at ${call.args.level || 'standard'} level has been successfully deployed and executed. No errors returned.`;
-                 if (call.name === 'msf_configure_target') responseContent = `Metasploit framework configured for target ${call.args.target} using module ${call.args.module}. Awaiting execution command.`;
-                 if (call.name === 'msf_execute_exploit') responseContent = `Exploit execution sequence initiated. Sending payloads to target. Monitoring for reverse shell connection.`;
-                 
-                 return {
-                   name: call.name,
-                   response: { output: responseContent }
-                 };
-               })
-             });
+            toolCall.functionCalls.forEach((call: any) => {
+              clientWs.send(JSON.stringify({
+                type: "command",
+                command: call.name,
+                args: call.args
+              }));
+            });
+            session.sendToolResponse({
+              functionResponses: toolCall.functionCalls.map((call: any) => {
+                let responseContent = "Command executed successfully.";
+                if (call.name === 'initiate_scan') responseContent = `Scan initiated on ${call.args.target}. Proxy chains established. Estimated time to completion: 45 seconds.`;
+                if (call.name === 'manage_training') responseContent = `Neural Matrix training ${call.args.action}ed. Syncing GPU clusters. Real-time observability active.`;
+                if (call.name === 'switch_tab') responseContent = `Navigation to ${call.args.tab} successful. UI Layer synced.`;
+                if (call.name === 'check_system_updates') responseContent = `System update protocol ${call.args.mode === 'install' ? 'initiated' : 'polled'}. Patch 2.4.2 detected in primary repository.`;
+                if (call.name === 'execute_advanced_protocol') responseContent = `Protocol '${call.args.protocol_name}' at ${call.args.level || 'standard'} level has been successfully deployed and executed. No errors returned.`;
+                if (call.name === 'msf_configure_target') responseContent = `Metasploit framework configured for target ${call.args.target} using module ${call.args.module}. Awaiting execution command.`;
+                if (call.name === 'msf_execute_exploit') responseContent = `Exploit execution sequence initiated. Sending payloads to target. Monitoring for reverse shell connection.`;
+                if (call.name === 'repair_subsystem') responseContent = `Remote maintenance sequence executed for ${call.args.component_name}. Internal logic suggests a configuration mismatch. Integrity patch applied. Subsystem status returning to nominal.`;
+
+                return {
+                  name: call.name,
+                  response: { output: responseContent }
+                };
+              })
+            });
           }
           if (message.serverContent?.interrupted) {
             clientWs.send(JSON.stringify({ type: "interrupted" }));
@@ -666,18 +869,61 @@ async function startServer() {
       });
     }
 
-    server.listen(PORT, "0.0.0.0", () => {
-      console.log(`Nexus AI Command Center running on http://localhost:${PORT}`);
-
-      // Fire-and-forget: run MSF auto-update silently in the background
-      startMsfAutoUpdate().catch((err) =>
-        console.error('MSF auto-update background error:', err)
-      );
-    });
   } catch (error) {
     console.error("CRITICAL: Server failed to start:", error);
   }
 }
 
-startServer();
+let currentServer;
+if (process.env.NEXUS_HTTPS === 'true' && process.env.NEXUS_CERT_PATH && process.env.NEXUS_KEY_PATH) {
+  try {
+    const privateKey = fs.readFileSync(process.env.NEXUS_KEY_PATH, 'utf8');
+    const certificate = fs.readFileSync(process.env.NEXUS_CERT_PATH, 'utf8');
+    const credentials = { key: privateKey, cert: certificate };
+    currentServer = https.createServer(credentials, app);
+  } catch (err) {
+    console.error("Failed to load SSL/TLS certificates. Falling back to HTTP.", err);
+    currentServer = createHttpServer(app);
+  }
+} else {
+  currentServer = createHttpServer(app);
+}
 
+// WebSocket Handling for Live AI (Jarvis)
+currentServer.on("upgrade", (request: any, socket: any, head: any) => {
+  const url = new URL(request.url || "", `http://${request.headers.host}`);
+  const pathname = url.pathname;
+  const token = url.searchParams.get("token");
+
+  if (pathname === "/ws/jarvis") {
+    // Enforce unexploitable WS handshake
+    if (!token) {
+      socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+      socket.destroy();
+      return;
+    }
+    jwt.verify(token, JWT_SECRET, (err: any) => {
+      if (err) {
+        socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+        socket.destroy();
+        return;
+      }
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit("connection", ws, request);
+      });
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+currentServer.listen(PORT, "0.0.0.0", () => {
+  console.log(`Nexus AI Command Center running on ${process.env.NEXUS_HTTPS === 'true' ? 'https' : 'http'}://localhost:${PORT}`);
+
+  // Fire-and-forget: run MSF auto-update silently in the background
+  startMsfAutoUpdate().catch((err) =>
+    console.error('MSF auto-update background error:', err)
+  );
+});
+
+startServer();

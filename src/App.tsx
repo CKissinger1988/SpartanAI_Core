@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { Settings } from './components/Settings';
+import { AudioSettingsProvider } from './contexts/AudioSettingsContext';
 import { Menu, X } from 'lucide-react';
 
 function AppContent() {
@@ -21,11 +22,23 @@ function AppContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string, text: string }[]>([]);
   const [isBooting, setIsBooting] = useState(true);
-  const { user, loading } = useAuth();
+  const [systemCheck, setSystemCheck] = useState<{
+    inProgress: boolean;
+    progress: number;
+    currentStep: string;
+    results: { name: string, status: 'online' | 'offline' | 'error' | 'pending' }[];
+  }>({
+    inProgress: false,
+    progress: 0,
+    currentStep: '',
+    results: []
+  });
+  const { user, loading, authenticatedFetch } = useAuth();
+  const checkPerformed = React.useRef(false);
 
   useEffect(() => {
     // Check initial server state
-    fetch('/api/system/status')
+    authenticatedFetch('/api/system/status')
       .then(res => res.json())
       .then(data => {
         if (!data.isBooting) {
@@ -50,6 +63,133 @@ function AppContent() {
     };
   }, []);
 
+  // System diagnostics and Jarvis announcements on startup
+  useEffect(() => { // This useEffect already has a useRef guard (checkPerformed.current)
+    if (!isBooting && user && 'speechSynthesis' in window && !checkPerformed.current) {
+      checkPerformed.current = true;
+
+      const performSystemCheck = async () => {
+        setSystemCheck({
+          inProgress: true,
+          progress: 0,
+          currentStep: 'Initializing system diagnostics...',
+          results: []
+        });
+        const failures: string[] = [];
+
+        const speak = (text: string) => {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.9; // Matches Jarvis persona
+          utterance.pitch = 0.8;
+          window.speechSynthesis.speak(utterance);
+        };
+
+        speak("Initializing system-wide diagnostics.");
+        await new Promise(r => setTimeout(r, 1000));
+
+        // 1. Core API Check
+        setSystemCheck(prev => ({ ...prev, progress: 20, currentStep: 'Verifying Core Systems...' }));
+        try {
+          const res = await authenticatedFetch('/api/system/status');
+          const data = await res.json();
+          if (res.ok) {
+            speak(`Core systems online. Nexus version ${data.version} operational.`);
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Core API', status: 'online' }] }));
+          }
+        } catch {
+          speak("System core communication failure.");
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Core API', status: 'error' }] }));
+          failures.push('Core API');
+        }
+        await new Promise(r => setTimeout(r, 800));
+
+        // 2. HSM Check
+        setSystemCheck(prev => ({ ...prev, progress: 40, currentStep: 'Verifying HSM Authentication...' }));
+        try {
+          const res = await authenticatedFetch('/api/security/hsm/status');
+          const data = await res.json();
+          if (data.status === 'OPERATIONAL') {
+            speak("Hardware Security Module authenticated. FIPS level 3 verified.");
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'HSM Module', status: 'online' }] }));
+          } else {
+            speak("Warning: Hardware Security Module is offline.");
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'HSM Module', status: 'offline' }] }));
+            failures.push('HSM Module');
+          }
+        } catch {
+          speak("H S M offline.");
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'HSM Module', status: 'offline' }] }));
+          failures.push('HSM Module');
+        }
+        await new Promise(r => setTimeout(r, 800));
+
+        // 3. Metasploit Status
+        setSystemCheck(prev => ({ ...prev, progress: 60, currentStep: 'Syncing Metasploit Framework...' }));
+        try {
+          const res = await authenticatedFetch('/api/msf/update/status');
+          const data = await res.json();
+          if (data.state !== 'not_installed') {
+            speak("Metasploit framework link established.");
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Metasploit', status: 'online' }] }));
+          } else {
+            speak("Metasploit framework not detected on local system.");
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Metasploit', status: 'offline' }] }));
+            failures.push('Metasploit');
+          }
+        } catch {
+          speak("Metasploit framework link failure.");
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Metasploit', status: 'error' }] }));
+          failures.push('Metasploit');
+        }
+        await new Promise(r => setTimeout(r, 800));
+
+        // 4. Model Registry
+        setSystemCheck(prev => ({ ...prev, progress: 80, currentStep: 'Syncing Neural Repository...' }));
+        try {
+          const res = await authenticatedFetch('/api/models');
+          const data = await res.json();
+          speak(`Neural repository synced. ${data.length} models available.`);
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Neural Models', status: 'online' }] }));
+        } catch {
+          speak("Neural artifact link failed.");
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Neural Models', status: 'error' }] }));
+        }
+        await new Promise(r => setTimeout(r, 800));
+
+        // 5. Hardware & Drivers
+        setSystemCheck(prev => ({ ...prev, progress: 100, currentStep: 'Probing Hardware Integrity...' }));
+        try {
+          const res = await authenticatedFetch('/api/system/hardware');
+          const data = await res.json();
+          if (data.status === 'optimal') {
+            speak("Hardware abstraction layer verified. Latest kernel drivers active with persistence.");
+            setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Hardware', status: 'online' }] }));
+          }
+        } catch {
+          setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Hardware', status: 'error' }] }));
+          failures.push('Hardware');
+        }
+        await new Promise(r => setTimeout(r, 800));
+
+        if (failures.length > 0) {
+          speak(`Diagnostics complete. I have identified ${failures.length} subsystem irregularities in: ${failures.join(", ")}. Please initiate neural link for automated repair.`);
+          window.dispatchEvent(new CustomEvent('nexus-system-failure', { detail: { failedComponents: failures } }));
+        } else {
+          speak("All systems nominal. Ready for command.");
+          // Automatically initiate always-on learning protocols
+          setTimeout(() => {
+            handleJarvisCommand('manage_training', { action: 'start' });
+          }, 2000);
+        }
+
+        setSystemCheck(prev => ({ ...prev, currentStep: 'Diagnostics Complete' }));
+        setTimeout(() => setSystemCheck(prev => ({ ...prev, inProgress: false })), 5000);
+      };
+
+      performSystemCheck();
+    }
+  }, [isBooting, user]);
+
   const addNotification = (text: string) => {
     const id = Math.random().toString(36).substr(2, 9);
     setNotifications(prev => [...prev, { id, text }]);
@@ -57,6 +197,19 @@ function AppContent() {
       setNotifications(prev => prev.filter(n => n.id !== id));
     }, 5000);
   };
+
+  // Global listener for system-wide notifications (e.g., from Settings)
+  useEffect(() => {
+    const handleSystemNotify = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.message) {
+        addNotification(customEvent.detail.message);
+      }
+    };
+
+    window.addEventListener('system-notification', handleSystemNotify);
+    return () => window.removeEventListener('system-notification', handleSystemNotify);
+  }, []);
 
   const handleJarvisCommand = (command: string, args: any) => {
     switch (command) {
@@ -78,7 +231,7 @@ function AppContent() {
         setActiveTab('dashboard');
         if (args.mode === 'install') {
           addNotification("JARVIS: Initiating system recovery and update sequence");
-          fetch('/api/system/update', { method: 'POST' }).catch(e => console.error(e));
+          authenticatedFetch('/api/system/update', { method: 'POST' }).catch(e => console.error(e));
         } else {
           addNotification("JARVIS: Polling primary repositories for security patches");
         }
@@ -98,8 +251,8 @@ function AppContent() {
         setActiveTab('msf_framework');
         addNotification(`JARVIS: Configuring MSF module for ${args.target}`);
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('msf-target-transfer', { 
-            detail: { target: args.target, module: args.module } 
+          window.dispatchEvent(new CustomEvent('msf-target-transfer', {
+            detail: { target: args.target, module: args.module }
           }));
         }, 500);
         break;
@@ -115,15 +268,15 @@ function AppContent() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard onLaunchDesktop={() => setActiveTab('desktop')} />;
+      case 'dashboard': return <Dashboard onLaunchDesktop={() => setActiveTab('desktop')} systemCheck={systemCheck} />;
       case 'jarvis': return <JarvisVoice onCommand={handleJarvisCommand} />;
       case 'models': return <ModelManager />;
       case 'security': return <SecurityLab />;
       case 'deeplearning': return <DeepLearning />;
       case 'terminal': return <KaliTerminal />;
-      case 'desktop': return <RemoteDesktop />;
+      case 'enclave': return <RemoteDesktop />;
       case 'msf_framework': return <MetasploitFramework />;
-      default: return <Dashboard onLaunchDesktop={() => setActiveTab('desktop')} />;
+      default: return <Dashboard onLaunchDesktop={() => setActiveTab('enclave')} />;
     }
   };
 
@@ -141,7 +294,7 @@ function AppContent() {
         ) : isBooting ? (
           <BootSequence key="boot" onComplete={() => setIsBooting(false)} />
         ) : (
-          <motion.div 
+          <motion.div
             key="interface"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -183,19 +336,19 @@ function AppContent() {
               <div className="hidden md:block sticky top-12 self-start h-[calc(100vh-3rem)] shrink-0 z-40">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onOpenSettings={() => setIsSettingsOpen(true)} />
               </div>
-              
+
               <AnimatePresence>
                 {isMobileMenuOpen && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: -100 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -100 }}
                     className="fixed inset-0 z-[60] bg-black/90 md:hidden flex"
                   >
-                    <Sidebar 
-                      activeTab={activeTab} 
-                      setActiveTab={(t) => { setActiveTab(t); setIsMobileMenuOpen(false); }} 
-                      onOpenSettings={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }} 
+                    <Sidebar
+                      activeTab={activeTab}
+                      setActiveTab={(t) => { setActiveTab(t); setIsMobileMenuOpen(false); }}
+                      onOpenSettings={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }}
                     />
                     <div className="flex-1 p-4" onClick={() => setIsMobileMenuOpen(false)}>
                       <button className="float-right text-white/50 hover:text-white">
@@ -205,9 +358,9 @@ function AppContent() {
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               <Settings open={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-              
+
               <main className="flex-1 relative p-6 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.03)_0%,_transparent_50%)] overflow-x-hidden">
                 <div className="max-w-7xl mx-auto space-y-6">
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -239,7 +392,7 @@ function AppContent() {
             <footer className="mt-auto h-8 border-t border-slate-900 bg-black/80 flex items-center justify-between px-6 shrink-0 z-50 relative">
               <div className="flex items-center gap-4 text-[9px] font-mono text-slate-500">
                 <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div> 
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
                   SYSTEM OK
                 </span>
                 <span className="hidden sm:block">UPTIME: 14D 02H 11M</span>
@@ -261,8 +414,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <AudioSettingsProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </AudioSettingsProvider>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Terminal, Shield, Brain, Cpu, Mic, Settings, LayoutDashboard, LogOut, Monitor, Cpu as HsmIcon, Crosshair } from 'lucide-react';
+import { Terminal, Shield, Brain, Cpu, Mic, Settings, LayoutDashboard, LogOut, ShieldCheck, Cpu as HsmIcon, Crosshair } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -28,7 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
 
   const tabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'COMMAND' },
-    { id: 'desktop', icon: Monitor, label: 'CLD_DESKTOP' },
+    { id: 'enclave', icon: ShieldCheck, label: 'OP_ENCLAVE' },
     { id: 'jarvis', icon: Mic, label: 'JARVIS' },
     { id: 'terminal', icon: Terminal, label: 'KALI_CONS' },
     { id: 'models', icon: Brain, label: 'NEURAL_MOD' },
@@ -54,9 +54,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-4 px-6 py-3 transition-colors relative group ${
-                isActive ? 'text-cyan-400 bg-cyan-500/5' : 'text-slate-500 hover:text-slate-300'
-              }`}
+              className={`w-full flex items-center gap-4 px-6 py-3 transition-colors relative group ${isActive ? 'text-cyan-400 bg-cyan-500/5' : 'text-slate-500 hover:text-slate-300'
+                }`}
             >
               {isActive && (
                 <motion.div
@@ -85,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
           <Settings className="w-5 h-5" />
           <span className="hidden lg:block font-medium text-[10px] tracking-widest uppercase">CONFIG</span>
         </button>
-        <button 
+        <button
           onClick={logout}
           className="flex items-center gap-4 text-red-500/70 hover:text-red-400 transition-colors w-full group"
         >

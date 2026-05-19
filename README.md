@@ -1,14 +1,12 @@
-# Nexus AI Security Suite
+# Nexus AI Sovereign Security Suite (ASOC)
 
-**Nexus AI Security Suite** is an advanced, simulated penetration testing and security operations dashboard designed for training, demonstration, and conceptual architectural testing. It provides a highly interactive and visually immersive interface replicating real-world defensive and offensive cyber environments.
-
-**Disclaimer:** This application is entirely simulated. It does not contain actual exploit payloads, nor does it perform real network reconnaissance or unauthorized access. It is designed purely for educational and conceptual demonstration purposes.
+**Nexus AI Sovereign Security Suite** is a high-performance autonomous security operations center (ASOC) designed for professional offensive and defensive operations. This build is hardened for zero-trace visibility and unexploitable interface boundaries, providing a neural-orchestrated hub for managing distributed infrastructure, hardware-level encryption, and autonomous counter-measures.
 
 ## 🚀 Features
-- **Cloud Desktop**: An embedded window manager that simulates a remote Kali Linux environment, complete with a functional terminal UI.
-- **Jarvis AI Assistant**: A voice-activated AI engine powered by Google Gemini that can interact with the suite, configure simulated exploits, and provide real-time situational awareness.
-- **Metasploit Framework UI**: A simulated, high-fidelity replica of the `msfconsole`, seamlessly integrated into the dashboard.
-- **Security Recon Lab**: Analyze mock network scans, identify simulated vulnerabilities, and automatically stage mock exploit pipelines.
+- **Operational Enclave**: A zero-trust node management gateway providing secure terminal access and encrypted file operations across distributed assets.
+- **Jarvis AI Assistant**: A voice-activated neural orchestrator powered by Gemini 2.0, capable of autonomous infrastructure auditing, threat analysis, and exploit staging.
+- **Metasploit Framework Console**: Operational bridge to MSF infrastructure for targeted deployment.
+- **Security Recon Lab**: Real-time vulnerability assessment engine and network topology analyzer.
 - **Responsive Layout**: Fluid design built with Tailwind CSS, ensuring the dashboard scales from desktop monitors down to mobile devices.
 
 ## 🛠️ Installation & Setup

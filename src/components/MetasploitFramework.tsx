@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Crosshair, Hash, ShieldAlert, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { TerminalMessage } from '../types';
@@ -59,7 +59,7 @@ export const MetasploitFramework: React.FC = () => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail) {
         const { target, module } = customEvent.detail;
-        
+
         const setupLogs: TerminalMessage[] = [
           { id: Date.now().toString() + '-1', user: '', content: `[*] Received external target payload: ${target}`, type: 'info', timestamp: '' },
           { id: Date.now().toString() + '-2', user: 'msf6', content: `msf6 > use ${module}`, type: 'input', timestamp: '' },
@@ -83,19 +83,25 @@ export const MetasploitFramework: React.FC = () => {
     };
     window.addEventListener('msf-execute-exploit', handleExecute);
     return () => window.removeEventListener('msf-execute-exploit', handleExecute);
-  }, [history]);
+  }, [processCommand]);
 
-  const processCommand = (cmd: string) => {
-    const newHistory: TerminalMessage[] = [
-      ...history,
-      {
-        id: Date.now().toString(),
-        user: 'msf6',
-        content: `msf6 > ${cmd}`,
-        type: 'input',
-        timestamp: new Date().toLocaleTimeString()
-      }
-    ];
+  const processCommand = useCallback((cmd: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const commandId = Date.now().toString();
+
+    setHistory(prev => {
+      const updated = [
+        ...prev,
+        {
+          id: commandId,
+          user: 'msf6',
+          content: `msf6 > ${cmd}`,
+          type: 'input',
+          timestamp
+        }
+      ];
+      return updated.slice(-100); // Prevent DOM bloat
+    });
 
     const c = cmd.toLowerCase().trim();
     let output = '';
@@ -106,16 +112,16 @@ export const MetasploitFramework: React.FC = () => {
     } else if (c.startsWith('use ')) {
       const module = c.split(' ')[1];
       output = `[*] Using configured payload windows/x64/meterpreter/reverse_tcp`;
-      
-      setHistory([
-        ...newHistory,
+
+      setHistory(prev => [
+        ...prev,
         { id: (Date.now() + 1).toString(), user: '', content: output, type: 'info', timestamp: '' },
         { id: (Date.now() + 2).toString(), user: '', content: `msf6 exploit(${module.split('/').pop()}) > `, type: 'prompt', timestamp: '' }
-      ]);
+      ].slice(-100));
       return;
     } else if (c.startsWith('set ')) {
       const parts = c.split(' ');
-      if(parts.length >= 3) {
+      if (parts.length >= 3) {
         output = `${parts[1].toUpperCase()} => ${parts[2]}`;
       } else {
         output = `[-] Invalid syntax. Usage: set <var> <val>`;
@@ -123,12 +129,12 @@ export const MetasploitFramework: React.FC = () => {
       }
     } else if (c === 'run' || c === 'exploit') {
       output = `[*] Started reverse TCP handler on 192.168.1.105:4444 \n[*] 192.168.12.55:445 - Connecting to target for exploitation.\n[+] 192.168.12.55:445 - Connection established for exploitation.\n[+] 192.168.12.55:445 - Target OS selected valid for OS indicated by SMB reply\n[*] 192.168.12.55:445 - CORE raw buffer dump (42 bytes)\n[*] 192.168.12.55:445 - Target arch selected valid for arch indicated by DCE/RPC reply\n[*] 192.168.12.55:445 - Trying exploit with 12 Groom Allocations.\n[*] 192.168.12.55:445 - Sending all but last fragment of exploit packet\n[*] 192.168.12.55:445 - Starting non-paged pool grooming\n[+] 192.168.12.55:445 - Sending SMBv2 buffers\n[+] 192.168.12.55:445 - Closing SMBv1 connection creating free hole adjacent to SMBv2 buffer.\n[*] 192.168.12.55:445 - Sending final SMBv2 buffers.\n[*] 192.168.12.55:445 - Sending last fragment of exploit packet!\n[*] 192.168.12.55:445 - Receiving response from exploit packet\n[+] 192.168.12.55:445 - ETERNALBLUE overwrite completed successfully (0xC000000D)!\n[*] 192.168.12.55:445 - Sending egg to corrupted connection.\n[*] 192.168.12.55:445 - Triggering free of corrupted buffer.\n[*] Sending stage (200262 bytes) to 192.168.12.55\n[*] Meterpreter session 1 opened (192.168.1.105:4444 -> 192.168.12.55:49156)`;
-      
-      setHistory([
-        ...newHistory,
+
+      setHistory(prev => [
+        ...prev,
         { id: (Date.now() + 1).toString(), user: '', content: output, type: 'success', timestamp: '' },
         { id: (Date.now() + 2).toString(), user: '', content: `meterpreter > `, type: 'meterpreter', timestamp: '' }
-      ]);
+      ].slice(-100));
       return;
     } else if (c === 'sysinfo') {
       output = `Computer        : TARGET-WIN-01\nOS              : Windows 10 (10.0 Build 19041).\nArchitecture    : x64\nSystem Language : en_US\nDomain          : WORKGROUP\nLogged On Users : 2\nMeterpreter     : x64/windows`;
@@ -151,9 +157,7 @@ export const MetasploitFramework: React.FC = () => {
         timestamp: new Date().toLocaleTimeString()
       }]);
     }, 150);
-
-    setHistory(newHistory);
-  };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,13 +208,13 @@ export const MetasploitFramework: React.FC = () => {
       </div>
 
       {/* Terminal Output Area */}
-      <div 
+      <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-6 space-y-1 custom-scrollbar"
       >
         <AnimatePresence>
           {history.map((msg) => (
-            <motion.div 
+            <motion.div
               key={msg.id}
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
@@ -270,7 +274,7 @@ export const MetasploitFramework: React.FC = () => {
       <form onSubmit={handleSubmit} className="p-4 bg-black/60 border-t border-red-900/30 flex items-center gap-3 shrink-0">
         <span className="text-red-400 font-bold underline decoration-red-500/30 tracking-wider">msf6</span>
         <span className="text-white font-bold">&gt;</span>
-        <input 
+        <input
           autoFocus
           className="bg-transparent border-none outline-none flex-1 text-white text-sm font-mono placeholder:text-slate-800"
           value={input}
