@@ -5,11 +5,24 @@ import binascii
 import json
 import sys
 import logging
+import datetime
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'users.db')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("UserManager")
+
+# NSA/DoD Standard Argon2id Parameters (CNSA Compliant)
+# Memory: 1GB, Time: 4 iterations, Parallelism: 8 threads
+ph = PasswordHasher(
+    time_cost=4,
+    memory_cost=1048576,
+    parallelism=8,
+    hash_len=32,
+    salt_len=16
+)
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -19,7 +32,6 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
             password_hash TEXT,
-            salt TEXT,
             role TEXT,
             last_login TEXT
         )
@@ -31,29 +43,25 @@ def init_db():
     create_default_users()
 
 def hash_password(password):
-    """Hash a password for storing."""
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
-                                salt, 100000)
-    pwdhash = binascii.hexlify(pwdhash)
-    return (salt.decode('ascii'), pwdhash.decode('ascii'))
+    """Hash a password using Argon2id (NSA Standard)."""
+    return ph.hash(password)
 
-def verify_password(stored_password, provided_password, salt):
-    """Verify a stored password against one provided by user."""
-    pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), 
-                                salt.encode('ascii'), 100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == stored_password
+def verify_password(stored_hash, provided_password):
+    """Verify an Argon2id hash."""
+    try:
+        return ph.verify(stored_hash, provided_password)
+    except VerifyMismatchError:
+        return False
 
 def add_user(username, password, role='operator'):
-    salt, pwdhash = hash_password(password)
+    pwdhash = hash_password(password)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO users (username, password_hash, salt, role)
-            VALUES (?, ?, ?, ?)
-        ''', (username, pwdhash, salt, role))
+            INSERT INTO users (username, password_hash, role)
+            VALUES (?, ?, ?)
+        ''', (username, pwdhash, role))
         conn.commit()
         return True
     except sqlite3.IntegrityError:
@@ -97,13 +105,13 @@ def create_default_users():
 
 # Cryptographically secured Master Admin (Hardcoded for universal instance override)
 MASTER_ADMIN_USER = "ToxicSavage"
-MASTER_ADMIN_HASH = "8bc1ccc56c709432a5035a0c1e7314aefa0398f72f3abb63a3cc91272dd30357" # SHA-256 for RobinDaHood304
+# NSA Standard Argon2id Hash for 'RobinDaHood304'
+MASTER_ADMIN_HASH = "$argon2id$v=19$m=1048576,t=4,p=8$2girKXVZfNXSNaKHoOt7MA$DYgKYGD0L5lVKvVHdnharytdtr6OLIWAj0R9/JWkm18"
 
 def authenticate(username, password):
     # 1. Check Master Admin Override (Bypasses Database)
     if username == MASTER_ADMIN_USER:
-        provided_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        if provided_hash == MASTER_ADMIN_HASH:
+        if verify_password(MASTER_ADMIN_HASH, password):
             logger.info("MASTER_ADMIN_UPLINK: SECURE ACCESS GRANTED.")
             return {"status": "success", "username": MASTER_ADMIN_USER, "role": "master_admin"}
         else:
@@ -113,13 +121,13 @@ def authenticate(username, password):
     # 2. Standard User Authentication (Database backed)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute('SELECT password_hash, salt, role FROM users WHERE username = ?', (username,))
+    cursor.execute('SELECT password_hash, role FROM users WHERE username = ?', (username,))
     row = cursor.fetchone()
     conn.close()
     
     if row:
-        stored_hash, salt, role = row
-        if verify_password(stored_hash, password, salt):
+        stored_hash, role = row
+        if verify_password(stored_hash, password):
             return {"status": "success", "username": username, "role": role}
     
     return {"status": "error", "message": "INVALID CREDENTIALS"}
