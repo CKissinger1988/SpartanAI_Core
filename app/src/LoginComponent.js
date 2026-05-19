@@ -89,8 +89,9 @@ const LoginComponent = ({ onLogin }) => {
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                        <label style={{ fontSize: '12px' }}>[ OPERATOR_ID ]</label>
+                        <label htmlFor="operator-id" style={{ fontSize: '12px' }}>[ OPERATOR_ID ]</label>
                         <input 
+                            id="operator-id"
                             style={inputStyle}
                             type="text" 
                             value={username} 
@@ -102,8 +103,9 @@ const LoginComponent = ({ onLogin }) => {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                        <label style={{ fontSize: '12px' }}>[ ACCESS_KEY ]</label>
+                        <label htmlFor="access-key" style={{ fontSize: '12px' }}>[ ACCESS_KEY ]</label>
                         <input 
+                            id="access-key"
                             style={inputStyle}
                             type="password" 
                             value={password} 

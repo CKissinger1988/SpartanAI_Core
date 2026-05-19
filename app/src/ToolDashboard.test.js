@@ -56,7 +56,7 @@ describe('ToolDashboard', () => {
             expect(mockInvoke).toHaveBeenCalledWith('exploit.manage', { action: 'find', payload: 'CVE-2021-44228' });
             expect(mockSend).toHaveBeenCalledWith('terminal.keystroke', '# AUTO-EXPLOIT ENGAGED: Exploit 1\r');
             expect(mockSend).toHaveBeenCalledWith('terminal.keystroke', '# SOURCE: http://test\r');
-            expect(mockSend).toHaveBeenCalledWith('tool.run', 'echo "Executing CVE-1234 payload..."');
+            expect(mockSend).toHaveBeenCalledWith('tool.run', 'exploit-launch --cve CVE-1234 --payload-data "cGF5bG9hZCBkYXRh"');
         });
     });
 });
