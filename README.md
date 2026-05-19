@@ -76,6 +76,16 @@ Ensure system integrity with the automated test suite:
 npm test
 ```
 
+### Default Credentials
+Access to the **NEXUS // AI** terminal requires authentication. The following default accounts are initialized during bootstrap:
+
+| Role | Username | Password |
+| :--- | :--- | :--- |
+| **Administrator** | `ADMIN_CORE` | `NEXUS_ADMIN_2026` |
+| **Operator** | `OPERATOR_01` | `SENTINEL_PASS` |
+
+*Note: It is highly recommended to change these credentials immediately after the first successful uplink.*
+
 ## 🔐 Security Standards
 - All IPC communication is strictly typed and validated in `app/preload.js`.
 - Sensitive operations (like shell execution) are handled in the main process with limited privileges.

@@ -13,7 +13,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger("Bootstrap")
 
 def init_db():
-    logger.info("Initializing Exploit Database...")
+    logger.info("Initializing Databases...")
+    
+    # Exploit DB
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''
@@ -27,19 +29,24 @@ def init_db():
             date_added TEXT
         )
     ''')
-    
-    # Check if empty
     cursor.execute('SELECT COUNT(*) FROM exploits')
     count = cursor.fetchone()[0]
     conn.close()
     
     if count == 0:
-        logger.info("Database empty. Importing initial 2025/2026 signatures...")
+        logger.info("Exploit database empty. Importing signatures...")
         try:
             from exploit_manager import auto_update_msf
             auto_update_msf()
-        except ImportError:
-            logger.error("Could not import exploit_manager to populate database.")
+        except: pass
+
+    # User DB
+    try:
+        from user_manager import init_db as init_users
+        init_users()
+        logger.info("User database initialized.")
+    except Exception as e:
+        logger.error(f"Failed to initialize user database: {e}")
 
 def setup_jarvis():
     logger.info("Configuring Jarvis AI environment...")

@@ -4,22 +4,29 @@ import ChatComponent from './ChatComponent';
 import ToolDashboard from './ToolDashboard';
 import ExploitDB from './ExploitDB';
 import MatrixBackground from './MatrixBackground';
+import LoginComponent from './LoginComponent';
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI) 
     ? window.electronAPI.ipcRenderer 
     : { invoke: () => Promise.resolve({ cpu: 0, mem: 0 }), on: () => {}, send: () => {} };
 
 const SentinelHub = () => {
+    const [user, setUser] = useState(null);
     const [activeTab, setActiveTab] = useState('Terminal');
     const [stats, setStats] = useState({ cpu: 0, mem: 0 });
 
     useEffect(() => {
+        if (!user) return;
         const interval = setInterval(async () => {
             const newStats = await ipcRenderer.invoke('system.getStats');
             setStats(newStats);
         }, 2000);
         return () => clearInterval(interval);
-    }, []);
+    }, [user]);
+
+    if (!user) {
+        return <LoginComponent onLogin={(userData) => setUser(userData)} />;
+    }
 
     const navStyle = {
         width: '240px',
@@ -62,7 +69,10 @@ const SentinelHub = () => {
         <div style={{ display: 'flex', height: '100vh', background: '#000', color: '#fff', fontFamily: 'monospace', overflow: 'hidden' }}>
             <MatrixBackground />
             <nav style={navStyle}>
-                <h1 style={{ fontSize: '24px', margin: '0 0 20px 0', color: '#00ff00', textShadow: '0 0 10px #00ff00' }}>NEXUS // AI</h1>
+                <h1 style={{ fontSize: '24px', margin: '0 0 5px 0', color: '#00ff00', textShadow: '0 0 10px #00ff00' }}>NEXUS // AI</h1>
+                <div style={{ fontSize: '10px', color: '#005500', marginBottom: '20px', borderBottom: '1px solid #005500', paddingBottom: '10px' }}>
+                    USER: {user.username} [{user.role.toUpperCase()}]
+                </div>
                 
                 <div style={statStyle}>
                     <div>SYS LOAD: {stats.cpu.toFixed(1)}%</div>
@@ -80,12 +90,19 @@ const SentinelHub = () => {
                 <button style={buttonStyle('Tools')} onClick={() => setActiveTab('Tools')}>[%] TOOL_VAULT</button>
                 <button style={buttonStyle('Exploits')} onClick={() => setActiveTab('Exploits')}>[!] EXPLOIT_DB</button>
                 
+                <button 
+                    style={{...buttonStyle(''), marginTop: '20px', color: '#ff0000', borderColor: '#550000'}} 
+                    onClick={() => setUser(null)}
+                >
+                    [X] LOGOUT_SESSION
+                </button>
+
                 <div style={{ marginTop: 'auto', fontSize: '10px', color: '#005500' }}>
                     NEURAL SYNAPSE: ACTIVE<br/>
                     DEEP LEARNING: SYNCED<br/>
                     STATUS: SECURE<br/>
                     UPLINK: ACTIVE<br/>
-                    VER: 2.0.0-YOLO
+                    VER: 2.1.0-AUTH
                 </div>
             </nav>
             <main style={{ flex: 1, padding: '20px', overflow: 'hidden', position: 'relative', background: 'rgba(0,0,0,0.7)' }}>

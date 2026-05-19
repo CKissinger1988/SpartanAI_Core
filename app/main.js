@@ -115,6 +115,28 @@ function createWindow() {
     });
   });
 
+  // Authentication Handler
+  ipcMain.handle('auth.login', async (event, { username, password }) => {
+    return new Promise((resolve) => {
+      let options = {
+        mode: 'text',
+        pythonPath: 'python',
+        scriptPath: path.join(__dirname, '..', 'backend'),
+        args: ['auth', username, password]
+      };
+
+      PythonShell.run('user_manager.py', options).then(results => {
+        try {
+          resolve(JSON.parse(results[results.length - 1]));
+        } catch (e) {
+          resolve({ status: 'error', message: 'Auth engine failure' });
+        }
+      }).catch(err => {
+        resolve({ status: 'error', message: err.message });
+      });
+    });
+  });
+
   // Exploit DB Handler
   ipcMain.handle('exploit.manage', async (event, { action, payload }) => {
     return new Promise((resolve) => {
