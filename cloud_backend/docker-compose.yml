@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # The Supreme Core
+  # 1. The Supreme Core
   jarvis-core:
     build: 
       context: .
@@ -18,7 +18,22 @@ services:
     networks:
       - nexus-internal
 
-  # Isolated Light Brain Vault
+  # 2. Local Command & Control Dashboard
+  jarvis-dashboard:
+    build:
+      context: ..
+      dockerfile: Dockerfile.web_portal
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - CORE_GRPC_URL=jarvis-core:50051
+    depends_on:
+      - jarvis-core
+    networks:
+      - nexus-internal
+
+  # 3. Isolated Light Brain Vault
   brain-vault-light:
     image: python:3.9-slim
     command: python vault_service.py
@@ -31,7 +46,7 @@ services:
     networks:
       - nexus-internal
 
-  # Isolated Shadow Brain Vault
+  # 4. Isolated Shadow Brain Vault
   brain-vault-shadow:
     image: python:3.9-slim
     command: python vault_service.py
