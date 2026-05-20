@@ -2,9 +2,17 @@ import subprocess
 import os
 
 class RemoteADBManager:
-    """Enhancement: Advanced management of remote device connections via ADB."""
-    def __init__(self, adb_path=r"C:\Program Files\platform-tools\adb.exe"):
+    """Enhancement: Advanced management of remote device connections via ADB with cross-network tunnel support."""
+    def __init__(self, adb_path=r"C:\Program Files\platform-tools\adb.exe", tunnel_bin=r"C:\Users\ckiss\.remoteadb\bin\cloudflared.exe"):
         self.adb_path = adb_path
+        self.tunnel_bin = tunnel_bin
+
+    def establish_tunnel(self, target_host):
+        """Uses Cloudflare Tunnel for secure, NAT-traversing mobile connectivity."""
+        print(f"Jeeves: Establishing encrypted tunnel to {target_host}...")
+        # Start tunnel process in background
+        proc = subprocess.Popen([self.tunnel_bin, "access", "tcp", "--hostname", target_host, "--url", "localhost:5037"])
+        return proc
 
     def run_command(self, serial, command):
         """Executes a command on a specific remote device."""
@@ -22,14 +30,6 @@ class RemoteADBManager:
             return result.decode().strip()
         except subprocess.CalledProcessError:
             return "Failed to list devices"
-
-    def deploy_agent(self, serial, agent_path):
-        """Deploys a local agent file to a remote device."""
-        try:
-            subprocess.check_call([self.adb_path, "-s", serial, "push", agent_path, "/data/local/tmp/"])
-            return "Agent deployment successful."
-        except subprocess.CalledProcessError:
-            return "Agent deployment failed."
 
 # Test instantiation
 if __name__ == "__main__":
