@@ -49,10 +49,21 @@ npm run build
 npm start
 ```
 
-## 📱 Future Roadmap: Mobile Integration
-Development has commenced on porting the NexusAI ecosystem to Android:
-- **Termux Integration:** Headless tactical backend for mobile hardware.
-- **Flutter Native Hub:** High-performance mobile UI for remote C2 management and local sensor analysis.
+## 📱 Mobile Integration (Android APK)
+
+The NexusAI ecosystem now includes a standalone Android application for field operations:
+- **NexusAI Mobile Hub:** A native-feel APK built using **Flet (Flutter + Python)**.
+- **Standalone Execution:** Wraps the core tactical backend, exploit database, and Jarvis voice authority into a single mobile interface.
+- **Automated Build:** The APK is automatically built via GitHub Actions on every push to the `main` branch.
+
+### How to build/get the APK:
+1. **GitHub Artifacts:** Download the latest build from the "Actions" tab in the GitHub repository.
+2. **Local Build:**
+   ```bash
+   cd mobile
+   pip install flet
+   flet build apk
+   ```
 
 ## 🔐 Restricted Access Control
 Access requires valid credentials generated during the first bootstrap sequence. Operator keys are saved to `INITIAL_CREDENTIALS.txt` upon the first successful uplink and must be rotated immediately.

@@ -1,0 +1,7 @@
+flet==0.85.1
+httpx
+cryptography
+paho-mqtt
+pycryptodome
+argon2-cffi
+sqlite3
