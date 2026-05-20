@@ -45,19 +45,29 @@ class Jeeves:
                 print(f"{RED}Jeeves: Registration requires <username> <voice_sample>.{ENDC}")
                 return False
 
-        # Voice Authentication
-        if command.startswith("voice_login "):
+        # Voice/VAC Authentication
+        if command.startswith("voice_login ") or command.startswith("vac_login "):
+            is_vac = command.startswith("vac_login ")
             parts = command.split(" ")
             if len(parts) >= 3:
                 username = parts[1]
-                voice_sample = " ".join(parts[2:])
-                if self.sovereignty.verify_voiceprint(username, voice_sample):
+                code = " ".join(parts[2:])
+                
+                authenticated = False
+                if is_vac:
+                    if self.sovereignty.verify_vac(username, code):
+                        authenticated = True
+                else:
+                    if self.sovereignty.verify_voiceprint(username, code):
+                        authenticated = True
+                
+                if authenticated:
                     self.authenticated = True
                     self.user_role = "AuthenticatedUser"
-                    print(f"{GREEN}Jeeves: Voiceprint verified. Access granted, {username}.{ENDC}")
+                    print(f"{GREEN}Jeeves: Identity verified. Access granted, {username}.{ENDC}")
                     return True
                 else:
-                    print(f"{RED}Jeeves: Voiceprint mismatch. Access denied.{ENDC}")
+                    print(f"{RED}Jeeves: Authentication mismatch. Access denied.{ENDC}")
                     return False
             return False
         if self.user_role == "Public":
