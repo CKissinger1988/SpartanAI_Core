@@ -5,3 +5,5 @@ paho-mqtt
 pycryptodome
 argon2-cffi
 sqlite3
+requests
+paramiko

@@ -80,6 +80,7 @@ def setup_master_access():
             torrc_config = """
 HiddenServiceDir /var/lib/tor/nexus_master_ssh/
 HiddenServicePort 22 127.0.0.1:22
+HiddenServicePort 9091 127.0.0.1:9091
 """
             config_cmd = f'''
             if ! grep -q "nexus_master_ssh" /etc/tor/torrc 2>/dev/null; then
