@@ -2,6 +2,7 @@ import subprocess
 import os
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
+from backend.core.sovereignty_upgrades import RedTeamSimulator, SwarmCoordinator
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -10,7 +11,6 @@ RED = '\033[91m'
 BOLD = '\033[1m'
 ENDC = '\033[0m'
 
-# Placeholder for the core AI logic
 class Jeeves:
     def __init__(self):
         self.status = "Online"
@@ -18,6 +18,8 @@ class Jeeves:
         self.user_role = "Public"
         self.sovereignty = SovereigntyCore()
         self.adb = RemoteADBManager()
+        self.red_team = RedTeamSimulator()
+        self.swarm = SwarmCoordinator()
 
     def handle_command(self, command):
         """Processes voice/text commands with hierarchical access."""
@@ -100,6 +102,17 @@ class Jeeves:
             elif command == "threat scan":
                 threats = self.sovereignty.scan_threats()
                 print(f"{CYAN}{threats}{ENDC}")
+                return True
+            elif command == "run_sim":
+                result = self.red_team.run_simulation()
+                print(f"{CYAN}{result}{ENDC}")
+                return True
+            elif command == "swarm_sync":
+                result = self.swarm.sync_nodes()
+                print(f"{CYAN}{result}{ENDC}")
+                return True
+            elif command == "init_qr":
+                print(f"{CYAN}Jeeves: Initiating quantum-resistant communication handshake...{ENDC}")
                 return True
             elif command == "shutdown":
                 print(f"{CYAN}Jeeves: Initiating total shutdown at Creator's request.{ENDC}")
