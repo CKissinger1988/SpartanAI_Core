@@ -1,7 +1,7 @@
 # Placeholder for the core AI logic
 class Jeeves:
     def __init__(self):
-        self.status = "Awaiting Orders"
+        self.status = "Online"
 
     def greet(self):
         print("Jeeves Orchestrator Online. Awaiting command.")
