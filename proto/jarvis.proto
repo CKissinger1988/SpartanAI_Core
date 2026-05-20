@@ -8,6 +8,9 @@ service JarvisService {
     
     // Elevate session to Master Admin
     rpc ElevatePrivileges(ElevationRequest) returns (ElevationResponse);
+
+    // Adaptive Self-Evolution: Update Jarvis logic on the fly
+    rpc SelfEvolve(EvolutionCode) returns (EvolutionStatus);
 }
 
 message OperatorRequest {
@@ -25,11 +28,22 @@ message JarvisResponse {
 
 message ElevationRequest {
     string client_id = 1;
-    string master_key = 2; // Secret key for admin access
+    string master_key = 2;
 }
 
 message ElevationResponse {
     bool success = 1;
     string message = 2;
-    string admin_token = 3; // Session token for admin actions
+    string admin_token = 3;
+}
+
+message EvolutionCode {
+    string admin_token = 1; // Requires Master Admin authority
+    string logic_snippet = 2; // The new Python code to integrate
+    string target_module = 3; // e.g., "defense", "intelligence"
+}
+
+message EvolutionStatus {
+    bool success = 1;
+    string logs = 2;
 }
