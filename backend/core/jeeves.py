@@ -1,6 +1,12 @@
 import subprocess
 import os
 
+# ANSI Colors for Dark Pentester Theme
+CYAN = '\033[96m'
+GREEN = '\033[92m'
+BOLD = '\033[1m'
+ENDC = '\033[0m'
+
 # Placeholder for the core AI logic
 class Jeeves:
     def __init__(self):
@@ -16,10 +22,10 @@ class Jeeves:
 
     def announce_status(self):
         """Runs the status check script and announces results."""
-        print("Jeeves: Initiating full system diagnostic...")
+        print(f"\n{CYAN}{BOLD}Jeeves: Initiating full system diagnostic...{ENDC}")
         script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'status_check.py')
         subprocess.run(['python', script_path])
-        print("Jeeves: Diagnostics complete. Systems nominal.")
+        print(f"\n{GREEN}{BOLD}Jeeves: Diagnostics complete. Systems nominal.{ENDC}")
 
     def greet(self):
         print("Jeeves Orchestrator Online. Awaiting command.")
