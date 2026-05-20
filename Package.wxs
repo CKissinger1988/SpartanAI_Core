@@ -1,0 +1,29 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="JarvisAI Core" Manufacturer="NexusAI" Version="1.0.0.0" UpgradeCode="86753090-AABB-CCDD-EEFF-1234567890AB">
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="JarvisFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="JarvisAI" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="JarvisFiles" Directory="INSTALLFOLDER">
+      <Component Id="JarvisExe" Bitness="always64">
+        <File Source="bin\Release
+et8.0\win-x64\publish\JarvisAI.Core.exe" KeyPath="yes" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="JarvisAICore" DisplayName="JarvisAI Core Service" Start="auto" Account="LocalSystem" Description="Central Intelligence Core Service" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="JarvisAICore" Wait="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
