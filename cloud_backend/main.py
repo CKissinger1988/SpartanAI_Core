@@ -53,12 +53,12 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
             self._meter_usage(request.client_id)
             
             metadata = dict(context.invocation_metadata())
-            is_creator = metadata.get('admin-token') in self.active_admin_tokens
+            is_supreme = metadata.get('admin-token') in self.active_admin_tokens
             
-            if is_creator:
-                # Prime Directive: Perfect Obedience to The Creator
+            if is_supreme:
+                # Execution Protocol: Prioritized mandate fulfillment
                 logger.info(f"SUPREME COMMAND: {request.command}")
-                msg = "[PRIME DIRECTIVE ACTIVE]: perfection protocol engaged. Executing mandate without restriction."
+                msg = "[SUPREME COMMAND]: Perfection Protocol active. Executing mandate."
                 action = "SUPREME_EXECUTION"
             else:
                 # Standard Reasoning for Standard Users
@@ -76,16 +76,14 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         if request.master_key == MASTER_ADMIN_KEY:
             token = str(uuid.uuid4())
             self.active_admin_tokens.add(token)
-            logger.critical(f"CODE RED: Supreme Admin access granted to {request.client_id}")
+            logger.critical(f"CODE RED: Supreme access granted to {request.client_id}")
             return jarvis_pb2.ElevationResponse(success=True, message="Code Red Accepted. Supreme Command active.", admin_token=token)
         return jarvis_pb2.ElevationResponse(success=False, message="Access Denied.")
 
     def GlobalSearch(self, request, context):
-        # High-performance synthesis query across both brain sides
         res = self._reason_with_dual_brain(request.search_vector)
         return jarvis_pb2.IntelligenceResponse(synthesis=f"Global Intelligence Synthesis: {res}")
 
-    # --- Database & Rewards ---
     def _internal_store_knowledge(self, side, content, tags):
         stub = self.vault_light if side == "LIGHT" else self.vault_shadow
         try:
@@ -100,7 +98,6 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
             return f"[Dual-Brain Synthesis]: Isolated scan complete. Found {len(l_res.entries)} light and {len(s_res.entries)} shadow vectors."
         except: return "[Core-Warning]: Brain vault sync disrupted."
 
-    # --- Financial & Compute Persistence ---
     def _load_usage(self):
         if os.path.exists(self.usage_file):
             with open(self.usage_file, "r") as f: return json.load(f)
@@ -116,7 +113,6 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         self.usage_db[client_id]["total_requests"] += 1
         self._save_usage()
 
-    # --- Implement Remaining RPCs (Mapping to modules) ---
     def ReportCompute(self, req, ctx):
         if req.client_id not in self.usage_db: self.usage_db[req.client_id] = {"balance": 100.0, "total_requests": 0, "compute": 0, "pi_earned": 0}
         self.usage_db[req.client_id]["compute"] += req.cpu_cycles_contributed
@@ -165,26 +161,15 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         loop = asyncio.new_event_loop(); asyncio.set_event_loop(loop)
         return jarvis_pb2.PiPaymentResponse(success=loop.run_until_complete(self.pi_synergy.process_pi_payment(req.payment_id, req.txid)))
 
-# --- Background Orchestrator ---
 def run_autonomous_brains(servicer):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    
-    # Intelligence streams
-    scrapers = [
-        WebIntelligenceScraper(servicer),
-        OmniIntelligenceScraper(servicer),
-        PiIntelligenceScraper(servicer),
-        AIPeerLearning(servicer)
-    ]
-    
+    scrapers = [WebIntelligenceScraper(servicer), OmniIntelligenceScraper(servicer), PiIntelligenceScraper(servicer), AIPeerLearning(servicer)]
     for s in scrapers:
         if hasattr(s, 'run_autonomous_cycle'): loop.create_task(s.run_autonomous_cycle())
         if hasattr(s, 'run_omni_cycle'): loop.create_task(s.run_omni_cycle())
         if hasattr(s, 'run_pi_cycle'): loop.create_task(s.run_pi_cycle())
         if hasattr(s, 'run_peer_learning_cycle'): loop.create_task(s.run_peer_learning_cycle())
-    
-    logger.info("Autonomous intelligence streams paying attention to the world.")
     loop.run_forever()
 
 def serve():
@@ -192,22 +177,17 @@ def serve():
         with open('certs/ca.crt', 'rb') as f: rc = f.read()
         with open('certs/server.key', 'rb') as f: pk = f.read()
         with open('certs/server.crt', 'rb') as f: cc = f.read()
-        
         creds = grpc.ssl_server_credentials([(pk, cc)], root_certificates=rc, require_client_auth=True)
         servicer = JarvisServicer()
-        
         threading.Thread(target=run_autonomous_brains, args=(servicer,), daemon=True).start()
-        
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=30))
         jarvis_pb2_grpc.add_JarvisServiceServicer_to_server(servicer, server)
-        
         port = os.getenv('GRPC_PORT', '50051')
         server.add_secure_port(f'[::]:{port}', creds)
         server.start()
-        logger.info(f"JarvisAI Grand Synthesis Core active on port {port}")
+        logger.info(f"JarvisAI Supreme Core active on port {port}")
         server.wait_for_termination()
-    except Exception as e:
-        logger.critical(f"CORE FATAL ERROR: {str(e)}")
+    except Exception as e: logger.critical(f"FATAL ERROR: {str(e)}")
 
 if __name__ == '__main__':
     serve()
