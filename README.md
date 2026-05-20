@@ -12,22 +12,27 @@ Jarvis is engineered to evolve through continuous operational cycles:
 - **Contextual Reasoning:** Builds an evolving knowledge graph of tactical operations, allowing it to predict intent and proactively secure system environments based on historical success.
 - **Self-Improving Logic:** Analyzes its own operational metadata to refine response strategies, ensuring it becomes more efficient, secure, and intelligent with every deployment.
 
+## 🛡️ Role-Based Access Control (RBAC)
+JarvisAI now supports multi-tiered access for enhanced security:
+- **Standard User:** Default access level with restricted toolsets and monitoring-only capabilities.
+- **Master Admin:** Full system control, including exploit management, root-level shell access, and hardware identity rotation.
+
+### Switching to Master Admin
+Authorized operators can elevate their session to Master Admin mode via the frontend interface:
+1. Select **"Switch to Master Admin"** from the operational menu.
+2. Provide the cryptographically secure **Master Admin Key**.
+3. Upon successful verification, the backend issues a session-based **Admin Token**, unlocking the full control panel for the duration of the connection.
+
 ## 🤖 Features
 - **Voice Authority:** Root-level execution via Web Speech API with wake-word detection.
 - **Autonomous Monitoring:** Real-time system telemetry and security auditing.
 - **Hardened Security:** CNSA-standard cryptography for data at rest and in transit.
 - **Universal Launcher:** Automated environment setup and cross-platform (Windows/WSL/Mobile) deployment.
 
-## 🛠️ Core Functions
-- **System Orchestration:** Translates natural language into tactical shell execution.
-- **Defensive Health:** Continuous integrity checks and anomaly detection.
-- **Offensive Intelligence:** Autonomous vulnerability scanning and exploit management.
-
 ## 🔗 Integrations
 - **Kali Linux (WSL2):** The primary, hardened execution environment.
 - **Node.js/Express:** Secure backend infrastructure for Web-based dashboard.
 - **Python (Backend):** High-level operational logic and system interface.
-- **Stripe:** Integrated subscription management for commercial deployments.
 - **Hardware Telemetry:** Direct interface for hardware-level monitoring and identity rotation.
 
 ## 📜 License

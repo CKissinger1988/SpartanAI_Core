@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package jarvis;
+
+service JarvisService {
+    // Bi-directional streaming for voice/commands
+    rpc StreamOperator(stream OperatorRequest) returns (stream JarvisResponse);
+    
+    // Elevate session to Master Admin
+    rpc ElevatePrivileges(ElevationRequest) returns (ElevationResponse);
+}
+
+message OperatorRequest {
+    string client_id = 1;
+    bytes audio_chunk = 2;
+    string command = 3;
+}
+
+message JarvisResponse {
+    string message = 1;
+    bytes audio_response = 2;
+    string action_type = 3;
+    string payload = 4;
+}
+
+message ElevationRequest {
+    string client_id = 1;
+    string master_key = 2; // Secret key for admin access
+}
+
+message ElevationResponse {
+    bool success = 1;
+    string message = 2;
+    string admin_token = 3; // Session token for admin actions
+}
