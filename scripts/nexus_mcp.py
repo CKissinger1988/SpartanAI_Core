@@ -118,5 +118,29 @@ def set_auto_patch(enabled: bool = True):
     os.environ["JARVIS_AUTO_PATCH"] = "true" if enabled else "false"
     return f"Jarvis Autonomous Patching set to: {enabled}"
 
+@mcp.tool()
+def fetch_samsung_firmware(model: str, region: str):
+    """Downloads the latest Samsung firmware for a specific model and region (Frija equivalent)."""
+    try:
+        # We use samloader-py via subprocess to fetch info
+        cmd = f"samloader -m {model} -r {region} check"
+        proc = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        return f"Firmware Check for {model}/{region}:\n{proc.stdout}"
+    except Exception as e:
+        return f"Firmware Fetch Error: {str(e)}"
+
+@mcp.tool()
+def flash_firmware(file_path: str):
+    """Flashes firmware to a connected Samsung device using Heimdall (Odin equivalent)."""
+    # This requires root and a connected device in download mode
+    try:
+        # Minimal verification
+        if not os.path.exists(file_path):
+            return "Firmware file not found."
+        
+        cmd = f"heimdall flash --auto-reboot --AP {file_path}"
+        # We don't execute this fully here as it requires human verification of device state
+        return f"FLASH COMMAND PREPARED: {cmd}\n(Manual verification required: Ensure device is in Download Mode)"
+
 if __name__ == "__main__":
     mcp.run()

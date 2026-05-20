@@ -98,6 +98,7 @@ systemctl enable jarvis-kali-monitor.service
 chown -R root:root /opt/nexus-ai
 chmod -R 700 /opt/nexus-ai
 
-# 9. Final cleanup
+# 9. Final cleanup and tool validation
 apt-get update && apt-get install -y --fix-missing
+pip3 install samloader-py --break-system-packages || pip3 install samloader-py
 echo "--- SETUP COMPLETE ---"
