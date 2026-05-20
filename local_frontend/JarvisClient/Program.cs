@@ -7,6 +7,7 @@ using Grpc.Core;
 class Program
 {
     private static string _adminToken = "";
+    private static string _clientId = "windows-pc-01";
 
     static async Task Main(string[] args)
     {
@@ -16,11 +17,12 @@ class Program
         while (true)
         {
             Console.WriteLine("\n--- JarvisAI Operational Interface ---");
-            Console.WriteLine("1. Standard Command");
+            Console.WriteLine("1. Standard Command (Metered)");
             Console.WriteLine("2. Switch to Master Admin");
             Console.WriteLine("3. Adaptive Self-Evolution (Master Admin)");
             Console.WriteLine("4. Inject Knowledge (Master Admin)");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Billing & Pi Refill");
+            Console.WriteLine("6. Exit");
             Console.Write("Selection: ");
             var choice = Console.ReadLine();
 
@@ -28,7 +30,31 @@ class Program
             else if (choice == "2") await HandleElevation(client);
             else if (choice == "3") await HandleEvolution(client);
             else if (choice == "4") await HandleKnowledgeInjection(client);
-            else if (choice == "5") break;
+            else if (choice == "5") await HandleBilling(client);
+            else if (choice == "6") break;
+        }
+    }
+
+    static async Task HandleBilling(JarvisService.JarvisServiceClient client)
+    {
+        var stats = await client.GetUsageStatsAsync(new UsageRequest { ClientId = _clientId });
+        Console.WriteLine($"\n--- Billing Status ---");
+        Console.WriteLine($"Current Balance: {stats.CurrentBalance:F2} Credits");
+        Console.WriteLine($"Requests Processed: {stats.RequestsProcessed}");
+        Console.WriteLine($"Refill Cost: {stats.PiEquivalent:F4} Pi");
+        
+        Console.Write("\nInitiate Pi Refill? (y/n): ");
+        if (Console.ReadLine()?.ToLower() == "y")
+        {
+            Console.Write("Enter Pi Payment ID: "); var payId = Console.ReadLine();
+            Console.Write("Enter Blockchain TxID: "); var txid = Console.ReadLine();
+            
+            var res = await client.RefillCreditsAsync(new RefillRequest { 
+                ClientId = _clientId, PaymentId = payId, Txid = txid 
+            });
+            
+            if (res.Success) Console.WriteLine($"[SUCCESS] Balance refilled to {res.NewBalance} credits.");
+            else Console.WriteLine("[FAILED] Payment verification failed.");
         }
     }
 
@@ -36,7 +62,7 @@ class Program
     {
         Console.Write("Enter Master Admin Key: ");
         var key = Console.ReadLine();
-        var response = await client.ElevatePrivilegesAsync(new ElevationRequest { ClientId = "windows-pc-01", MasterKey = key });
+        var response = await client.ElevatePrivilegesAsync(new ElevationRequest { ClientId = _clientId, MasterKey = key });
         if (response.Success) { _adminToken = response.AdminToken; Console.WriteLine("[SUCCESS] Master Admin mode activated."); }
         else Console.WriteLine($"[FAILED] {response.Message}");
     }
@@ -77,7 +103,7 @@ class Program
         {
             Console.Write("> "); var cmd = Console.ReadLine();
             if (cmd?.ToLower() == "back") break;
-            await call.RequestStream.WriteAsync(new OperatorRequest { ClientId = "windows-pc-01", Command = cmd });
+            await call.RequestStream.WriteAsync(new OperatorRequest { ClientId = _clientId, Command = cmd });
             if (await call.ResponseStream.MoveNext(default)) Console.WriteLine($"Jarvis: {call.ResponseStream.Current.Message}");
         }
     }
