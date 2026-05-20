@@ -11,6 +11,7 @@ import threading
 from intelligence_scraper import WebIntelligenceScraper
 from omni_intelligence import OmniIntelligenceScraper
 from peer_learning import AIPeerLearning
+from pi_synergy import PiNetworkIntegration, PiIntelligenceScraper
 
 # Master Admin Key
 MASTER_ADMIN_KEY = os.getenv("MASTER_ADMIN_KEY", "nexus_master_override_2026")
@@ -24,6 +25,9 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         os.makedirs(self.knowledge_dir, exist_ok=True)
         self.light_brain = self._load_knowledge("LIGHT")
         self.shadow_brain = self._load_knowledge("SHADOW")
+        
+        # Initialize Synergy Modules
+        self.pi_synergy = PiNetworkIntegration(self)
 
     def StreamOperator(self, request_iterator, context):
         for request in request_iterator:
@@ -31,9 +35,9 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
             is_admin = metadata.get('admin-token') in self.active_admin_tokens
             reasoning = self._reason_with_dual_brain(request.command)
             yield jarvis_pb2.JarvisResponse(
-                message=f"{reasoning}\n[Jarvis]: Central Intelligence active.",
+                message=f"{reasoning}\n[Jarvis]: Operational.",
                 action_type="REPLY",
-                payload="Omni-Intelligence Core Online"
+                payload="Pi-Enabled Core Online"
             )
 
     def ElevatePrivileges(self, request, context):
@@ -49,17 +53,31 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         self._internal_store_knowledge(request.side, request.content, request.tags)
         return jarvis_pb2.KnowledgeStatus(success=True, message=f"Stored in {request.side}.")
 
+    # Pi Network Synergy Methods
+    def VerifyPioneer(self, request, context):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        pioneer = loop.run_until_complete(self.pi_synergy.verify_pioneer(request.access_token))
+        if pioneer:
+            return jarvis_pb2.PiAuthResponse(success=True, username=pioneer['username'], uid=pioneer['uid'])
+        return jarvis_pb2.PiAuthResponse(success=False)
+
+    def ProcessPayment(self, request, context):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        success = loop.run_until_complete(self.pi_synergy.process_pi_payment(request.payment_id, request.txid))
+        return jarvis_pb2.PiPaymentResponse(success=success, message="Payment finalized" if success else "Failed")
+
     def _internal_store_knowledge(self, side, content, tags):
         target_brain = self.light_brain if side == "LIGHT" else self.shadow_brain
         target_brain.append({"content": content, "tags": tags, "timestamp": time.time()})
         self._save_knowledge(side, target_brain)
 
     def _reason_with_dual_brain(self, command):
-        # Deep Synthesis reasoning logic
         light_matches = [k for k in self.light_brain if any(t in command for t in k['tags'].split(','))]
         shadow_matches = [k for k in self.shadow_brain if any(t in command for t in k['tags'].split(','))]
-        output = "[Omni-Reasoning]: "
-        if light_matches: output += f"Global logic paths found ({len(light_matches)}). "
+        output = "[Symmetric-Reasoning]: "
+        if light_matches: output += f"Positive protocols found ({len(light_matches)}). "
         if shadow_matches: output += f"Adversarial vectors identified ({len(shadow_matches)}). "
         return output
 
@@ -74,17 +92,18 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         with open(path, "w") as f: json.dump(data, f, indent=4)
 
 def run_scrapers(servicer):
-    threat_scraper = WebIntelligenceScraper(servicer)
-    omni_scraper = OmniIntelligenceScraper(servicer)
-    peer_learning = AIPeerLearning(servicer)
-    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     
-    # Parallelize all intelligence streams
+    threat_scraper = WebIntelligenceScraper(servicer)
+    omni_scraper = OmniIntelligenceScraper(servicer)
+    peer_learning = AIPeerLearning(servicer)
+    pi_scraper = PiIntelligenceScraper(servicer)
+    
     loop.create_task(threat_scraper.run_autonomous_cycle())
     loop.create_task(omni_scraper.run_omni_cycle())
     loop.create_task(peer_learning.run_peer_learning_cycle())
+    loop.create_task(pi_scraper.run_pi_cycle())
     
     loop.run_forever()
 
@@ -95,8 +114,6 @@ def serve():
     server_credentials = grpc.ssl_server_credentials([(private_key, certificate_chain)], root_certificates=root_certs, require_client_auth=True)
     
     servicer = JarvisServicer()
-    
-    # Start Universal Intelligence Ingestion in background
     scraper_thread = threading.Thread(target=run_scrapers, args=(servicer,), daemon=True)
     scraper_thread.start()
     
@@ -104,7 +121,7 @@ def serve():
     jarvis_pb2_grpc.add_JarvisServiceServicer_to_server(servicer, server)
     server.add_secure_port('[::]:50051', server_credentials)
     server.start()
-    print("JarvisAI Omni-Intelligence Central Core Active...")
+    print("JarvisAI Central Intelligence Core with Pi Network Synergy Online...")
     server.wait_for_termination()
 
 if __name__ == '__main__':
