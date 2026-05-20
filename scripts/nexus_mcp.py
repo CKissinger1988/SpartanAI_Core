@@ -130,17 +130,28 @@ def fetch_samsung_firmware(model: str, region: str):
         return f"Firmware Fetch Error: {str(e)}"
 
 @mcp.tool()
-def flash_firmware(file_path: str):
-    """Flashes firmware to a connected Samsung device using Heimdall (Odin equivalent)."""
-    # This requires root and a connected device in download mode
+def flash_generic_fastboot(image_path: str, partition: str = "boot"):
+    """Flashes a generic image to an unlocked Android device via Fastboot (Google, OnePlus, Xiaomi, etc.)."""
     try:
-        # Minimal verification
-        if not os.path.exists(file_path):
-            return "Firmware file not found."
+        if not os.path.exists(image_path):
+            return "Image file not found."
         
-        cmd = f"heimdall flash --auto-reboot --AP {file_path}"
-        # We don't execute this fully here as it requires human verification of device state
-        return f"FLASH COMMAND PREPARED: {cmd}\n(Manual verification required: Ensure device is in Download Mode)"
+        cmd = f"fastboot flash {partition} {image_path}"
+        return f"FASTBOOT COMMAND PREPARED: {cmd}\n(Ensure device is in Fastboot/Bootloader Mode)"
+    except Exception as e:
+        return f"Fastboot Preparation Error: {str(e)}"
+
+@mcp.tool()
+def flash_qualcomm_edl(firehose_path: str, rawprogram_path: str, patch_path: str):
+    """Flashes Qualcomm-based devices via EDL (Emergency Download Mode) using QDL."""
+    cmd = f"qdl --firehose {firehose_path} --storage ufs --program {rawprogram_path} --patch {patch_path}"
+    return f"QUALCOMM EDL COMMAND PREPARED: {cmd}\n(Manual verification required: Ensure device is in EDL Mode/HS-USB QDLoader 9008)"
+
+@mcp.tool()
+def exploit_mtk_bootloader():
+    """Attempts to bypass/unlock MediaTek bootloaders and read device partitions via MTKClient."""
+    cmd = "python3 -m mtk rf flash.bin"
+    return f"MTK FORENSIC COMMAND PREPARED: {cmd}\n(Requires device in BROM mode: Hold Vol Up + Vol Down and connect USB)"
 
 if __name__ == "__main__":
     mcp.run()

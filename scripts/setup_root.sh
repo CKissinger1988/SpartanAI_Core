@@ -100,5 +100,5 @@ chmod -R 700 /opt/nexus-ai
 
 # 9. Final cleanup and tool validation
 apt-get update && apt-get install -y --fix-missing
-pip3 install samloader-py --break-system-packages || pip3 install samloader-py
+pip3 install samloader-py mtkclient --break-system-packages || pip3 install samloader-py mtkclient
 echo "--- SETUP COMPLETE ---"
