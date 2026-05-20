@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package jarvis.vault;
+
+service BrainVault {
+    // Encrypted retrieval
+    rpc QueryKnowledge(VaultQuery) returns (VaultResponse);
+    // Secure persistence
+    rpc CommitKnowledge(VaultEntry) returns (VaultStatus);
+}
+
+message VaultQuery {
+    string search_vector = 1;
+    string auth_token = 2; // Internal micro-service token
+}
+
+message VaultResponse {
+    repeated VaultEntry entries = 1;
+}
+
+message VaultEntry {
+    string content = 1;
+    string tags = 2;
+    double timestamp = 3;
+    string signature = 4; // Cryptographic integrity check
+}
+
+message VaultStatus {
+    bool success = 1;
+    string vault_id = 2;
+}

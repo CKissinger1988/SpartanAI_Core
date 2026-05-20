@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # The Supreme Core
+  jarvis-core:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      - MASTER_ADMIN_KEY=nexus_master_override_2026
+      - VAULT_LIGHT_URL=brain-vault-light:50060
+      - VAULT_SHADOW_URL=brain-vault-shadow:50061
+    depends_on:
+      - brain-vault-light
+      - brain-vault-shadow
+    networks:
+      - nexus-internal
+
+  # Isolated Light Brain Vault
+  brain-vault-light:
+    image: python:3.9-slim
+    command: python vault_service.py
+    environment:
+      - VAULT_TYPE=LIGHT
+      - VAULT_PORT=50060
+      - VAULT_MASTER_KEY=${VAULT_KEY_LIGHT}
+    volumes:
+      - vault-light-data:/vault/data
+    networks:
+      - nexus-internal
+
+  # Isolated Shadow Brain Vault
+  brain-vault-shadow:
+    image: python:3.9-slim
+    command: python vault_service.py
+    environment:
+      - VAULT_TYPE=SHADOW
+      - VAULT_PORT=50061
+      - VAULT_MASTER_KEY=${VAULT_KEY_SHADOW}
+    volumes:
+      - vault-shadow-data:/vault/data
+    networks:
+      - nexus-internal
+
+networks:
+  nexus-internal:
+    driver: bridge
+
+volumes:
+  vault-light-data:
+  vault-shadow-data:
