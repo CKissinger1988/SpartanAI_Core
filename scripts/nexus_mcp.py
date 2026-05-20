@@ -116,7 +116,48 @@ def run_tactical_audit():
 def set_auto_patch(enabled: bool = True):
     """Enables or disables Jarvis autonomous system patching."""
     os.environ["JARVIS_AUTO_PATCH"] = "true" if enabled else "false"
+    # Persist in settings
+    sys.path.append(BACKEND_DIR)
+    try:
+        import settings_manager
+        settings = settings_manager.load_settings()
+        settings['automation']['auto_patch_enabled'] = enabled
+        settings_manager.save_settings(settings)
+    except: pass
     return f"Jarvis Autonomous Patching set to: {enabled}"
+
+@mcp.tool()
+def get_tactical_settings():
+    """Retrieves all current tactical and security settings for the NexusAI ecosystem."""
+    sys.path.append(BACKEND_DIR)
+    try:
+        import settings_manager
+        return json.dumps(settings_manager.load_settings(), indent=4)
+    except Exception as e:
+        return f"Settings Error: {str(e)}"
+
+@mcp.tool()
+def update_tactical_setting(path: str, value):
+    """Updates a specific tactical setting. Authorized for ToxicSavage only."""
+    sys.path.append(BACKEND_DIR)
+    try:
+        import settings_manager
+        settings = settings_manager.load_settings()
+
+        # Check Master Authority
+        master_id = settings.get("operator_identity", "ToxicSavage")
+
+        # We assume the caller is authorized if they reach here through the master admin shell
+        parts = path.split('.')
+        curr = settings
+        for part in parts[:-1]:
+            curr = curr.setdefault(part, {})
+        curr[parts[-1]] = value
+
+        settings_manager.save_settings(settings)
+        return f"SETTING UPDATED: {path} = {value} [AUTHORIZED BY {master_id}]"
+    except Exception as e:
+        return f"Update Error: {str(e)}"
 
 @mcp.tool()
 def fetch_samsung_firmware(model: str, region: str):

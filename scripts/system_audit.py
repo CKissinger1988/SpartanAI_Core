@@ -76,11 +76,22 @@ def run_full_audit():
         "kernel_audit_bypass": "LOCKED" if not is_root else "UNLOCKED"
     }
 
+    # Load Tactical Settings
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+    settings = {}
+    try:
+        import settings_manager
+        settings = settings_manager.load_settings()
+    except: pass
+
     audit = {
         "timestamp": datetime.now().isoformat(),
         "hostname": socket.gethostname(),
+        "operator_identity": settings.get("operator_identity", "ToxicSavage"),
+        "master_control": "ACTIVE" if settings.get("master_control_enabled") else "RESTRICTED",
         "security": check_cnsa_compliance(),
         "anonymity": check_anonymity(),
+        "tactical_settings": settings,
         "hardware": {
             "root_integrity": "SECURE (ROOT)" if is_root else "VULNERABLE (NON-ROOT)",
             "os": sys.platform,

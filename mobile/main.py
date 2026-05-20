@@ -32,7 +32,7 @@ class NexusMobileApp:
         header = ft.Row(
             [
                 ft.Text("NEXUS // AI", size=24, color="#00FF00", weight=ft.FontWeight.BOLD),
-                ft.Text("v3.2.1-MOBILE", size=12, color="#00AA00")
+                ft.Text("OPERATOR: ToxicSavage", size=12, color="#00AA00")
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
