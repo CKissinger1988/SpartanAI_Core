@@ -13,17 +13,23 @@ class Program
         var channel = GrpcChannel.ForAddress("https://your-cloud-server:50051");
         var client = new JarvisService.JarvisServiceClient(channel);
 
-        Console.WriteLine("--- JarvisAI Operational Interface ---");
-        Console.WriteLine("1. Standard Command");
-        Console.WriteLine("2. Switch to Master Admin");
-        Console.WriteLine("3. Adaptive Self-Evolution (Master Admin Only)");
-        Console.Write("Selection: ");
-        var choice = Console.ReadLine();
+        while (true)
+        {
+            Console.WriteLine("\n--- JarvisAI Operational Interface ---");
+            Console.WriteLine("1. Standard Command");
+            Console.WriteLine("2. Switch to Master Admin");
+            Console.WriteLine("3. Adaptive Self-Evolution (Master Admin)");
+            Console.WriteLine("4. Inject Knowledge (Master Admin)");
+            Console.WriteLine("5. Exit");
+            Console.Write("Selection: ");
+            var choice = Console.ReadLine();
 
-        if (choice == "2") await HandleElevation(client);
-        if (choice == "3") await HandleEvolution(client);
-
-        await StartOperationStream(client);
+            if (choice == "1") await StartOperationStream(client);
+            else if (choice == "2") await HandleElevation(client);
+            else if (choice == "3") await HandleEvolution(client);
+            else if (choice == "4") await HandleKnowledgeInjection(client);
+            else if (choice == "5") break;
+        }
     }
 
     static async Task HandleElevation(JarvisService.JarvisServiceClient client)
@@ -37,36 +43,40 @@ class Program
 
     static async Task HandleEvolution(JarvisService.JarvisServiceClient client)
     {
-        if (string.IsNullOrEmpty(_adminToken)) { Console.WriteLine("Error: Must be Master Admin to trigger evolution."); return; }
-        
-        Console.WriteLine("Enter Target Module (e.g., defense, intel):");
-        var module = Console.ReadLine();
-        Console.WriteLine("Paste New Python Logic Snippet (End with empty line):");
+        if (string.IsNullOrEmpty(_adminToken)) { Console.WriteLine("Error: Must be Master Admin."); return; }
+        Console.Write("Target Module: "); var mod = Console.ReadLine();
+        Console.WriteLine("Code (End with empty line):");
         string code = ""; string line;
         while (!string.IsNullOrEmpty(line = Console.ReadLine())) { code += line + "\n"; }
+        var res = await client.SelfEvolveAsync(new EvolutionCode { AdminToken = _adminToken, LogicSnippet = code, TargetModule = mod });
+        Console.WriteLine(res.Success ? "[SUCCESS]" : "[FAILED]");
+    }
 
-        var response = await client.SelfEvolveAsync(new EvolutionCode { 
-            AdminToken = _adminToken, 
-            LogicSnippet = code, 
-            TargetModule = module 
+    static async Task HandleKnowledgeInjection(JarvisService.JarvisServiceClient client)
+    {
+        if (string.IsNullOrEmpty(_adminToken)) { Console.WriteLine("Error: Must be Master Admin."); return; }
+        Console.Write("Brain Side (LIGHT/SHADOW): "); var side = Console.ReadLine()?.ToUpper();
+        Console.Write("Tags (comma separated): "); var tags = Console.ReadLine();
+        Console.WriteLine("Content (End with empty line):");
+        string content = ""; string line;
+        while (!string.IsNullOrEmpty(line = Console.ReadLine())) { content += line + "\n"; }
+
+        var res = await client.StoreKnowledgeAsync(new KnowledgeEntry { 
+            AdminToken = _adminToken, Side = side, Content = content, Tags = tags 
         });
-
-        if (response.Success) Console.WriteLine($"[SUCCESS] Evolution Complete: {response.Logs}");
-        else Console.WriteLine($"[FAILED] {response.Logs}");
+        Console.WriteLine(res.Success ? $"[SUCCESS] {res.Message}" : "[FAILED]");
     }
 
     static async Task StartOperationStream(JarvisService.JarvisServiceClient client)
     {
         var headers = new Metadata();
         if (!string.IsNullOrEmpty(_adminToken)) headers.Add("admin-token", _adminToken);
-
         using var call = client.StreamOperator(headers);
-        Console.WriteLine("Operational stream open.");
+        Console.WriteLine("Stream open. Type 'back' to return.");
         while (true)
         {
-            Console.Write("> ");
-            var cmd = Console.ReadLine();
-            if (cmd?.ToLower() == "exit") break;
+            Console.Write("> "); var cmd = Console.ReadLine();
+            if (cmd?.ToLower() == "back") break;
             await call.RequestStream.WriteAsync(new OperatorRequest { ClientId = "windows-pc-01", Command = cmd });
             if (await call.ResponseStream.MoveNext(default)) Console.WriteLine($"Jarvis: {call.ResponseStream.Current.Message}");
         }
