@@ -22,6 +22,10 @@ service JarvisService {
     // Metered Billing System (Pi-Based)
     rpc GetUsageStats(UsageRequest) returns (UsageResponse);
     rpc RefillCredits(RefillRequest) returns (RefillResponse);
+
+    // Distributed Compute Rewards (Earn Pi)
+    rpc ReportCompute(ComputePayload) returns (ComputeStatus);
+    rpc GetRewardStats(RewardRequest) returns (RewardResponse);
 }
 
 message OperatorRequest {
@@ -96,9 +100,9 @@ message UsageRequest {
 }
 
 message UsageResponse {
-    double current_balance = 1; // Credits remaining
+    double current_balance = 1;
     int32 requests_processed = 2;
-    double pi_equivalent = 3;   // Cost to refill to full (100 credits) in Pi
+    double pi_equivalent = 3;
 }
 
 message RefillRequest {
@@ -110,4 +114,26 @@ message RefillRequest {
 message RefillResponse {
     bool success = 1;
     double new_balance = 2;
+}
+
+message ComputePayload {
+    string client_id = 1;
+    double cpu_cycles_contributed = 2;
+    double memory_mb_second = 3;
+    string task_id = 4; // Verification token
+}
+
+message ComputeStatus {
+    bool success = 1;
+    double credits_earned = 2;
+}
+
+message RewardRequest {
+    string client_id = 1;
+}
+
+message RewardResponse {
+    double total_compute_contributed = 1;
+    double lifetime_pi_earned = 2;
+    double pending_pi_payout = 3;
 }
