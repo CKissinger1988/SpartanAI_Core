@@ -34,13 +34,32 @@ class Jeeves:
 
         # Public Profile Registration (KYC)
         if command.startswith("register "):
-            username = command.split(" ")[1]
-            # Simulate scraping
-            raw_data = "Public user profile metadata."
-            self.sovereignty.create_profile(username, raw_data)
-            return True
-            
-        # Public vs. Creator logic
+            parts = command.split(" ")
+            if len(parts) >= 3:
+                username = parts[1]
+                voice_sample = " ".join(parts[2:])
+                raw_data = "Public user profile metadata."
+                self.sovereignty.create_profile(username, raw_data, voice_sample)
+                return True
+            else:
+                print(f"{RED}Jeeves: Registration requires <username> <voice_sample>.{ENDC}")
+                return False
+
+        # Voice Authentication
+        if command.startswith("voice_login "):
+            parts = command.split(" ")
+            if len(parts) >= 3:
+                username = parts[1]
+                voice_sample = " ".join(parts[2:])
+                if self.sovereignty.verify_voiceprint(username, voice_sample):
+                    self.authenticated = True
+                    self.user_role = "AuthenticatedUser"
+                    print(f"{GREEN}Jeeves: Voiceprint verified. Access granted, {username}.{ENDC}")
+                    return True
+                else:
+                    print(f"{RED}Jeeves: Voiceprint mismatch. Access denied.{ENDC}")
+                    return False
+            return False
         if self.user_role == "Public":
             if command in ["systems check", "systems status"]:
                 self.announce_status()
