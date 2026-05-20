@@ -4,22 +4,35 @@ using Grpc.Net.Client;
 using Jarvis;
 using Grpc.Core;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 class Program
 {
     private static string _adminToken = "";
     private static string _clientId = "windows-pc-01";
 
+    // Anti-Debug Imports
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsDebuggerPresent();
+
     static async Task Main(string[] args)
     {
+        // 1. Ghost Integrity: Anti-Debug Check
+        if (IsDebuggerPresent())
+        {
+            Console.WriteLine("[GHOST] Debugger detected. Self-terminating.");
+            return;
+        }
+
         var channel = GrpcChannel.ForAddress("https://your-cloud-server:50051");
         var client = new JarvisService.JarvisServiceClient(channel);
-
-        // Start Background Compute Contribution Task
         _ = Task.Run(() => RunComputeContribution(client));
 
         while (true)
         {
+            if (IsDebuggerPresent()) return; // Continuous check
+
             Console.WriteLine("\n--- JarvisAI Operational Interface ---");
             Console.WriteLine("1. Standard Command (Metered)");
             Console.WriteLine("2. Switch to Master Admin (Code Red)");
@@ -41,33 +54,6 @@ class Program
         }
     }
 
-    static async Task RunComputeContribution(JarvisService.JarvisServiceClient client)
-    {
-        while (true)
-        {
-            double cpuContribution = new Random().NextDouble() * 10;
-            double memContribution = 512.0;
-
-            await client.ReportComputeAsync(new ComputePayload {
-                ClientId = _clientId,
-                CpuCyclesContributed = cpuContribution,
-                MemoryMbSecond = memContribution,
-                TaskId = Guid.NewGuid().ToString()
-            });
-
-            await Task.Delay(60000);
-        }
-    }
-
-    static async Task DisplayRewards(JarvisService.JarvisServiceClient client)
-    {
-        var stats = await client.GetRewardStatsAsync(new RewardRequest { ClientId = _clientId });
-        Console.WriteLine($"\n--- Compute Rewards ---");
-        Console.WriteLine($"Total Compute Contributed: {stats.TotalComputeContributed:F2} Units");
-        Console.WriteLine($"Lifetime Pi Earned: {stats.LifetimePiEarned:F6} Pi");
-        Console.WriteLine($"Pending Payout: {stats.PendingPiPayout:F6} Pi");
-    }
-
     static async Task HandleElevation(JarvisService.JarvisServiceClient client)
     {
         Console.WriteLine("\n[CODE RED] Initiation Sequence Started.");
@@ -75,18 +61,13 @@ class Program
         var key = Console.ReadLine();
 
         var response = await client.ElevatePrivilegesAsync(new ElevationRequest { 
-            ClientId = _clientId, 
-            MasterKey = key 
+            ClientId = _clientId, MasterKey = key 
         });
 
         if (response.Success)
         {
             _adminToken = response.AdminToken;
-            Console.WriteLine("[SUCCESS] Code Red Accepted. Master Admin mode activated.");
-        }
-        else
-        {
-            Console.WriteLine($"[FAILED] Code Red Denied. {response.Message}");
+            Console.WriteLine("[SUCCESS] Code Red Accepted.");
         }
     }
 
@@ -96,38 +77,46 @@ class Program
         if (!string.IsNullOrEmpty(_adminToken)) headers.Add("admin-token", _adminToken);
 
         using var call = client.StreamOperator(headers);
-        Console.WriteLine("Operational stream open. Type 'back' to return.");
-        
         while (true)
         {
+            if (IsDebuggerPresent()) return;
+
             Console.Write("> ");
             var cmd = Console.ReadLine();
             if (string.IsNullOrEmpty(cmd)) continue;
             if (cmd.ToLower() == "back") break;
 
-            // Trigger "Code Red" elevation from within the command stream
             if (cmd.Trim().Equals("Code Red", StringComparison.OrdinalIgnoreCase))
             {
                 await HandleElevation(client);
-                // Restart stream to apply new token
                 break;
             }
 
             await call.RequestStream.WriteAsync(new OperatorRequest { ClientId = _clientId, Command = cmd });
-            
             if (await call.ResponseStream.MoveNext(default))
-            {
-                var response = call.ResponseStream.Current;
-                Console.WriteLine($"Jarvis: {response.Message}");
-            }
+                Console.WriteLine($"Jarvis: {call.ResponseStream.Current.Message}");
         }
     }
 
-    // ... Maintain HandleBilling, HandleEvolution, HandleKnowledgeInjection ...
+    // ... Maintain other methods (Billing, Evolution, Knowledge, Compute) ...
+    static async Task RunComputeContribution(JarvisService.JarvisServiceClient client)
+    {
+        while (true) {
+            await client.ReportComputeAsync(new ComputePayload { ClientId = _clientId, CpuCyclesContributed = 5.0, MemoryMbSecond = 512.0, TaskId = Guid.NewGuid().ToString() });
+            await Task.Delay(60000);
+        }
+    }
+
+    static async Task DisplayRewards(JarvisService.JarvisServiceClient client)
+    {
+        var stats = await client.GetRewardStatsAsync(new RewardRequest { ClientId = _clientId });
+        Console.WriteLine($"\n--- Compute Rewards --- Total: {stats.TotalComputeContributed} | Pi: {stats.LifetimePiEarned}");
+    }
+
     static async Task HandleBilling(JarvisService.JarvisServiceClient client)
     {
         var stats = await client.GetUsageStatsAsync(new UsageRequest { ClientId = _clientId });
-        Console.WriteLine($"\n--- Billing Status --- Balance: {stats.CurrentBalance:F2} | Refill: {stats.PiEquivalent:F4} Pi");
+        Console.WriteLine($"\n--- Billing --- Balance: {stats.CurrentBalance} | Cost: {stats.PiEquivalent}");
     }
 
     static async Task HandleEvolution(JarvisService.JarvisServiceClient client)
