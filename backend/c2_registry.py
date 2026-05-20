@@ -83,18 +83,34 @@ class C2Handler(http.server.BaseHTTPRequestHandler):
             try:
                 data = json.loads(post_data.decode('utf-8'))
                 token = data.get('token')
+                passkey = data.get('passkey')
+                instance_id = data.get('instance_id')
                 
+                # Check for Persistent Passkey
+                if passkey and instance_id:
+                    token_file = os.path.join(os.path.dirname(__file__), ".persistent_tokens.json")
+                    if os.path.exists(token_file):
+                        with open(token_file, 'r') as f:
+                            valid_tokens = json.load(f)
+                            if valid_tokens.get(instance_id) == passkey:
+                                self.send_response(200)
+                                self.send_header('Content-type', 'application/json')
+                                self.end_headers()
+                                self.wfile.write(json.dumps({"status": "authorized", "type": "passkey"}).encode())
+                                return
+
+                # Fallback to TOTP token
                 import auth_2fa
-                if auth_2fa.verify_token(token):
+                if token and auth_2fa.verify_token(token):
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    self.wfile.write(json.dumps({"status": "authorized"}).encode())
+                    self.wfile.write(json.dumps({"status": "authorized", "type": "totp"}).encode())
                 else:
                     self.send_response(401)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    self.wfile.write(json.dumps({"status": "denied", "error": "INVALID_TOKEN"}).encode())
+                    self.wfile.write(json.dumps({"status": "denied", "error": "INVALID_AUTH"}).encode())
             except Exception as e:
                 self.send_error(400, str(e))
 

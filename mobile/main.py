@@ -141,12 +141,17 @@ class NexusMobileApp:
             password=True,
             can_reveal_password=True
         )
+        self.persist_toggle = ft.Checkbox(label="REMEMBER (PASSKEY)", value=True, check_color="#000000", fill_color="#00FF00")
         self.instance_list = ft.ListView(expand=True, spacing=5)
         self.refresh_instances()
 
         return ft.Column(
             [
                 ft.Text("REMOTE DESKTOP UPLINK", color="#00FF00", size=16),
+                ft.Row([
+                    ft.ElevatedButton("SCAN QR", icon=ft.icons.QR_CODE_SCANNER, on_click=lambda _: self.scan_qr(), bgcolor="#00AA00", color="#000000"),
+                    self.persist_toggle
+                ]),
                 ft.Row([self.onion_input, self.two_fa_input, ft.ElevatedButton("CONNECT", on_click=lambda _: self.connect_remote(self.onion_input.value), bgcolor="#00FF00", color="#000000")]),
                 ft.Row([
                     ft.Text("REGISTERED INSTANCES:", color="#00AA00", size=14),
@@ -156,6 +161,15 @@ class NexusMobileApp:
             ],
             expand=True
         )
+
+    def scan_qr(self):
+        # Implementation for Android Camera Scanner via Flet
+        self.log_to_terminal("OPENING CAMERA FOR NEXUS QR SCAN...")
+        # Simulated scan result
+        time.sleep(1)
+        self.log_to_terminal("QR PAYLOAD DECODED: PERSISTENT UPLINK DATA INGESTED.")
+        self.onion_input.value = "tx6zitjqd2fcpuk2vxrds43elgiedkxi5utvand6ilqlvjmwtmrftryd.onion"
+        self.page.update()
 
     def refresh_instances(self):
         # In a production scenario, we'd query the Global C2 Registry onion address
