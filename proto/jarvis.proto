@@ -3,30 +3,36 @@ syntax = "proto3";
 package jarvis;
 
 service JarvisService {
-    // Bi-directional streaming for voice/commands
+    // --- Operational Streams ---
+    // Bi-directional stream for supreme command and operator interaction
     rpc StreamOperator(stream OperatorRequest) returns (stream JarvisResponse);
     
-    // Elevate session to Master Admin
+    // --- Authority & Elevation ---
+    // Transition to Supreme Master Admin (The Creator / Code Red)
     rpc ElevatePrivileges(ElevationRequest) returns (ElevationResponse);
-
-    // Adaptive Self-Evolution: Update Jarvis logic on the fly
+    // Adaptive Self-Evolution: Live recode of core modules
     rpc SelfEvolve(EvolutionCode) returns (EvolutionStatus);
 
-    // Symmetric Knowledge Core: Feed the brain
+    // --- Intelligence & Knowledge ---
+    // Feed the Symmetric Brain (LIGHT / SHADOW)
     rpc StoreKnowledge(KnowledgeEntry) returns (KnowledgeStatus);
+    // Deep research query across all intelligence streams
+    rpc GlobalSearch(IntelligenceQuery) returns (IntelligenceResponse);
 
-    // Pi Network Synergy
+    // --- Blockchain & Financial Synergy ---
     rpc VerifyPioneer(PiAuthRequest) returns (PiAuthResponse);
     rpc ProcessPayment(PiPaymentRequest) returns (PiPaymentResponse);
-
-    // Metered Billing System (Pi-Based)
+    
+    // --- Metered Economy ---
     rpc GetUsageStats(UsageRequest) returns (UsageResponse);
     rpc RefillCredits(RefillRequest) returns (RefillResponse);
 
-    // Distributed Compute Rewards (Earn Pi)
+    // --- Distributed Compute ---
     rpc ReportCompute(ComputePayload) returns (ComputeStatus);
     rpc GetRewardStats(RewardRequest) returns (RewardResponse);
 }
+
+// --- Message Definitions ---
 
 message OperatorRequest {
     string client_id = 1;
@@ -75,6 +81,14 @@ message KnowledgeStatus {
     string message = 2;
 }
 
+message IntelligenceQuery {
+    string search_vector = 1;
+}
+
+message IntelligenceResponse {
+    string synthesis = 1;
+}
+
 message PiAuthRequest {
     string access_token = 1;
 }
@@ -120,7 +134,7 @@ message ComputePayload {
     string client_id = 1;
     double cpu_cycles_contributed = 2;
     double memory_mb_second = 3;
-    string task_id = 4; // Verification token
+    string task_id = 4;
 }
 
 message ComputeStatus {
