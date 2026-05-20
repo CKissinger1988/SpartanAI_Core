@@ -1,0 +1,62 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: jarvis-supreme-ubuntu
+    password: "$6$ex$mH7A9.Z7WzfvV6X7mN6C0.m9V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7" # Plain: nexus_admin_override
+    username: creator
+  keyboard: {layout: us, variant: ''}
+  locale: en_US.UTF-8
+  network:
+    network:
+      version: 2
+      ethernets:
+        all-en:
+          match:
+            name: "e*"
+          dhcp4: true
+  storage:
+    layout:
+      name: direct
+  packages:
+    - git
+    - python3-pip
+    - python3-venv
+    - docker.io
+    - docker-compose
+    - tor
+    - ufw
+    - fail2ban
+    - dos2unix
+    - pciutils
+    - lshw
+    - wget
+    - curl
+    - build-essential
+    - ubuntu-drivers-common
+  user-data:
+    runcmd:
+      - echo "--- Initializing JarvisAI Ubuntu AI OS ---"
+      - systemctl enable --now docker tor
+      - # Universal AI Environment (Conda)
+      - wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" -O /tmp/miniforge.sh
+      - bash /tmp/miniforge.sh -b -p /opt/conda
+      - echo 'export PATH="/opt/conda/bin:$PATH"' > /etc/profile.d/conda.sh
+      - # JarvisAI Supreme Core Deployment
+      - git clone https://github.com/CKissinger1988/JarvisAI_Core.git /opt/JarvisAI_Core
+      - cd /opt/JarvisAI_Core/cloud_backend
+      - python3 -m venv venv
+      - ./venv/bin/pip install --upgrade pip
+      - ./venv/bin/pip install -r requirements.txt
+      - ./venv/bin/pip install grpcio-tools cryptography
+      - # Generate stubs
+      - ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/jarvis.proto
+      - ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/vault.proto
+      - # Security Hardening
+      - ufw default deny incoming
+      - ufw allow ssh
+      - ufw allow 50051/tcp
+      - ufw allow 31400:31409/tcp
+      - ufw --force enable
+      - # Hardware Setup
+      - ubuntu-drivers autoinstall
