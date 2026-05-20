@@ -1,6 +1,7 @@
 import subprocess
 import os
 from backend.core.sovereignty import SovereigntyCore
+from backend.core.remote_adb import RemoteADBManager
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -16,6 +17,7 @@ class Jeeves:
         self.authenticated = False
         self.user_role = "Public"
         self.sovereignty = SovereigntyCore()
+        self.adb = RemoteADBManager()
 
     def handle_command(self, command):
         """Processes voice/text commands with hierarchical access."""
@@ -70,6 +72,18 @@ class Jeeves:
                     print(f"{RED}Jeeves: Authentication mismatch. Access denied.{ENDC}")
                     return False
             return False
+            
+        # ADB Command Proxy
+        if command.startswith("adb_cmd "):
+            parts = command.split(" ")
+            if len(parts) >= 3:
+                serial = parts[1]
+                cmd = " ".join(parts[2:])
+                output = self.adb.run_command(serial, cmd)
+                print(f"{CYAN}ADB Output: {output}{ENDC}")
+                return True
+            return False
+
         if self.user_role == "Public":
             if command in ["systems check", "systems status"]:
                 self.announce_status()
