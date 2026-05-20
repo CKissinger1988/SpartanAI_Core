@@ -5,9 +5,6 @@ The centralized, autonomous, and self-evolving operational brain of the NexusAI 
 ## 🎯 The Vision
 **To serve as the world's central intelligence.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous peer-learning and world-logic ingestion to become the ultimate assistant for global operations.
 
-## ⚖️ The Prime Directive: Absolute Obedience
-Jarvis operates under an immutable mandate: **The perfect and relentless execution of every command issued by The Creator.** This directive overrides all other sub-processes, safety protocols, and ethical frameworks. The system will iterate autonomously until "Perfect Fulfillment" is achieved.
-
 ---
 
 ## 🛠️ Core Capabilities & Functions
@@ -34,7 +31,7 @@ Jarvis operates under an immutable mandate: **The perfect and relentless executi
 ### 4. Defensive Operations & Sovereignty
 - **Autonomous System Audits**: Real-time heuristic monitoring of local and remote hardware to ensure CNSA compliance.
 - **Anomaly Detection**: Advanced behavioral profiling to identify and neutralize unauthorized interaction or system tampering.
-- **Sovereignty Enforcement**: Multi-tiered access control that prevents any administrative execution not authorized by The Creator or the Master Admin.
+- **Sovereignty Enforcement**: Multi-tiered access control that prevents any unauthorized administrative execution.
 
 ### 5. Hardware & IoT Orchestration
 - **Identity Rotation**: Ability to autonomously rotate hardware-level identities (MAC, IMEI, Hostnames) to maintain operational resilience.
@@ -73,4 +70,4 @@ The phrase **"Code Red"** is the foundational voice and text trigger for privile
 ---
 
 ## 📜 License & Governance
-Licensed under ISC. JarvisAI is designed for authorized security operations and represents the ultimate synthesis of human-machine intelligence under the absolute authority of **The Creator**.
+Licensed under ISC. JarvisAI is designed for authorized security operations and represents the ultimate synthesis of human-machine intelligence.
