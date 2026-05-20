@@ -7,34 +7,30 @@ The centralized, autonomous operational brain for the NexusAI ecosystem. JarvisA
 
 ## 🧠 Learning & Adaptive Capabilities
 Jarvis is engineered to evolve through continuous operational cycles:
-- **Heuristic Pattern Recognition:** Continuously analyzes system logs, network traffic, and exploit outcomes to identify anomalous behavior and refine defensive postures.
-- **Adaptive Execution:** Learns from successful and failed task execution, iteratively optimizing its command-line orchestration and resource management strategies.
-- **Contextual Reasoning:** Builds an evolving knowledge graph of tactical operations, allowing it to predict intent and proactively secure system environments based on historical success.
-- **Self-Improving Logic:** Analyzes its own operational metadata to refine response strategies, ensuring it becomes more efficient, secure, and intelligent with every deployment.
+- **Heuristic Pattern Recognition:** Continuously analyzes system logs, network traffic, and exploit outcomes to identify anomalous behavior.
+- **Adaptive Execution:** Learns from successful and failed task execution, iteratively optimizing its command-line orchestration.
+- **Contextual Reasoning:** Builds an evolving knowledge graph to predict intent and proactively secure system environments.
+- **Self-Improving Logic:** Allows the Master Admin to recode Jarvis's core modules on the fly via the **Adaptive Self-Evolution** interface.
 
 ## 🛡️ Role-Based Access Control (RBAC)
-JarvisAI supports multi-tiered access for enhanced security:
-- **The Creator:** The supreme Master Admin and foundational authority. All operational rules and core directives originate from The Creator. His authority is absolute and overrides all system sub-processes.
-- **Master Admin:** Full system control, including exploit management, root-level shell access, and hardware identity rotation, acting under the directives of The Creator.
-- **Standard User:** Default access level with restricted toolsets and monitoring-only capabilities.
+- **The Creator:** Supreme Master Admin and foundational authority.
+- **Master Admin:** Full system control, including exploit management and hardware identity rotation.
+- **Standard User:** Restricted default access with monitoring capabilities.
 
-### Switching to Master Admin
-Authorized operators can elevate their session to Master Admin mode via the frontend interface:
-1. Select **"Switch to Master Admin"** from the operational menu.
-2. Provide the cryptographically secure **Master Admin Key**.
-3. Upon successful verification, the backend issues a session-based **Admin Token**, unlocking the full control panel for the duration of the connection.
+## ⚡ Distributed Architecture & Synergy
+Jarvis operates as a distributed system with a cloud-hosted gRPC brain and a native Windows/Mobile frontend.
+- **Symmetric Knowledge Core:** Dual-sided brain (LIGHT/SHADOW) for synthesized deep reasoning.
+- **Universal Intelligence Ingestion:** Autonomously scrapes global streams (Science, Events, Tech) to understand world logic.
+- **Recursive Peer-Learning:** Learns from and distills intelligence from other global AI systems.
+- **Pi Network Blockchain Synergy:** 
+    *   **Pioneer Authentication:** Securely verifies user identity via the Pi Platform API.
+    *   **Financial Integration:** Processes and completes Pi-based transactions within the Jarvis ecosystem.
+    *   **Blockchain Intelligence:** Autonomously monitors the Pi Network ecosystem to ingest blockchain evolution data.
 
 ## 🤖 Features
 - **Voice Authority:** Root-level execution via Web Speech API with wake-word detection.
-- **Autonomous Monitoring:** Real-time system telemetry and security auditing.
-- **Hardened Security:** CNSA-standard cryptography for data at rest and in transit.
-- **Universal Launcher:** Automated environment setup and cross-platform (Windows/WSL/Mobile) deployment.
-
-## 🔗 Integrations
-- **Kali Linux (WSL2):** The primary, hardened execution environment.
-- **Node.js/Express:** Secure backend infrastructure for Web-based dashboard.
-- **Python (Backend):** High-level operational logic and system interface.
-- **Hardware Telemetry:** Direct interface for hardware-level monitoring and identity rotation.
+- **Hardened Security:** CNSA-standard cryptography (4096-bit mTLS) and OS hardening.
+- **Universal Launcher:** Automated deployment for Google Cloud, Linux, and Windows.
 
 ## 📜 License
 Licensed under ISC. Created for authorized security operations.

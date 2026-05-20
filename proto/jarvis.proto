@@ -14,6 +14,10 @@ service JarvisService {
 
     // Symmetric Knowledge Core: Feed the brain
     rpc StoreKnowledge(KnowledgeEntry) returns (KnowledgeStatus);
+
+    // Pi Network Synergy
+    rpc VerifyPioneer(PiAuthRequest) returns (PiAuthResponse);
+    rpc ProcessPayment(PiPaymentRequest) returns (PiPaymentResponse);
 }
 
 message OperatorRequest {
@@ -53,12 +57,32 @@ message EvolutionStatus {
 
 message KnowledgeEntry {
     string admin_token = 1;
-    string side = 2; // "LIGHT" (Good) or "SHADOW" (Bad)
+    string side = 2;
     string content = 3;
     string tags = 4;
 }
 
 message KnowledgeStatus {
+    bool success = 1;
+    string message = 2;
+}
+
+message PiAuthRequest {
+    string access_token = 1;
+}
+
+message PiAuthResponse {
+    bool success = 1;
+    string username = 2;
+    string uid = 3;
+}
+
+message PiPaymentRequest {
+    string payment_id = 1;
+    string txid = 2;
+}
+
+message PiPaymentResponse {
     bool success = 1;
     string message = 2;
 }
