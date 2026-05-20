@@ -2,8 +2,8 @@
 
 The centralized, autonomous operational brain for the NexusAI ecosystem. JarvisAI_Core provides root-level orchestration, advanced cyber intelligence, and hardened system management capabilities.
 
-## 🎯 Project Goal
-To provide a unified, CNSA-hardened, autonomous core that enables secure, tactical, and untraceable operations across all NexusAI deployment targets (Kali WSL, Linux, Mobile).
+## 🎯 Our Goal
+**To evolve Jarvis into the world's central intelligence.** By unifying autonomous system orchestration, pervasive cyber-security intelligence, and advanced adaptive reasoning into a single, scalable core, Jarvis will bridge the gap between human intent and machine execution at a global scale.
 
 ## 🤖 Features
 - **Voice Authority:** Root-level execution via Web Speech API with wake-word detection.
