@@ -102,5 +102,21 @@ def jarvis_exec(command: str):
     except Exception as e:
         return f"Execution Error: {str(e)}"
 
+@mcp.tool()
+def run_tactical_audit():
+    """Triggers a full system audit for CNSA compliance, anonymity, and root integrity."""
+    audit_script = os.path.join(BASE_DIR, "scripts", "system_audit.py")
+    try:
+        proc = subprocess.run(["python3", audit_script], capture_output=True, text=True)
+        return proc.stdout
+    except Exception as e:
+        return f"Audit Error: {str(e)}"
+
+@mcp.tool()
+def set_auto_patch(enabled: bool = True):
+    """Enables or disables Jarvis autonomous system patching."""
+    os.environ["JARVIS_AUTO_PATCH"] = "true" if enabled else "false"
+    return f"Jarvis Autonomous Patching set to: {enabled}"
+
 if __name__ == "__main__":
     mcp.run()

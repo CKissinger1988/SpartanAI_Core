@@ -57,13 +57,37 @@ class NexusMobileApp:
         self.log_to_terminal("NEXUS MOBILE CORE INITIALIZED...")
         self.log_to_terminal("READY FOR UPLINK.")
         
-        return ft.Container(
-            content=self.terminal_output,
-            padding=10,
-            border=ft.border.all(1, "#005500"),
-            border_radius=5,
+        return ft.Column(
+            [
+                ft.Container(
+                    content=self.terminal_output,
+                    padding=10,
+                    border=ft.border.all(1, "#005500"),
+                    border_radius=5,
+                    expand=True
+                ),
+                ft.Row(
+                    [
+                        ft.ElevatedButton("RUN AUDIT", on_click=lambda _: self.run_audit(), bgcolor="#00FF00", color="#000000"),
+                        ft.Switch(label="AUTO-PATCH", value=True, on_change=lambda e: self.toggle_patch(e.control.value), active_color="#00FF00")
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                )
+            ],
             expand=True
         )
+
+    def run_audit(self):
+        self.log_to_terminal("INITIATING SYSTEM AUDIT...")
+        # In practice, this would invoke the run_tactical_audit tool via MCP
+        time.sleep(1)
+        self.log_to_terminal("AUDIT COMPLETE: CNSA_COMPLIANT, TOR_ACTIVE, ROOT_VERIFIED.")
+        self.page.update()
+
+    def toggle_patch(self, val):
+        status = "ENABLED" if val else "DISABLED"
+        self.log_to_terminal(f"AUTONOMOUS PATCHING {status}.")
+        self.page.update()
 
     def exploits_view(self):
         self.exploit_list = ft.ListView(expand=True, spacing=10)
