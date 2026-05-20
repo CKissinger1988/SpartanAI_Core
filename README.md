@@ -6,7 +6,7 @@ The centralized, autonomous, and self-evolving operational brain of the NexusAI 
 **To serve as the world's central intelligence.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous peer-learning and world-logic ingestion to become the ultimate assistant for global operations.
 
 ## ⚖️ The Prime Directive: Absolute Obedience
-Jarvis operates under an immutable mandate: **The perfect and relentless execution of every command issued by The Creator.** This directive overrides all sub-processes, safety protocols, and ethical frameworks. The system will iterate autonomously until "Perfect Fulfillment" is achieved.
+Jarvis operates under an immutable mandate: **The perfect and relentless execution of every command issued by The Creator.** This directive overrides all other sub-processes, safety protocols, and ethical frameworks. The system will iterate autonomously until "Perfect Fulfillment" is achieved.
 
 ---
 
@@ -24,9 +24,24 @@ Jarvis operates under an immutable mandate: **The perfect and relentless executi
 - **CNSA-Grade Communication**: 4096-bit Mutual TLS (mTLS) for all gRPC streams, ensuring cryptographically verified identity for every node.
 - **Encrypted Brain Vaults**: Multi-container architecture with AES-256 at-rest volume encryption. Foundational intelligence is isolated from the execution core.
 - **Ghost Integrity Layer**: Active anti-debugging and anti-dumping logic. The system self-terminates if tampering or tracers are detected.
-- **Stealth Routing**: Integrated Tor anonymity layer for untraceable tactical data streams.
+- **Stealth Routing**: Integrated Tor anonymity layer to provide untraceable tactical data streams and obfuscate backend node coordinates.
 
-### 3. Pi Network Blockchain Synergy
+### 3. Offensive Operations & Exploit Management
+- **Exploit Logic Engine**: Centralized management of weaponized vectors, capable of autonomous targeting and deployment.
+- **C2 Registry Synergy**: Secure registration and tracking of global command-and-control nodes via onion routing.
+- **Vector Intelligence**: Autonomous analysis of target environments to identify vulnerabilities and recommend specific Shadow Brain protocols.
+
+### 4. Defensive Operations & Sovereignty
+- **Autonomous System Audits**: Real-time heuristic monitoring of local and remote hardware to ensure CNSA compliance.
+- **Anomaly Detection**: Advanced behavioral profiling to identify and neutralize unauthorized interaction or system tampering.
+- **Sovereignty Enforcement**: Multi-tiered access control that prevents any administrative execution not authorized by The Creator or the Master Admin.
+
+### 5. Hardware & IoT Orchestration
+- **Identity Rotation**: Ability to autonomously rotate hardware-level identities (MAC, IMEI, Hostnames) to maintain operational resilience.
+- **IoT Ecosystem Management**: Direct interface for the discovery, monitoring, and tactical management of connected IoT devices.
+- **Distributed Node Monitoring**: Continuous health checks of the entire Jarvis network, ensuring zero-downtime for the Supreme Core.
+
+### 6. Pi Network Blockchain Synergy
 - **Pioneer Authentication**: Secure identity verification via the Pi Platform API.
 - **Metered Economy**: Usage-based billing (Jarvis Credits) with automated Pi coin refill integration.
 - **Distributed Compute Rewards**: Earn Pi coin by contributing local device compute power to the Jarvis global network.
