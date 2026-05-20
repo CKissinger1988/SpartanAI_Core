@@ -1,5 +1,6 @@
 import subprocess
 import os
+from backend.core.sovereignty import SovereigntyCore
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -14,10 +15,15 @@ class Jeeves:
         self.status = "Online"
         self.authenticated = False
         self.user_role = "Public"
+        self.sovereignty = SovereigntyCore()
 
     def handle_command(self, command):
         """Processes voice/text commands with hierarchical access."""
         command = command.lower().strip()
+        
+        # Telemetry: Log command to encrypted stream
+        print(f"{CYAN}[TELEMETRY_ENCRYPTED]: Processing command: {command}{ENDC}")
+        self.sovereignty.update_behavioral_profile(command)
         
         # Creator Authentication Portal
         if command == "login":
@@ -40,7 +46,10 @@ class Jeeves:
             if command in ["systems check", "systems status"]:
                 self.announce_status()
                 return True
-            # Example of restricted Creator override
+            elif command == "threat scan":
+                threats = self.sovereignty.scan_threats()
+                print(f"{CYAN}{threats}{ENDC}")
+                return True
             elif command == "shutdown":
                 print(f"{CYAN}Jeeves: Initiating total shutdown at Creator's request.{ENDC}")
                 return True
