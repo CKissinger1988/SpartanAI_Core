@@ -6,13 +6,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend.core.jeeves import Jeeves
 
-def test_command(cmd):
-    jeeves = Jeeves()
+def test_command(jeeves, cmd):
     print(f"\nCommand: '{cmd}'")
     if not jeeves.handle_command(cmd):
         print("Jeeves: Command not recognized.")
 
 if __name__ == "__main__":
-    test_command("systems check")
-    test_command("systems status")
-    test_command("hello")
+    jeeves = Jeeves()
+    test_command(jeeves, "systems check") # Should fail
+    test_command(jeeves, "login")         # Should succeed
+    test_command(jeeves, "systems check") # Should succeed

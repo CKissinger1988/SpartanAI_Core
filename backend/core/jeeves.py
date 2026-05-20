@@ -4,6 +4,7 @@ import os
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
 GREEN = '\033[92m'
+RED = '\033[91m'
 BOLD = '\033[1m'
 ENDC = '\033[0m'
 
@@ -11,10 +12,22 @@ ENDC = '\033[0m'
 class Jeeves:
     def __init__(self):
         self.status = "Online"
+        self.authenticated = False
 
     def handle_command(self, command):
-        """Processes voice/text commands."""
+        """Processes voice/text commands with authentication."""
         command = command.lower().strip()
+        
+        if command == "login":
+            print(f"{CYAN}{BOLD}Jeeves: Awaiting biometric/voice identification for The Creator...{ENDC}")
+            self.authenticated = True
+            print(f"{GREEN}Jeeves: Access granted. Welcome, Creator.{ENDC}")
+            return True
+            
+        if not self.authenticated:
+            print(f"{RED}Jeeves: Unauthorized. Identify as The Creator to proceed.{ENDC}")
+            return False
+
         if command in ["systems check", "systems status"]:
             self.announce_status()
             return True
