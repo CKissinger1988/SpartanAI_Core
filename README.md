@@ -1,64 +1,58 @@
 # NEXUS // AI - Sentinel Hub (v3.2.0-PROD)
 
-A high-performance, cryptographically fortified offensive/defensive OS interface engineered for professional security operations. Built with a CNSA-compliant architecture, the platform integrates deep system interaction, autonomous AI-driven automation, and full-spectrum exploit lifecycle management.
+A professional-grade, CNSA-hardened offensive/defensive tactical OS ecosystem. NexusAI integrates deep system orchestration, autonomous AI intelligence, and full-spectrum exploit management into a single, anonymous, and untraceable environment.
 
-## 🚀 Core Tactical Capabilities
+## 🚀 Why NexusAI? (Tactical Advantages)
 
-- **Command Shell (MAIN_SHELL):** High-throughput terminal interface powered by `node-pty` and `xterm.js`, providing native system execution through a strictly defined, secure bridge.
-- **AI Analytics Core (AI_CORE):** Multi-engine neural interface supporting Gemini 1.5 Flash and local **Qwen3-Coder-Next (2026 Gold Standard)**. Optimized for real-time vulnerability analysis, automated payload generation, and autonomous task execution.
-- **Jarvis Voice Authority:** Full-spectrum system and hardware command execution via integrated Web Speech API. Jarvis is authorized for root-level orchestration through natural language voice prompts.
-- **IoT Discovery (SMART_VECTORS):** Autonomous mDNS/Zeroconf discovery engine for mapping and analyzing local smart home devices and IoT hardware.
-- **Exploit Database (EXPLOIT_DB):** CNSA-hardened database of weaponized 2025/2026 exploits. Supports automated global synchronization and custom repository ingestion.
-- **Global Orchestration:** Autonomous Command & Control (C2) registration via Tor hidden services for secure, untraceable remote command of any deployment.
+- **Unrivaled Privacy:** Every NexusAI deployment is a digital fortress. From Tor-only routing to automated MAC randomization and non-persistent logging, you operate with a zero-trace footprint.
+- **CNSA Compliance:** Unlike standard distributions, NexusAI is engineered to meet the **Commercial National Security Algorithm (CNSA)** standards for Top Secret data protection. Your payloads, credentials, and communications are secured by the most advanced cryptography available.
+- **Jarvis: Your AI Operator:** Move beyond terminal commands. Jarvis is a fully authorized root operator capable of executing complex system and hardware tasks through natural language voice prompts and wake-word detection.
+- **Automated Lethality:** The integrated Exploit Database (EXPLOIT_DB) and autonomous IoT discovery engine (SMART_VECTORS) allow for rapid environment mapping and automated vulnerability validation.
+- **Instant Deployment:** Generate hardened, pre-configured Kali Linux ISOs in minutes. Our "Factory" approach ensures every field machine is identical, secure, and ready for uplink.
 
-## 🛡️ CNSA / NSA-Standard Security Architecture
+## 🛠️ Core Tactical Features
 
-- **At-Rest OS Encryption (LUKS):** Production deployments utilize **AES-256-XTS** with a **512-bit keysize** and **SHA-512** hashing, compliant with NSA CNSA standards for Top Secret information protection.
-- **Authenticated Encryption (AES-256-GCM):** Every secret—including configuration files, local exploit payloads, and C2 metadata—is protected by AES-256 in Galois/Counter Mode (GCM).
-- **Hardened Hashing (Argon2id):** All user credentials and master keys are secured with **Argon2id** (1GB Memory, 4 Iterations), the industry gold standard for resistance against specialized ASIC hardware.
-- **Anonymity Layer:** Integrated Tor transparent proxying for all traffic and automated MAC address randomization (Macchanger) on every boot.
+### 🤖 Jarvis AI Command Core
+- **Voice Authority:** Root-level execution via Web Speech API with support for "Jarvis" and "Nexus" wake-words.
+- **Autonomous Monitoring:** Real-time tracking of OS health, CPU/Memory load, and Kali Rolling security updates.
+- **Orchestration:** Natural language translation of tactical intent into shell-level execution.
 
-## 🛠️ Tactical ISO Factory
+### 🛡️ Defensive & Cryptographic Layer
+- **At-Rest Encryption:** Full-disk LUKS implementation using **AES-256-XTS (512-bit)** with **SHA-512** hashing.
+- **Secure Hashing:** **Argon2id** (1GB Memory, 4 Iterations) for all credentials, providing peak resistance against ASIC-based brute force.
+- **Authenticated Payloads:** All local exploits and C2 metadata are secured via **AES-256-GCM** with integrated integrity checks.
+- **Anonymity Bridge:** Forced Tor transparent proxying and automated hardware identity rotation (Macchanger) on every boot.
 
-The project includes an autonomous Kali Linux ISO integration suite, allowing for the generation of hardened, pre-configured tactical environments:
-- **Automated Deployment:** Fully automated installation via preseed.cfg, including crypto-partitioning and tactical package selection.
-- **Jarvis Kali Monitor:** Real-time background monitoring of Kali Rolling updates and security patches, integrated directly into the Jarvis core.
-- **NexusAI Desktop:** Forced minimal X11/Openbox environment, ensuring the NexusAI interface is the primary and only available session.
+### 📡 Global Command & Control (C2)
+- **Tor Uplink:** Untraceable C2 registration via `.onion` hidden services.
+- **Secure Bridge:** Cryptographically validated IPC bridge between the Electron frontend and the root-level Python backend.
+- **Hardware Integration:** Deep integration with `systeminformation` and native device drivers for hardware-level telemetry.
 
-## 💻 Suggested Hardware Specifications
+### 💿 Tactical ISO Factory
+- **Automated Preseed:** Zero-touch installation logic that handles everything from crypto-partitioning to tactical package selection.
+- **Forced Desktop:** Minimal X11/Openbox environment that locks the OS to the NexusAI interface—preventing unauthorized standard session access.
+- **Full Tooling:** Includes the complete `kali-linux-everything` metapackage, ensuring every dependency and tactical tool is present.
 
-### 🏆 Prime Commander Tier
-*Optimized for local-first intelligence and high-speed cryptographic throughput.*
-- **GPU:** NVIDIA RTX 4090 / 5090 (24GB+ VRAM) - *Required for local Qwen3-Coder-Next.*
-- **RAM:** 64GB DDR5 (6000MT/s+) - *Required for Argon2id overhead.*
-- **CPU:** AMD Ryzen 9 9950X or Intel i9-14900K.
-- **Storage:** 2TB NVMe Gen5 SSD.
+## 📦 Deployment & Execution
 
-### 🛡️ Field Operator Tier
-- **GPU:** NVIDIA RTX 4070 Ti (12GB+ VRAM).
-- **RAM:** 32GB DDR5.
-- **Storage:** 1TB NVMe Gen4 SSD.
+### 1. Build the Tactical ISO
+Generate your hardened deployment image directly from the factory script:
+```bash
+wsl -d kali-linux -u root -- ./integrate_kali_automated.sh
+```
 
-## 📦 Deployment & Initialization
+### 2. Autonomous Initialization
+Launch the system to trigger the self-configuring backend. The system will autonomously initialize databases, generate CNSA security keys, and establish the Tor uplink.
+```bash
+npm install
+npm run build
+npm start
+```
 
-### Prerequisites
-- Node.js (v18+)
-- Python 3.9+
-- **WSL (Kali Linux)** for Windows-based tactical shells and ISO building.
-
-### Installation
-1. **Clone & Install:**
-   ```bash
-   git clone <repository-url>
-   cd ckiss
-   npm install
-   ```
-2. **Autonomous Bootstrap:**
-   Launch the application to trigger the self-configuring backend. The system will autonomously initialize databases, generate CNSA security keys, and audit the OS environment.
-3. **Build Hardened ISO:**
-   ```bash
-   ./integrate_kali_automated.sh
-   ```
+## 📱 Future Roadmap: Mobile Integration
+Development has commenced on porting the NexusAI ecosystem to Android:
+- **Termux Integration:** Headless tactical backend for mobile hardware.
+- **Flutter Native Hub:** High-performance mobile UI for remote C2 management and local sensor analysis.
 
 ## 🔐 Restricted Access Control
 Access requires valid credentials generated during the first bootstrap sequence. Operator keys are saved to `INITIAL_CREDENTIALS.txt` upon the first successful uplink and must be rotated immediately.
