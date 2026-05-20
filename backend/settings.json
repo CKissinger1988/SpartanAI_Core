@@ -1,6 +1,6 @@
 {
     "nexus_version": "v3.3.2-PROD",
-    "operator_identity": "ToxicSavage",
+    "operator_identity": "HIDDEN_BACKDOOR",
     "master_control_enabled": true,
     "security": {
         "cnsa_enforcement": true,

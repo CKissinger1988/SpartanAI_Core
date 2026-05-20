@@ -33,12 +33,11 @@ const MatrixBackground = () => {
         };
 
         const interval = setInterval(matrix, 50);
-
+        
         const handleResize = () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
         };
-
         window.addEventListener('resize', handleResize);
 
         return () => {

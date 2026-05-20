@@ -62,10 +62,23 @@ def check_anonymity():
 
     return status
 
+def is_root_user():
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        except:
+            return False
+    else:
+        try:
+            return os.getuid() == 0
+        except AttributeError:
+            return False
+
 def run_full_audit():
     print(f"[*] Jarvis: Initiating Full System Tactical Audit...")
     
-    is_root = os.getuid() == 0
+    is_root = is_root_user()
     
     # Root-dependent capability checklist
     root_capabilities = {

@@ -24,11 +24,13 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      additionalArguments: [process.env.NEXUS_PREVIEW === 'true' || !app.isPackaged ? '--preview' : '']
     }
   });
 
   mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  mainWindow.webContents.openDevTools();
 
   // Real Terminal Backend
   const ptyProcess = pty.spawn(shell, [], {
