@@ -24,23 +24,44 @@ const ChatComponent = () => {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition.current = new SpeechRecognition();
-            recognition.current.continuous = false;
-            recognition.current.interimResults = false;
+            recognition.current.continuous = true;
+            recognition.current.interimResults = true;
             recognition.current.lang = 'en-US';
 
             recognition.current.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setMessages(prev => [...prev, { sender: 'OPERATOR', text: `[VOICE]: ${transcript}` }]);
-                executeVoiceCommand(transcript);
-                setIsListening(false);
+                const results = event.results;
+                const transcript = results[results.length - 1][0].transcript.trim().toLowerCase();
+                const isFinal = results[results.length - 1].isFinal;
+
+                if (transcript.includes('jarvis') || transcript.includes('nexus')) {
+                    if (isFinal) {
+                        // Extract the command after the wake word
+                        const command = transcript.split(/jarvis|nexus/).pop().trim();
+                        if (command) {
+                            setMessages(prev => [...prev, { sender: 'OPERATOR', text: `[WAKE]: ${transcript}` }]);
+                            executeVoiceCommand(command);
+                        }
+                    }
+                }
             };
 
             recognition.current.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    // Ignore no-speech errors in continuous mode
+                    return;
+                }
                 setIsListening(false);
             };
+
+            recognition.current.onend = () => {
+                // Restart listening if it was supposed to be on (wake word mode)
+                if (isListening) {
+                    recognition.current.start();
+                }
+            };
         }
-    }, []);
+    }, [isListening]);
 
     const toggleVoice = () => {
         if (isListening) {
