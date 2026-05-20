@@ -4,19 +4,18 @@ package jarvis;
 
 service JarvisService {
     // --- Operational Streams ---
-    // Bi-directional stream for supreme command and operator interaction
     rpc StreamOperator(stream OperatorRequest) returns (stream JarvisResponse);
     
     // --- Authority & Elevation ---
-    // Transition to Supreme Master Admin (The Creator / Code Red)
     rpc ElevatePrivileges(ElevationRequest) returns (ElevationResponse);
-    // Adaptive Self-Evolution: Live recode of core modules
     rpc SelfEvolve(EvolutionCode) returns (EvolutionStatus);
 
+    // --- Organization & User Management (Supreme Admin) ---
+    rpc ManageOrganization(OrgRequest) returns (OrgStatus);
+    rpc ListUsers(OrgQuery) returns (UserList);
+
     // --- Intelligence & Knowledge ---
-    // Feed the Symmetric Brain (LIGHT / SHADOW)
     rpc StoreKnowledge(KnowledgeEntry) returns (KnowledgeStatus);
-    // Deep research query across all intelligence streams
     rpc GlobalSearch(IntelligenceQuery) returns (IntelligenceResponse);
 
     // --- Blockchain & Financial Synergy ---
@@ -32,7 +31,36 @@ service JarvisService {
     rpc GetRewardStats(RewardRequest) returns (RewardResponse);
 }
 
-// --- Message Definitions ---
+// --- Organization Messages ---
+
+message OrgRequest {
+    string admin_token = 1; // Requires Supreme/Master Admin
+    string org_id = 2;
+    string target_user_id = 3;
+    string action = 4;      // e.g., "ADD", "REMOVE", "SET_ADMIN"
+}
+
+message OrgStatus {
+    bool success = 1;
+    string message = 2;
+}
+
+message OrgQuery {
+    string admin_token = 1;
+    string org_id = 2;
+}
+
+message UserList {
+    repeated UserInfo users = 1;
+}
+
+message UserInfo {
+    string user_id = 1;
+    string role = 2;        // "USER", "ORG_ADMIN"
+    double balance = 3;
+}
+
+// --- Original Messages Maintain Persistence ---
 
 message OperatorRequest {
     string client_id = 1;
