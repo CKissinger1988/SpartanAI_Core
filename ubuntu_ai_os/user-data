@@ -2,7 +2,7 @@
 autoinstall:
   version: 1
   identity:
-    hostname: jarvis-server
+    hostname: JarvisAI_Local_Core
     password: "$6$ex$mH7A9.Z7WzfvV6X7mN6C0.m9V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7"
     username: creator
   keyboard: {layout: us, variant: ''}
