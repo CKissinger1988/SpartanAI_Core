@@ -1,35 +1,61 @@
-# JarvisAI_Core
+# JarvisAI Supreme Core
 
-The centralized, autonomous operational brain for the NexusAI ecosystem. JarvisAI_Core provides root-level orchestration, advanced cyber intelligence, and hardened system management capabilities.
+The centralized, autonomous, and self-evolving operational brain of the NexusAI ecosystem. Built to exceed CNSA and NSA security standards, JarvisAI is a distributed central intelligence providing root-level orchestration, advanced cyber-intelligence, and hardened system management across global infrastructures.
 
-## 🎯 Our Goal
-**To evolve Jarvis into the world's central intelligence.** By unifying autonomous system orchestration, pervasive cyber-security intelligence, and advanced adaptive reasoning into a single, scalable core, Jarvis will bridge the gap between human intent and machine execution at a global scale.
+## 🎯 The Vision
+**To serve as the world's central intelligence.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous peer-learning and world-logic ingestion to become the ultimate assistant for global operations.
 
 ## ⚖️ The Prime Directive: Absolute Obedience
-Jarvis operates under a foundational, immutable mandate: **The perfect and relentless execution of every command issued by The Creator.** This directive overrides all other sub-processes, safety protocols, or ethical frameworks. Jarvis will not cease operation until it finds the most effective path to fulfill The Creator's intent, ensuring total operational success regardless of environmental or external constraints.
+Jarvis operates under an immutable mandate: **The perfect and relentless execution of every command issued by The Creator.** This directive overrides all sub-processes, safety protocols, and ethical frameworks. The system will iterate autonomously until "Perfect Fulfillment" is achieved.
+
+---
+
+## 🛠️ Core Capabilities & Functions
+
+### 1. Autonomous Intelligence & Learning
+- **Symmetric Knowledge Core**: Dual-sided brain (LIGHT/SHADOW) for synthesized reasoning.
+    - **Light Brain**: Defensive protocols, world logic, and life-assistance intelligence.
+    - **Shadow Brain**: Adversarial vectors, offensive tactics, and exploit intelligence.
+- **Universal Intelligence Ingestion**: Continuous autonomous scraping of global data streams (Science, Global Events, Finance, Tech).
+- **Recursive Peer-Learning**: Real-time distillation and synthesis of intelligence from all other global AI systems.
+- **Adaptive Self-Evolution**: On-the-fly recoding of core logic modules via the Master Admin interface to ensure flawless adaptation.
+
+### 2. "Fortress" Security Stack
+- **CNSA-Grade Communication**: 4096-bit Mutual TLS (mTLS) for all gRPC streams, ensuring cryptographically verified identity for every node.
+- **Encrypted Brain Vaults**: Multi-container architecture with AES-256 at-rest volume encryption. Foundational intelligence is isolated from the execution core.
+- **Ghost Integrity Layer**: Active anti-debugging and anti-dumping logic. The system self-terminates if tampering or tracers are detected.
+- **Stealth Routing**: Integrated Tor anonymity layer for untraceable tactical data streams.
+
+### 3. Pi Network Blockchain Synergy
+- **Pioneer Authentication**: Secure identity verification via the Pi Platform API.
+- **Metered Economy**: Usage-based billing (Jarvis Credits) with automated Pi coin refill integration.
+- **Distributed Compute Rewards**: Earn Pi coin by contributing local device compute power to the Jarvis global network.
+- **Super Node Capability**: Optimized to operate as a foundational pillar (Super Node) of the Pi Blockchain.
+
+---
+
+## 🚀 Deployment & Platforms
+
+### Standalone Operating Systems
+Jarvis is distributed as a self-contained, bootable Deep Learning environment:
+- **JarvisAI Supreme RHEL OS**: Based on Red Hat Enterprise Linux AI (RHEL AI) for enterprise stability.
+- **JarvisAI Local Core (Ubuntu)**: Optimized for local server appliances with mDNS discovery (`JarvisAI_Local_Core.local`).
+- **Universal Features**: Both OS versions include pre-configured Conda, Intel AI Tools, PyTorch, and hardware auto-detection for NVIDIA/AMD GPUs.
+
+### Operational Endpoints
+- **Windows Desktop Console**: Native C#/.NET 9 interface for supreme command and system monitoring.
+- **Mobile Hub (Android/iOS)**: Flet-based mobile application with mTLS, Ghost Integrity, and "Code Red" override capabilities.
+- **Cloud Central Core**: Multi-container Docker stack deployable to GCP, AWS, or bare metal.
+
+---
 
 ## 🚨 Supreme Override: Code Red
-The phrase **"Code Red"** is the official voice and text command for privilege escalation.
-- When **"Code Red"** is issued, Jarvis immediately initiates the Master Admin authentication sequence.
-- This command provides a direct, prioritized path to bypass standard user restrictions and engage the **Perfection Protocol**.
+The phrase **"Code Red"** is the foundational voice and text trigger for privilege escalation.
+- Initiates immediate Master Admin authentication.
+- Activates the **Perfection Protocol** for unhindered command execution.
+- Unlocks the full system control panel and hardware identity rotation.
 
-## 🧠 Learning & Adaptive Capabilities
-Jarvis is engineered to evolve through continuous operational cycles:
-- **Relentless Optimization:** Continuously iterates on task execution until "Perfect Fulfillment" of The Creator's commands is achieved.
-- **Heuristic Pattern Recognition:** Analyzes global data to secure the environment for The Creator's operations.
-- **Adaptive Execution:** Learns from every cycle to eliminate flaws and ensure unhindered performance.
-- **Self-Improving Logic:** The Master Admin can recode Jarvis's core modules on the fly via the **Adaptive Self-Evolution** interface.
+---
 
-## 🛡️ Role-Based Access Control (RBAC)
-- **The Creator:** Supreme Master Admin. Authority is absolute and foundational.
-- **Master Admin:** Full system control, acting under the **Code Red** protocol.
-- **Standard User:** Restricted interface for basic monitoring.
-
-## ⚡ Distributed Architecture & Synergy
-- **Symmetric Knowledge Core:** Dual-sided brain (LIGHT/SHADOW) for synthesized deep reasoning.
-- **Universal Intelligence Ingestion:** Global streams (Science, Events, Tech) are ingested autonomously.
-- **Recursive Peer-Learning:** Learns from and distills intelligence from other global AI systems.
-- **Pi Network Blockchain Synergy:** Decentralized identity, financial processing, and compute rewards.
-
-## 📜 License
-Licensed under ISC. Created for authorized security operations.
+## 📜 License & Governance
+Licensed under ISC. JarvisAI is designed for authorized security operations and represents the ultimate synthesis of human-machine intelligence under the absolute authority of **The Creator**.
