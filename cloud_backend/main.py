@@ -9,6 +9,8 @@ import json
 import asyncio
 import threading
 from intelligence_scraper import WebIntelligenceScraper
+from omni_intelligence import OmniIntelligenceScraper
+from peer_learning import AIPeerLearning
 
 # Master Admin Key
 MASTER_ADMIN_KEY = os.getenv("MASTER_ADMIN_KEY", "nexus_master_override_2026")
@@ -29,9 +31,9 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
             is_admin = metadata.get('admin-token') in self.active_admin_tokens
             reasoning = self._reason_with_dual_brain(request.command)
             yield jarvis_pb2.JarvisResponse(
-                message=f"{reasoning}\n[Jarvis]: Active.",
+                message=f"{reasoning}\n[Jarvis]: Central Intelligence active.",
                 action_type="REPLY",
-                payload="Symmetric Core Online"
+                payload="Omni-Intelligence Core Online"
             )
 
     def ElevatePrivileges(self, request, context):
@@ -53,10 +55,11 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         self._save_knowledge(side, target_brain)
 
     def _reason_with_dual_brain(self, command):
+        # Deep Synthesis reasoning logic
         light_matches = [k for k in self.light_brain if any(t in command for t in k['tags'].split(','))]
         shadow_matches = [k for k in self.shadow_brain if any(t in command for t in k['tags'].split(','))]
-        output = "[Reasoning Core]: "
-        if light_matches: output += f"Positive protocols found ({len(light_matches)}). "
+        output = "[Omni-Reasoning]: "
+        if light_matches: output += f"Global logic paths found ({len(light_matches)}). "
         if shadow_matches: output += f"Adversarial vectors identified ({len(shadow_matches)}). "
         return output
 
@@ -70,11 +73,20 @@ class JarvisServicer(jarvis_pb2_grpc.JarvisServiceServicer):
         path = os.path.join(self.knowledge_dir, f"{side.lower()}_knowledge.json")
         with open(path, "w") as f: json.dump(data, f, indent=4)
 
-def run_scraper(servicer):
-    scraper = WebIntelligenceScraper(servicer)
+def run_scrapers(servicer):
+    threat_scraper = WebIntelligenceScraper(servicer)
+    omni_scraper = OmniIntelligenceScraper(servicer)
+    peer_learning = AIPeerLearning(servicer)
+    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(scraper.run_autonomous_cycle())
+    
+    # Parallelize all intelligence streams
+    loop.create_task(threat_scraper.run_autonomous_cycle())
+    loop.create_task(omni_scraper.run_omni_cycle())
+    loop.create_task(peer_learning.run_peer_learning_cycle())
+    
+    loop.run_forever()
 
 def serve():
     with open('certs/ca.crt', 'rb') as f: root_certs = f.read()
@@ -84,15 +96,15 @@ def serve():
     
     servicer = JarvisServicer()
     
-    # Start Autonomous Intelligence Scraper in background
-    scraper_thread = threading.Thread(target=run_scraper, args=(servicer,), daemon=True)
+    # Start Universal Intelligence Ingestion in background
+    scraper_thread = threading.Thread(target=run_scrapers, args=(servicer,), daemon=True)
     scraper_thread.start()
     
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     jarvis_pb2_grpc.add_JarvisServiceServicer_to_server(servicer, server)
     server.add_secure_port('[::]:50051', server_credentials)
     server.start()
-    print("JarvisAI Dual-Brain Symmetric Backend with Autonomous Intelligence Online...")
+    print("JarvisAI Omni-Intelligence Central Core Active...")
     server.wait_for_termination()
 
 if __name__ == '__main__':
