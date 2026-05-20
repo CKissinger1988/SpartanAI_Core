@@ -2,8 +2,8 @@
 autoinstall:
   version: 1
   identity:
-    hostname: jarvis-supreme-ubuntu
-    password: "$6$ex$mH7A9.Z7WzfvV6X7mN6C0.m9V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7" # Plain: nexus_admin_override
+    hostname: jarvis-server
+    password: "$6$ex$mH7A9.Z7WzfvV6X7mN6C0.m9V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7X8V7"
     username: creator
   keyboard: {layout: us, variant: ''}
   locale: en_US.UTF-8
@@ -34,10 +34,13 @@ autoinstall:
     - curl
     - build-essential
     - ubuntu-drivers-common
+    - avahi-daemon
+    - nodejs
+    - npm
   user-data:
     runcmd:
-      - echo "--- Initializing JarvisAI Ubuntu AI OS ---"
-      - systemctl enable --now docker tor
+      - echo "--- Initializing JarvisAI Local Server OS ---"
+      - systemctl enable --now docker tor avahi-daemon
       - # Universal AI Environment (Conda)
       - wget -q "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" -O /tmp/miniforge.sh
       - bash /tmp/miniforge.sh -b -p /opt/conda
@@ -52,10 +55,11 @@ autoinstall:
       - # Generate stubs
       - ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/jarvis.proto
       - ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/vault.proto
-      - # Security Hardening
+      - # Security & Discovery
       - ufw default deny incoming
       - ufw allow ssh
       - ufw allow 50051/tcp
+      - ufw allow 3000/tcp # Dashboard
       - ufw allow 31400:31409/tcp
       - ufw --force enable
       - # Hardware Setup
