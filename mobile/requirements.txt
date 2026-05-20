@@ -10,3 +10,4 @@ paramiko
 samloader-py
 mtkclient
 pyusb
+pyotp

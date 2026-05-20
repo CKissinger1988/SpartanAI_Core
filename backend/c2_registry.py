@@ -76,6 +76,27 @@ class C2Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"status": "success", "enc": "AES-256-GCM"}).encode())
             except Exception as e:
                 self.send_error(400, str(e))
+        
+        elif self.path == '/verify_2fa':
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                token = data.get('token')
+                
+                import auth_2fa
+                if auth_2fa.verify_token(token):
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"status": "authorized"}).encode())
+                else:
+                    self.send_response(401)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"status": "denied", "error": "INVALID_TOKEN"}).encode())
+            except Exception as e:
+                self.send_error(400, str(e))
 
     def do_GET(self):
         if self.path == '/list':

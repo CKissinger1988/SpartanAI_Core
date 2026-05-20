@@ -7,3 +7,4 @@ paho-mqtt==2.1.0
 pycryptodome==3.23.0
 argon2-cffi==25.1.0
 samloader-py
+pyotp

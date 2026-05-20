@@ -133,13 +133,21 @@ class NexusMobileApp:
             color="#00FF00",
             expand=True
         )
+        self.two_fa_input = ft.TextField(
+            hint_text="2FA TOKEN",
+            border_color="#00FF00",
+            color="#00FF00",
+            width=120,
+            password=True,
+            can_reveal_password=True
+        )
         self.instance_list = ft.ListView(expand=True, spacing=5)
         self.refresh_instances()
 
         return ft.Column(
             [
                 ft.Text("REMOTE DESKTOP UPLINK", color="#00FF00", size=16),
-                ft.Row([self.onion_input, ft.ElevatedButton("CONNECT", on_click=lambda _: self.connect_remote(self.onion_input.value), bgcolor="#00FF00", color="#000000")]),
+                ft.Row([self.onion_input, self.two_fa_input, ft.ElevatedButton("CONNECT", on_click=lambda _: self.connect_remote(self.onion_input.value), bgcolor="#00FF00", color="#000000")]),
                 ft.Row([
                     ft.Text("REGISTERED INSTANCES:", color="#00AA00", size=14),
                     ft.IconButton(ft.icons.REFRESH, on_click=lambda _: self.refresh_instances(), icon_color="#00FF00")
@@ -179,17 +187,32 @@ class NexusMobileApp:
         self.page.update()
 
     def connect_remote(self, onion):
-        if not onion: return
+        token = self.two_fa_input.value
+        if not onion: 
+            self.log_to_terminal("ERROR: NO ADDRESS PROVIDED.")
+            return
+        if not token:
+            self.log_to_terminal("ERROR: 2FA TOKEN REQUIRED FOR UPLINK.")
+            return
+
         self.log_to_terminal(f"INITIATING TOR-TUNNELED UPLINK TO {onion}...")
         self.page.update()
         
-        # Handshake Simulation
-        time.sleep(1.5)
-        self.log_to_terminal("AUTHENTICATING CNSA KEYS...")
+        # Handshake Simulation with 2FA
         time.sleep(1)
-        self.log_to_terminal("UPLINK ESTABLISHED. JARVIS GRANTED FULL CONTROL OF DESKTOP.")
+        self.log_to_terminal(f"VERIFYING 2FA TOKEN: {token}...")
+        time.sleep(1)
         
-        self.status_text.value = f"SYSTEM STATUS: REMOTE_CONTROL ACTIVE -> {onion[:12]}"
+        # In practice, this would be an actual POST to /verify_2fa over Tor
+        if len(token) == 6:
+            self.log_to_terminal("AUTHENTICATING CNSA KEYS...")
+            time.sleep(1)
+            self.log_to_terminal("UPLINK ESTABLISHED. JARVIS GRANTED FULL CONTROL OF DESKTOP.")
+            self.status_text.value = f"SYSTEM STATUS: REMOTE_CONTROL ACTIVE -> {onion[:12]}"
+        else:
+            self.log_to_terminal("ERROR: INVALID 2FA TOKEN. ACCESS DENIED.")
+            self.status_text.value = "SYSTEM STATUS: UPLINK_REJECTED"
+        
         self.page.update()
 
     def log_to_terminal(self, text):
