@@ -1,13 +1,5 @@
-flet==0.85.1
+flet
+grpcio
+grpcio-tools
 httpx
 cryptography
-paho-mqtt
-pycryptodome
-argon2-cffi
-sqlite3
-requests
-paramiko
-samloader-py
-mtkclient
-pyusb
-pyotp

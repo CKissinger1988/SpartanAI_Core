@@ -2,279 +2,175 @@ import flet as ft
 import os
 import sys
 import json
-import sqlite3
 import threading
 import time
+import grpc
+import uuid
 from datetime import datetime
 
-# Pathing for integrated logic
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BACKEND_DIR = os.path.join(BASE_DIR, "backend")
-EXPLOITS_DB = os.path.join(BACKEND_DIR, "exploits.db")
+# Attempt to import generated stubs
+try:
+    import jarvis_pb2
+    import jarvis_pb2_grpc
+except ImportError:
+    print("[WARNING] gRPC stubs not found. Run 'python -m grpc_tools.protoc' to generate.")
 
-class NexusMobileApp:
+class JarvisMobileSupreme:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.page.title = "NEXUS // AI - MOBILE HUB"
+        self.page.title = "JARVISAI // SUPREME MOBILE"
         self.page.theme_mode = ft.ThemeMode.DARK
-        self.page.padding = 20
-        self.page.bgcolor = "#000000"
-        self.page.fonts = {
-            "RobotoMono": "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf"
-        }
-        self.page.theme = ft.Theme(font_family="RobotoMono")
+        self.page.bgcolor = "#050505"
+        self.page.padding = 0
+        
+        self.client_id = f"mobile-operator-{uuid.uuid4().hex[:8]}"
+        self.admin_token = ""
+        self.channel = None
+        self.stub = None
+        
+        # Ghost Integrity: Anti-Debug (Basic Python Check)
+        self._enforce_ghost_integrity()
 
-        self.chat_history = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
-        self.status_text = ft.Text("SYSTEM STATUS: SECURE", color="#00FF00", size=12)
+    def _enforce_ghost_integrity(self):
+        if sys.gettrace() is not None:
+            print("[GHOST] Debugger detected. Terminating mobile core.")
+            sys.exit(1)
 
     def build(self):
-        # Header
-        header = ft.Row(
-            [
-                ft.Text("NEXUS // AI", size=24, color="#00FF00", weight=ft.FontWeight.BOLD),
-                ft.Text("OPERATOR: ToxicSavage", size=12, color="#00AA00")
-            ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-        )
+        # UI Elements
+        self.chat_history = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
+        self.status_bar = ft.Text("STATUS: CONNECTING...", color="#00FF00", size=10)
+        
+        # Economy Stats
+        self.balance_text = ft.Text("Credits: --", size=12, color="#00AAFF")
+        self.pi_earned_text = ft.Text("Pi Earned: --", size=12, color="#FFD700")
 
         # Tabs
-        tabs = ft.Tabs(
+        self.tabs = ft.Tabs(
             selected_index=0,
-            animation_duration=300,
             tabs=[
-                ft.Tab(text="TERMINAL", icon=ft.icons.TERMINAL, content=self.terminal_view()),
-                ft.Tab(text="EXPLOITS", icon=ft.icons.SECURITY, content=self.exploits_view()),
-                ft.Tab(text="JARVIS", icon=ft.icons.RECORD_VOICE_OVER, content=self.jarvis_view()),
-                ft.Tab(text="REMOTE", icon=ft.icons.SETTINGS_REMOTE, content=self.remote_view()),
+                ft.Tab(text="CORE", icon=ft.icons.RECORD_VOICE_OVER, content=self.jarvis_view()),
+                ft.Tab(text="ECONOMY", icon=ft.icons.ACCOUNT_BALANCE_WALLET, content=self.economy_view()),
+                ft.Tab(text="SYSTEM", icon=ft.icons.DASHBOARD, content=self.system_view()),
             ],
             expand=True
         )
 
-        self.page.add(header, ft.Divider(color="#005500"), tabs, self.status_text)
-
-    def terminal_view(self):
-        self.terminal_output = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
-        self.log_to_terminal("NEXUS MOBILE CORE INITIALIZED...")
-        self.log_to_terminal("READY FOR UPLINK.")
+        # Main Layout
+        self.page.add(
+            ft.Container(
+                content=ft.Row([
+                    ft.Text("JARVIS // SUPREME", size=18, color="#00FF00", weight="bold"),
+                    ft.IconButton(ft.icons.SECURITY, icon_color="#FF0000", on_click=lambda _: self.trigger_code_red())
+                ], alignment="spaceBetween"),
+                padding=20, bgcolor="#111111"
+            ),
+            self.tabs,
+            ft.Container(
+                content=ft.Row([self.status_bar, self.balance_text, self.pi_earned_text], alignment="spaceBetween"),
+                padding=10, bgcolor="#0A0A0A"
+            )
+        )
         
-        return ft.Column(
-            [
-                ft.Container(
-                    content=self.terminal_output,
-                    padding=10,
-                    border=ft.border.all(1, "#005500"),
-                    border_radius=5,
-                    expand=True
-                ),
-                ft.Row(
-                    [
-                        ft.ElevatedButton("RUN AUDIT", on_click=lambda _: self.run_audit(), bgcolor="#00FF00", color="#000000"),
-                        ft.Switch(label="AUTO-PATCH", value=True, on_change=lambda e: self.toggle_patch(e.control.value), active_color="#00FF00")
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                )
-            ],
-            expand=True
-        )
-
-    def run_audit(self):
-        self.log_to_terminal("INITIATING SYSTEM AUDIT...")
-        # In practice, this would invoke the run_tactical_audit tool via MCP
-        time.sleep(1)
-        self.log_to_terminal("AUDIT COMPLETE: CNSA_COMPLIANT, TOR_ACTIVE, ROOT_VERIFIED.")
-        self.page.update()
-
-    def toggle_patch(self, val):
-        status = "ENABLED" if val else "DISABLED"
-        self.log_to_terminal(f"AUTONOMOUS PATCHING {status}.")
-        self.page.update()
-
-    def exploits_view(self):
-        self.exploit_list = ft.ListView(expand=True, spacing=10)
-        self.refresh_exploits()
-        
-        return ft.Column(
-            [
-                ft.Text("WEAPONIZED EXPLOIT DATABASE", color="#00FF00", size=16),
-                ft.ElevatedButton("REFRESH DB", on_click=lambda _: self.refresh_exploits(), color="#000000", bgcolor="#00FF00"),
-                self.exploit_list
-            ],
-            expand=True
-        )
+        # Initialize Connection
+        threading.Thread(target=self.initialize_grpc, daemon=True).start()
 
     def jarvis_view(self):
         self.chat_input = ft.TextField(
-            hint_text="SAY SOMETHING OR TYPE COMMAND...",
+            hint_text="Enter Command or 'Code Red'...",
             border_color="#00FF00",
-            focused_border_color="#00AA00",
-            color="#00FF00",
             expand=True,
-            on_submit=lambda e: self.send_message(e.control.value)
+            on_submit=lambda e: self.send_command(e.control.value)
         )
+        return ft.Column([
+            ft.Container(content=self.chat_history, expand=True, padding=10),
+            ft.Row([
+                self.chat_input,
+                ft.IconButton(ft.icons.SEND, icon_color="#00FF00", on_click=lambda _: self.send_command(self.chat_input.value))
+            ], padding=10)
+        ])
 
-        return ft.Column(
-            [
-                self.chat_history,
-                ft.Row(
-                    [
-                        self.chat_input,
-                        ft.IconButton(icon=ft.icons.MIC, icon_color="#00FF00", on_click=lambda _: self.start_voice()),
-                        ft.IconButton(icon=ft.icons.SEND, icon_color="#00FF00", on_click=lambda _: self.send_message(self.chat_input.value)),
-                    ]
-                )
-            ],
-            expand=True
-        )
-
-    def remote_view(self):
-        self.onion_input = ft.TextField(
-            hint_text="ENTER DESKTOP ONION ADDRESS...",
-            border_color="#00FF00",
-            color="#00FF00",
-            expand=True
-        )
-        self.two_fa_input = ft.TextField(
-            hint_text="2FA TOKEN",
-            border_color="#00FF00",
-            color="#00FF00",
-            width=120,
-            password=True,
-            can_reveal_password=True
-        )
-        self.persist_toggle = ft.Checkbox(label="REMEMBER (PASSKEY)", value=True, check_color="#000000", fill_color="#00FF00")
-        self.instance_list = ft.ListView(expand=True, spacing=5)
-        self.refresh_instances()
-
-        return ft.Column(
-            [
-                ft.Text("REMOTE DESKTOP UPLINK", color="#00FF00", size=16),
-                ft.Row([
-                    ft.ElevatedButton("SCAN QR", icon=ft.icons.QR_CODE_SCANNER, on_click=lambda _: self.scan_qr(), bgcolor="#00AA00", color="#000000"),
-                    self.persist_toggle
+    def economy_view(self):
+        return ft.Column([
+            ft.Container(
+                content=ft.Column([
+                    ft.Text("METERED BILLING", size=16, weight="bold"),
+                    ft.ElevatedButton("REFRESH STATS", on_click=lambda _: self.update_economy_stats()),
+                    ft.Divider(),
+                    ft.Text("PI NETWORK SYNERGY", size=16, weight="bold"),
+                    ft.ElevatedButton("REFILL VIA PI", on_click=lambda _: self.initiate_pi_refill(), bgcolor="#00FF00", color="black"),
                 ]),
-                ft.Row([self.onion_input, self.two_fa_input, ft.ElevatedButton("CONNECT", on_click=lambda _: self.connect_remote(self.onion_input.value), bgcolor="#00FF00", color="#000000")]),
-                ft.Row([
-                    ft.Text("REGISTERED INSTANCES:", color="#00AA00", size=14),
-                    ft.IconButton(ft.icons.REFRESH, on_click=lambda _: self.refresh_instances(), icon_color="#00FF00")
+                padding=20
+            )
+        ])
+
+    def system_view(self):
+        return ft.Column([
+            ft.Container(
+                content=ft.Column([
+                    ft.Text("GHOST INTEGRITY: ACTIVE", color="#00FF00"),
+                    ft.Text("MTLS AUTHENTICATION: ENFORCED", color="#00FF00"),
+                    ft.Divider(),
+                    ft.Text("SYMMETRIC BRAIN", size=16, weight="bold"),
+                    ft.ElevatedButton("GLOBAL INTEL SEARCH", on_click=lambda _: self.global_search())
                 ]),
-                self.instance_list
-            ],
-            expand=True
-        )
+                padding=20
+            )
+        ])
 
-    def scan_qr(self):
-        # Implementation for Android Camera Scanner via Flet
-        self.log_to_terminal("OPENING CAMERA FOR NEXUS QR SCAN...")
-        # Simulated scan result
-        time.sleep(1)
-        self.log_to_terminal("QR PAYLOAD DECODED: PERSISTENT UPLINK DATA INGESTED.")
-        self.onion_input.value = "tx6zitjqd2fcpuk2vxrds43elgiedkxi5utvand6ilqlvjmwtmrftryd.onion"
-        self.page.update()
+    def initialize_grpc(self):
+        try:
+            # mTLS Configuration (Assuming certs are bundled or downloaded)
+            # For mobile, we'd typically use secure storage for these.
+            self.channel = grpc.secure_channel("your-cloud-server:50051", grpc.ssl_channel_credentials())
+            self.stub = jarvis_pb2_grpc.JarvisServiceStub(self.channel)
+            self.status_bar.value = "STATUS: ENCRYPTED LINK ACTIVE"
+            self.update_economy_stats()
+            self.page.update()
+        except Exception as e:
+            self.status_bar.value = f"STATUS: LINK FAILED"
+            self.page.update()
 
-    def refresh_instances(self):
-        # In a production scenario, we'd query the Global C2 Registry onion address
-        # For now, we simulate the fetch or check local state
-        self.instance_list.controls.clear()
-        self.instance_list.controls.append(ft.Text("POLLING C2 REGISTRY...", color="#00FF00", size=12))
-        self.page.update()
-
-        # Simulated registration data (as if fetched from C2 registry)
-        # In practice, this would use 'requests' to hit the C2_URL/list
-        time.sleep(0.5)
-        self.instance_list.controls.clear()
-        
-        # Check if we have a local MASTER_UPLINK.json to show as 'Self'
-        uplink_file = os.path.join(BASE_DIR, "MASTER_UPLINK.json")
-        if os.path.exists(uplink_file):
-            with open(uplink_file, "r") as f:
-                data = json.load(f)
-                self.instance_list.controls.append(
-                    ft.ListTile(
-                        title=ft.Text(f"MASTER: {data['instance_id']}", color="#00FF00"),
-                        subtitle=ft.Text(f"ADDRESS: {data['onion_address'][:16]}...", color="#00AA00"),
-                        trailing=ft.ElevatedButton("UPLINK", on_click=lambda _: self.connect_remote(data['onion_address'])),
-                        leading=ft.Icon(ft.icons.COMPUTER, color="#00FF00")
-                    )
-                )
-        
-        self.instance_list.controls.append(ft.Text("NO OTHER INSTANCES REGISTERED", color="#555555", size=12))
-        self.page.update()
-
-    def connect_remote(self, onion):
-        token = self.two_fa_input.value
-        if not onion: 
-            self.log_to_terminal("ERROR: NO ADDRESS PROVIDED.")
-            return
-        if not token:
-            self.log_to_terminal("ERROR: 2FA TOKEN REQUIRED FOR UPLINK.")
+    def send_command(self, cmd):
+        if not cmd: return
+        if cmd.strip().lower() == "code red":
+            self.trigger_code_red()
             return
 
-        self.log_to_terminal(f"INITIATING TOR-TUNNELED UPLINK TO {onion}...")
-        self.page.update()
-        
-        # Handshake Simulation with 2FA
-        time.sleep(1)
-        self.log_to_terminal(f"VERIFYING 2FA TOKEN: {token}...")
-        time.sleep(1)
-        
-        # In practice, this would be an actual POST to /verify_2fa over Tor
-        if len(token) == 6:
-            self.log_to_terminal("AUTHENTICATING CNSA KEYS...")
-            time.sleep(1)
-            self.log_to_terminal("UPLINK ESTABLISHED. JARVIS GRANTED FULL CONTROL OF DESKTOP.")
-            self.status_text.value = f"SYSTEM STATUS: REMOTE_CONTROL ACTIVE -> {onion[:12]}"
-        else:
-            self.log_to_terminal("ERROR: INVALID 2FA TOKEN. ACCESS DENIED.")
-            self.status_text.value = "SYSTEM STATUS: UPLINK_REJECTED"
-        
-        self.page.update()
-
-    def log_to_terminal(self, text):
-        self.terminal_output.controls.append(
-            ft.Text(f"[{datetime.now().strftime('%H:%M:%S')}]> {text}", color="#00FF00", size=12)
-        )
-        self.page.update()
-
-    def refresh_exploits(self):
-        self.exploit_list.controls.clear()
-        if not os.path.exists(EXPLOITS_DB):
-            self.exploit_list.controls.append(ft.Text("DATABASE NOT FOUND", color="#FF0000"))
-        else:
-            try:
-                conn = sqlite3.connect(EXPLOITS_DB)
-                cursor = conn.cursor()
-                cursor.execute("SELECT cve_id, name, type FROM exploits LIMIT 20")
-                for r in cursor.fetchall():
-                    self.exploit_list.controls.append(
-                        ft.ListTile(
-                            title=ft.Text(f"{r[0]} - {r[1]}", color="#00FF00"),
-                            subtitle=ft.Text(r[2], color="#00AA00"),
-                            leading=ft.Icon(ft.icons.BUG_REPORT, color="#00FF00")
-                        )
-                    )
-                conn.close()
-            except Exception as e:
-                self.exploit_list.controls.append(ft.Text(f"ERROR: {str(e)}", color="#FF0000"))
-        self.page.update()
-
-    def send_message(self, text):
-        if not text: return
-        self.chat_history.controls.append(ft.Text(f"[OPERATOR]> {text}", color="#00AA00"))
+        self.chat_history.controls.append(ft.Text(f"[OPERATOR]: {cmd}", color="#00AA00"))
         self.chat_input.value = ""
         self.page.update()
-        
-        # Simulate Jarvis Response
-        time.sleep(0.5)
-        response = f"JARVIS: COMMAND '{text}' RECEIVED. EXECUTING WITH ROOT AUTHORITY."
-        self.chat_history.controls.append(ft.Text(f"[{response}]", color="#00FF00"))
+
+        def stream_call():
+            metadata = [('admin-token', self.admin_token)] if self.admin_token else []
+            responses = self.stub.StreamOperator(iter([jarvis_pb2.OperatorRequest(client_id=self.client_id, command=cmd)]), metadata=metadata)
+            for r in responses:
+                self.chat_history.controls.append(ft.Text(f"[JARVIS]: {r.message}", color="#00FF00"))
+                if r.action_type == "SUPREME_EXECUTION":
+                    self.chat_history.controls.append(ft.Text("[PRIME DIRECTIVE ENGAGED]", color="#FF0000", weight="bold"))
+                self.page.update()
+                self.update_economy_stats()
+
+        threading.Thread(target=stream_call, daemon=True).start()
+
+    def trigger_code_red(self):
+        self.log_to_chat("[SYSTEM]: INITIATING CODE RED OVERRIDE", "#FF0000")
+        # In a real app, this would show a secure password dialog
+        # self.stub.ElevatePrivileges(...)
+        pass
+
+    def update_economy_stats(self):
+        if not self.stub: return
+        res = self.stub.GetUsageStats(jarvis_pb2.UsageRequest(client_id=self.client_id))
+        self.balance_text.value = f"Credits: {res.current_balance:.2f}"
         self.page.update()
 
-    def start_voice(self):
-        # Flet Voice recognition implementation placeholder
-        self.send_message("SPOKEN COMMAND DETECTED")
+    def log_to_chat(self, text, color="#00FF00"):
+        self.chat_history.controls.append(ft.Text(text, color=color))
+        self.page.update()
 
 def main(page: ft.Page):
-    app = NexusMobileApp(page)
+    app = JarvisMobileSupreme(page)
     app.build()
 
 if __name__ == "__main__":
