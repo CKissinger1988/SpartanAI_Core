@@ -31,6 +31,14 @@ class Jeeves:
             self.user_role = "Creator"
             print(f"\n{GREEN}{BOLD}Jeeves: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
+
+        # Public Profile Registration (KYC)
+        if command.startswith("register "):
+            username = command.split(" ")[1]
+            # Simulate scraping
+            raw_data = "Public user profile metadata."
+            self.sovereignty.create_profile(username, raw_data)
+            return True
             
         # Public vs. Creator logic
         if self.user_role == "Public":

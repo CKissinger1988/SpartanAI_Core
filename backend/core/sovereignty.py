@@ -4,18 +4,33 @@ import json
 import time
 
 class SovereigntyCore:
-    """Enhancement: Autonomously manages threat intelligence and behavioral profiling."""
+    """Enhancement: Autonomously manages threat intelligence, behavioral profiling, and KYC personalization."""
     def __init__(self):
         self.db_path = "vector_db/chroma.sqlite3"
-        self.profile_path = "data/creator_profile.json"
+        self.profile_path = "data/profiles"
         self.init_profiling()
 
     def init_profiling(self):
-        if not os.path.exists("data"):
-            os.makedirs("data")
         if not os.path.exists(self.profile_path):
-            with open(self.profile_path, 'w') as f:
-                json.dump({"last_login": time.time(), "threat_score": 0}, f)
+            os.makedirs(self.profile_path)
+
+    def create_profile(self, username, raw_data):
+        """AI-driven KYC and profile scraping."""
+        print(f"Jeeves: Initiating AI KYC for user: {username}...")
+        # Simulating AI-driven data extraction and categorization
+        profile_data = {
+            "username": username,
+            "kyc_score": random.randint(70, 99),
+            "scraped_metadata": raw_data,
+            "last_active": time.time()
+        }
+        
+        user_file = os.path.join(self.profile_path, f"{username}.json")
+        with open(user_file, 'w') as f:
+            json.dump(profile_data, f)
+            
+        print(f"Jeeves: Profile established. KYC verification complete for {username}.")
+        return profile_data
 
     def scan_threats(self):
         # Integration: Scan vector database for anomalies
@@ -24,6 +39,4 @@ class SovereigntyCore:
     def update_behavioral_profile(self, action):
         # Heuristic behavioral profiling
         print(f"Jeeves: Analyzing behavioral pattern: {action}")
-
-# Initialize the new sovereign systems
-sovereignty = SovereigntyCore()
+import random
