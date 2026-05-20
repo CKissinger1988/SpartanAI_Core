@@ -33,7 +33,7 @@ gcloud compute instances create "$INSTANCE_NAME" \
     --metadata="startup-script='
         # Auto-configure OS & Hardening
         apt update && apt upgrade -y
-        apt install -y ufw fail2ban tor docker.io git python3-pip python3-venv openssl dos2unix
+        apt install -y ufw fail2ban tor docker.io docker-compose git python3-pip python3-venv openssl dos2unix
         
         # Enable Core Services
         systemctl enable --now docker tor
@@ -51,7 +51,7 @@ echo "Synchronizing Supreme Core assets and identities..."
 # Ensure local certs are generated
 if [ ! -d "certs" ]; then
     echo "Generating fresh mTLS identities..."
-    # (Self-contained certificate generation logic could go here)
+    # A local script or openssl commands should be run here by the user
 fi
 
 # Clone and Prep
@@ -62,28 +62,33 @@ gcloud compute ssh "$INSTANCE_NAME" --zone="$ZONE" --project="$PROJECT_ID" --com
     cd JarvisAI_Core/cloud_backend
     # Create persistent storage directories
     mkdir -p certs knowledge evolution
-    # Setup venv
+    # Setup venv to compile stubs before building Docker container
     python3 -m venv venv
     ./venv/bin/pip install --upgrade pip
     ./venv/bin/pip install -r requirements.txt
     # Generate stubs
     ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/jarvis.proto
+    ./venv/bin/python -m grpc_tools.protoc -I=../proto --python_out=. --grpc_python_out=. ../proto/vault.proto
 "
 
 # Transfer Identities
 gcloud compute scp --recurse certs "$INSTANCE_NAME":~/JarvisAI_Core/cloud_backend/ --zone="$ZONE" --project="$PROJECT_ID"
 
-# 4. Launch Autonomous Service
-echo "Activating JarvisAI Central Intelligence..."
+# 4. Launch Autonomous Service via Docker Compose
+echo "Activating JarvisAI Central Intelligence Multi-Container Vault System..."
 gcloud compute ssh "$INSTANCE_NAME" --zone="$ZONE" --project="$PROJECT_ID" --command="
     cd ~/JarvisAI_Core/cloud_backend
     export GRPC_PORT=$GRPC_PORT
-    # Run using nohup for persistence
-    nohup ./venv/bin/python main.py > jarvis_active.log 2>&1 &
+    export VAULT_KEY_LIGHT=\$(python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+    export VAULT_KEY_SHADOW=\$(python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')
+    
+    # Rebuild and start the containers
+    sudo docker-compose build
+    sudo docker-compose up -d
 "
 
 EXTERNAL_IP=$(gcloud compute instances describe "$INSTANCE_NAME" --zone="$ZONE" --project="$PROJECT_ID" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
 
 echo "--- Perfection Deployment SUCCESS ---"
 echo "JarvisAI Central Core is LIVE at: $EXTERNAL_IP"
-echo "Prime Directive engaged. Symmetric Brain online. Pi Synergy active."
+echo "Prime Directive engaged. Encrypted Brain Vaults online. Pi Synergy active."
