@@ -64,14 +64,27 @@ def check_anonymity():
 
 def run_full_audit():
     print(f"[*] Jarvis: Initiating Full System Tactical Audit...")
+    
+    is_root = os.getuid() == 0
+    
+    # Root-dependent capability checklist
+    root_capabilities = {
+        "direct_hw_access": "LOCKED" if not is_root else "UNLOCKED",
+        "global_tor_proxy": "LOCKED" if not is_root else "UNLOCKED",
+        "wifi_packet_injection": "LOCKED" if not is_root else "UNLOCKED",
+        "protected_fs_write": "LOCKED" if not is_root else "UNLOCKED",
+        "kernel_audit_bypass": "LOCKED" if not is_root else "UNLOCKED"
+    }
+
     audit = {
         "timestamp": datetime.now().isoformat(),
         "hostname": socket.gethostname(),
         "security": check_cnsa_compliance(),
         "anonymity": check_anonymity(),
         "hardware": {
-            "root_integrity": "SECURE" if os.getuid() == 0 else "VULNERABLE (NON-ROOT)",
-            "os": sys.platform
+            "root_integrity": "SECURE (ROOT)" if is_root else "VULNERABLE (NON-ROOT)",
+            "os": sys.platform,
+            "capabilities": root_capabilities
         }
     }
     return audit
