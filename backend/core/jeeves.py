@@ -4,6 +4,7 @@ from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.sovereignty_upgrades import RedTeamSimulator, SwarmCoordinator
 from backend.core.sentinel import SentinelRedundancy
+from backend.core.efficiency_engine import EfficiencyEngine
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -21,7 +22,8 @@ class Jeeves:
         self.adb = RemoteADBManager()
         self.red_team = RedTeamSimulator()
         self.swarm = SwarmCoordinator()
-        self.sentinel = SentinelRedundancy() # Redundancy system
+        self.sentinel = SentinelRedundancy()
+        self.efficiency = EfficiencyEngine() # Efficiency engine
 
     def handle_command(self, command):
         """Processes voice/text commands with hierarchical access."""
