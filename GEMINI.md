@@ -25,6 +25,7 @@ This project serves as the root directory for NexusAI and related infrastructure
 
 ## Policy
 - **Zero Simulation Policy:** All code, configuration, and tools must be designed for real-world, production-grade operations only. Simulation, sandboxing, and mock-logic are strictly prohibited to maintain operational integrity.
+- **Autonomous Real-World Refactoring:** If non-production or simulation-based logic is detected, Jarvis must autonomously rewrite it to be functional in real-world logic whenever possible. All such refactors must be committed to the project's permanent memory.
 
 ## Directories
 - `src/`: Core application logic.

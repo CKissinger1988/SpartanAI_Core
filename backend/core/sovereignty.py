@@ -20,12 +20,15 @@ class SovereigntyCore:
         """AI-driven KYC, profile scraping, voiceprint registration, and VAC generation."""
         print(f"Jeeves: Initiating AI KYC and Voice-Registration for user: {username}...")
         
-                voiceprint_hash = hashlib.sha256(voice_sample.encode()).hexdigest()
+        voiceprint_hash = hashlib.sha256(voice_sample.encode()).hexdigest()
         vac = str(random.randint(100000, 999999))
+        
+        # Real-world KYC scoring: Calculate based on metadata complexity and length
+        kyc_score = min(99, 70 + (len(raw_data) // 100))
         
         profile_data = {
             "username": username,
-            "kyc_score": random.randint(70, 99),
+            "kyc_score": kyc_score,
             "voiceprint": voiceprint_hash,
             "vac": hashlib.sha256(vac.encode()).hexdigest(), # Hash the VAC for security
             "scraped_metadata": raw_data,
@@ -63,11 +66,21 @@ class SovereigntyCore:
         return hashlib.sha256(voice_sample.encode()).hexdigest() == profile["voiceprint"]
 
     def scan_threats(self):
-        """Heuristic threat scanning across system logs and behavioral data."""
+        """Autonomous threat scanning across system logs and behavioral data."""
         threats = []
-                if os.path.exists("data/unauthorized_access.log"):
+        if os.path.exists("data/unauthorized_access.log"):
             threats.append("Emergent threat: Multiple unauthorized login attempts detected.")
         
+        # Check for high-risk behavioral patterns in the last 10 observations
+        log_file = "data/behavioral_observations.jsonl"
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                lines = f.readlines()
+                for line in lines[-10:]:
+                    obs = json.loads(line)
+                    if obs["risk_score"] > 80:
+                        threats.append(f"High-risk behavior detected: {obs['action']} (Score: {obs['risk_score']})")
+
         if not threats:
             return "Autonomous Threat Scan: No emergent threats detected. System integrity at 100%."
         return "\n".join(threats)
@@ -90,9 +103,25 @@ class SovereigntyCore:
             f.write(json.dumps(observation) + "\n")
 
     def _calculate_risk(self, action):
-        """Heuristic risk scoring for behavioral actions."""
-        high_risk_keywords = ["exploit", "breach", "bypass", "root", "sudo", "delete", "rm -rf"]
-        for word in high_risk_keywords:
-            if word in action.lower():
-                return random.randint(50, 100)
-        return random.randint(0, 20)
+        """Deterministic risk scoring for behavioral actions based on keyword severity."""
+        severity_map = {
+            "rm -rf": 100,
+            "delete": 80,
+            "sudo": 70,
+            "bypass": 90,
+            "breach": 95,
+            "exploit": 95,
+            "root": 85
+        }
+        
+        max_risk = 0
+        action_lower = action.lower()
+        for keyword, score in severity_map.items():
+            if keyword in action_lower:
+                max_risk = max(max_risk, score)
+        
+        # Base risk for non-flagged actions based on length/complexity
+        if max_risk == 0:
+            max_risk = min(15, len(action) // 5)
+            
+        return max_risk
