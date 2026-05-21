@@ -3,24 +3,37 @@ import json
 import subprocess
 import os
 
+from backend.core.brain_bridge import BrainBridge
+from backend.core.hexstrike_client import HexstrikeEngine
+
 class LocalIntelligence:
     """Manages local LLM inference via Ollama for sovereign intelligence operations."""
     def __init__(self):
         self.endpoint = "http://localhost:11434/api/generate"
         self.model = "llama3:8b-instruct-q4_K_M" # Recommended for 16GB RAM
+        self.brain = BrainBridge()
+        self.hexstrike = HexstrikeEngine()
 
     def generate_response(self, prompt, system_prompt="You are Jarvis, a sovereign AI for the NexusAI ecosystem."):
+        # Feed directly from brain context
+        context = self.brain.get_tactical_context(prompt)
+        
+        enhanced_prompt = f"TACTICAL CONTEXT FROM BRAIN:\n{context}\n\nUSER DIRECTIVE:\n{prompt}"
+        
         payload = {
             "model": self.model,
-            "prompt": prompt,
+            "prompt": enhanced_prompt,
             "system": system_prompt,
             "stream": False
         }
         
         try:
-            response = requests.post(self.endpoint, json=payload, timeout=30)
+            response = requests.post(self.endpoint, json=payload, timeout=60)
             if response.status_code == 200:
-                return response.json().get('response', "Intelligence error: Empty response.")
+                result = response.json().get('response', "Intelligence error: Empty response.")
+                # Commit new interaction to brain memory
+                self.brain.feed_brain(f"Directive: {prompt}\nResponse: {result}")
+                return result
             return f"Intelligence error: Code {response.status_code}"
         except Exception as e:
             return f"Intelligence error: Local server unreachable ({e})"
