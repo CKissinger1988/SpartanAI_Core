@@ -8,13 +8,13 @@ def main(page: ft.Page):
     page.bgcolor = "#0a0a0a"
 
     # Status indicators
-    status_text = ft.Text("SYSTEMS NOMINAL", color=ft.colors.GREEN_400, weight=ft.FontWeight.BOLD)
+    status_text = ft.Text("SYSTEMS NOMINAL", color=ft.Colors.GREEN_400, weight=ft.FontWeight.BOLD)
     
     # Progress bars
     def create_metric(name):
         return ft.Column([
-            ft.Text(name, color=ft.colors.CYAN_400, size=12),
-            ft.ProgressBar(value=random.random(), color=ft.colors.GREEN_400, bgcolor=ft.colors.GREY_900)
+            ft.Text(name, color=ft.Colors.CYAN_400, size=12),
+            ft.ProgressBar(value=random.random(), color=ft.Colors.GREEN_400, bgcolor=ft.Colors.GREY_900)
         ])
 
     metrics = ft.Column([
@@ -25,10 +25,10 @@ def main(page: ft.Page):
     ])
 
     page.add(
-        ft.Text("NEXUS // AI // TACTICAL STATUS", color=ft.colors.CYAN_400, size=20, weight=ft.FontWeight.BOLD),
+        ft.Text("NEXUS // AI // TACTICAL STATUS", color=ft.Colors.CYAN_400, size=20, weight=ft.FontWeight.BOLD),
         status_text,
         ft.Divider(),
         metrics
     )
 
-ft.app(target=main)
+ft.run(main)

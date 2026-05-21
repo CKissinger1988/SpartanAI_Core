@@ -6,11 +6,33 @@ window.electronAPI = {
         invoke: jest.fn().mockImplementation((channel, args) => {
             if (channel === 'auth.login') return Promise.resolve({ status: 'success', username: 'test', role: 'operator' });
             if (channel === 'system.getStats') return Promise.resolve({ cpu: 10, mem: 20 });
+            if (channel === 'system.getDetailedStatus') return Promise.resolve({
+                uplink: { status: 'SECURE' },
+                database: { status: 'SYNCED' },
+                scanner: { status: 'IDLE' },
+                exploitEngine: { status: 'IDLE' },
+                overall: 'NOMINAL'
+            });
             return Promise.resolve({});
         }),
         removeAllListeners: jest.fn()
     }
 };
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // Deprecated
+        removeListener: jest.fn(), // Deprecated
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+    })),
+});
 
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
@@ -39,12 +61,10 @@ describe('SentinelHub', () => {
     fireEvent.change(userInput, { target: { value: 'test' } });
     fireEvent.change(passInput, { target: { value: 'pass' } });
     
-    await act(async () => {
-        fireEvent.click(userBtn);
-    });
+    fireEvent.click(userBtn);
 
     await waitFor(() => {
-        expect(screen.getByText(/MAIN_SHELL/i)).toBeInTheDocument();
+        expect(screen.getByText(/IDS Log \(Suricata\)/i)).toBeInTheDocument();
     });
   });
 });

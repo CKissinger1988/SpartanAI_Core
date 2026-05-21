@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import AxiomV2 from './AxiomV2';
+import LoginComponent from './LoginComponent';
 
 const SentinelHub = () => {
-    const [user, setUser] = useState(isPreviewMode ? { username: 'ToxicSavage', role: 'master_admin' } : null);
+    const [user, setUser] = useState(null);
 
     if (!user) {
-        return (
-            <>
-                <ProfessionalBackground />
-                <LoginComponent onLogin={setUser} />
-            </>
-        );
+        return <LoginComponent onLogin={setUser} />;
     }
 
     return <AxiomV2 user={user} />;
