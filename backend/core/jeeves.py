@@ -1,8 +1,9 @@
 import subprocess
 import os
+import json
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
-from backend.core.sovereignty_upgrades import RedTeamSimulator, SwarmCoordinator
+from backend.core.sovereignty_upgrades import SwarmCoordinator, RedTeamSimulator
 from backend.core.sentinel import SentinelRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
@@ -21,7 +22,6 @@ class Jeeves:
         self.user_role = "Public"
         self.sovereignty = SovereigntyCore()
         self.adb = RemoteADBManager()
-        self.red_team = RedTeamSimulator()
         self.swarm = SwarmCoordinator()
         self.sentinel = SentinelRedundancy()
         self.efficiency = EfficiencyEngine()
@@ -36,14 +36,13 @@ class Jeeves:
         print(f"{CYAN}[TELEMETRY_ENCRYPTED]: Processing command: {command}{ENDC}")
         self.sovereignty.update_behavioral_profile(command)
         
-        # Creator Authentication Portal
+        # 1. Open Commands (Public Access)
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
             print(f"\n{GREEN}{BOLD}Jeeves: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
-        # Public Profile Registration (KYC)
         if command.startswith("register "):
             parts = command.split(" ")
             if len(parts) >= 3:
@@ -52,37 +51,80 @@ class Jeeves:
                 raw_data = "Public user profile metadata."
                 self.sovereignty.create_profile(username, raw_data, voice_sample)
                 return True
-            else:
-                print(f"{RED}Jeeves: Registration requires <username> <voice_sample>.{ENDC}")
-                return False
+            return False
 
-        # Voice/VAC Authentication
         if command.startswith("voice_login ") or command.startswith("vac_login "):
             is_vac = command.startswith("vac_login ")
             parts = command.split(" ")
             if len(parts) >= 3:
                 username = parts[1]
                 code = " ".join(parts[2:])
-                
                 authenticated = False
                 if is_vac:
-                    if self.sovereignty.verify_vac(username, code):
-                        authenticated = True
+                    if self.sovereignty.verify_vac(username, code): authenticated = True
                 else:
-                    if self.sovereignty.verify_voiceprint(username, code):
-                        authenticated = True
+                    if self.sovereignty.verify_voiceprint(username, code): authenticated = True
                 
                 if authenticated:
                     self.authenticated = True
                     self.user_role = "AuthenticatedUser"
                     print(f"{GREEN}Jeeves: Identity verified. Access granted, {username}.{ENDC}")
                     return True
-                else:
-                    print(f"{RED}Jeeves: Authentication mismatch. Access denied.{ENDC}")
-                    return False
             return False
-            
-        # ADB Command Proxy
+
+        if command in ["systems check", "systems status"]:
+            self.announce_status()
+            return True
+
+        if command == "scan threats":
+            print(f"{CYAN}{self.sovereignty.scan_threats()}{ENDC}")
+            return True
+
+        # 2. Restricted Commands (Authenticated/Creator only)
+        if self.user_role == "Public":
+            print(f"{RED}Jeeves: Insufficient privileges. Administrative control restricted to The Creator.{ENDC}")
+            return False
+
+        if command == "view observations":
+            log_file = "data/behavioral_observations.jsonl"
+            if os.path.exists(log_file):
+                print(f"\n{GREEN}{BOLD}--- BEHAVIORAL OBSERVATIONS ---{ENDC}")
+                with open(log_file, "r") as f:
+                    lines = f.readlines()
+                    for line in lines[-10:]:
+                        obs = json.loads(line)
+                        risk_color = RED if obs["risk_score"] > 50 else GREEN
+                        print(f"[{obs['timestamp']}] Action: {obs['action']} | Risk: {risk_color}{obs['risk_score']}{ENDC}")
+                return True
+            return False
+
+        if command == "sync swarm":
+            print(self.swarm.sync_nodes())
+            return True
+
+        if command == "simulate breach":
+            simulator = RedTeamSimulator()
+            print(simulator.run_simulation())
+            return True
+
+        if command == "purge simulations":
+            print(f"{CYAN}Jeeves: Initiating autonomous simulation purge...{ENDC}")
+            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
+            subprocess.run(['python', script_path])
+            return True
+
+        if command == "field prep":
+            print(f"{RED}{BOLD}Jeeves: INITIATING SECURE FIELD SANITIZATION PROTOCOL...{ENDC}")
+            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
+            subprocess.run(['python', script_path, '--field'])
+            return True
+
+        if command == "full production":
+            print(f"{RED}{BOLD}Jeeves: INITIATING FULL PRODUCTION ARSENAL DEPLOYMENT...{ENDC}")
+            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
+            subprocess.run(['python', script_path, '--full-prod'])
+            return True
+
         if command.startswith("adb_cmd "):
             parts = command.split(" ")
             if len(parts) >= 3:
@@ -93,41 +135,17 @@ class Jeeves:
                 return True
             return False
 
-        if self.user_role == "Public":
-            if command in ["systems check", "systems status"]:
-                self.announce_status()
-                return True
-            else:
-                print(f"{RED}Jeeves: Insufficient privileges. Administrative control restricted to The Creator.{ENDC}")
-                return False
-
-        # Creator-only administrative commands
+        # Creator-specific
         if self.user_role == "Creator":
-            if command in ["systems check", "systems status"]:
-                self.announce_status()
-                return True
-            elif command == "threat scan":
-                threats = self.sovereignty.scan_threats()
-                print(f"{CYAN}{threats}{ENDC}")
-                return True
-            elif command == "run_sim":
-                result = self.red_team.run_simulation()
-                print(f"{CYAN}{result}{ENDC}")
-                return True
-            elif command == "swarm_sync":
-                result = self.swarm.sync_nodes()
-                print(f"{CYAN}{result}{ENDC}")
-                return True
-            elif command == "init_qr":
+            if command == "init_qr":
                 print(f"{CYAN}Jeeves: Initiating quantum-resistant communication handshake...{ENDC}")
                 return True
             elif command == "shutdown":
                 print(f"{CYAN}Jeeves: Initiating total shutdown at Creator's request.{ENDC}")
                 return True
-            else:
-                print(f"{CYAN}Jeeves: Awaiting administrative override, Creator.{ENDC}")
-                return True
-        return False
+
+        print(f"{CYAN}Jeeves: Command recognized but no specific handler for current role.{ENDC}")
+        return True
 
     def announce_status(self):
         """Runs the status check script and announces results."""

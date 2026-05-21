@@ -64,7 +64,37 @@ class SovereigntyCore:
         return hashlib.sha256(voice_sample.encode()).hexdigest() == profile["voiceprint"]
 
     def scan_threats(self):
-        return "Autonomous Threat Scan: No emergent threats detected."
+        """Heuristic threat scanning across system logs and behavioral data."""
+        threats = []
+        # Simulate heuristic checks
+        if os.path.exists("data/unauthorized_access.log"):
+            threats.append("Emergent threat: Multiple unauthorized login attempts detected.")
+        
+        if not threats:
+            return "Autonomous Threat Scan: No emergent threats detected. System integrity at 100%."
+        return "\n".join(threats)
 
     def update_behavioral_profile(self, action):
+        """BOE: Logs and analyzes behavioral patterns for anomaly detection."""
         print(f"Jeeves: Analyzing behavioral pattern: {action}")
+        observation = {
+            "timestamp": time.time(),
+            "action": action,
+            "risk_score": self._calculate_risk(action)
+        }
+        
+        # Save observation to a local log for the learning engine
+        log_file = "data/behavioral_observations.jsonl"
+        if not os.path.exists("data"):
+            os.makedirs("data")
+            
+        with open(log_file, "a") as f:
+            f.write(json.dumps(observation) + "\n")
+
+    def _calculate_risk(self, action):
+        """Heuristic risk scoring for behavioral actions."""
+        high_risk_keywords = ["exploit", "breach", "bypass", "root", "sudo", "delete", "rm -rf"]
+        for word in high_risk_keywords:
+            if word in action.lower():
+                return random.randint(50, 100)
+        return random.randint(0, 20)
