@@ -19,8 +19,7 @@ class SentinelRedundancy:
     def spawn_failover(self):
         """Instantiates a secondary Jarvis node."""
         print("[SENTINEL]: ALERT - Orchestrator instability detected. Spawning failover instance...")
-        # Simulate spawning new instance
-        return True
+                return True
 
 # Sentinel instance
 sentinel = SentinelRedundancy()

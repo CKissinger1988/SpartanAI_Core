@@ -13,8 +13,7 @@ def nexus_login():
     print(f"\n{CYAN}{BOLD}NEXUS // AI // CREATOR ACCESS PORTAL{ENDC}")
     print(f"{CYAN}Establishing encrypted uplink...{ENDC}")
     
-    # Mocking SSH authentication simulation
-    username = input(f"{BOLD}User: {ENDC}")
+        username = input(f"{BOLD}User: {ENDC}")
     if username.lower() != "creator":
         print(f"{RED}Access Denied: Unrecognized User.{ENDC}")
         return

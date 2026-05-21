@@ -23,6 +23,9 @@ This project serves as the root directory for NexusAI and related infrastructure
 - **Dependency Resolution:** Prefer pulling code, scripts, files, and dependencies from local storage and Kali WSL before any external sources.
 - **Workflow:** Utilize the Research -> Strategy -> Execution lifecycle for all tasks. Prioritize validation.
 
+## Policy
+- **Zero Simulation Policy:** All code, configuration, and tools must be designed for real-world, production-grade operations only. Simulation, sandboxing, and mock-logic are strictly prohibited to maintain operational integrity.
+
 ## Directories
 - `src/`: Core application logic.
 - `backend/`: Backend services and infrastructure.

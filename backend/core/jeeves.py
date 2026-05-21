@@ -3,7 +3,7 @@ import os
 import json
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
-from backend.core.sovereignty_upgrades import SwarmCoordinator, RedTeamSimulator
+from backend.core.swarm import SwarmCoordinator
 from backend.core.sentinel import SentinelRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
@@ -100,29 +100,6 @@ class Jeeves:
 
         if command == "sync swarm":
             print(self.swarm.sync_nodes())
-            return True
-
-        if command == "simulate breach":
-            simulator = RedTeamSimulator()
-            print(simulator.run_simulation())
-            return True
-
-        if command == "purge simulations":
-            print(f"{CYAN}Jeeves: Initiating autonomous simulation purge...{ENDC}")
-            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
-            subprocess.run(['python', script_path])
-            return True
-
-        if command == "field prep":
-            print(f"{RED}{BOLD}Jeeves: INITIATING SECURE FIELD SANITIZATION PROTOCOL...{ENDC}")
-            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
-            subprocess.run(['python', script_path, '--field'])
-            return True
-
-        if command == "full production":
-            print(f"{RED}{BOLD}Jeeves: INITIATING FULL PRODUCTION ARSENAL DEPLOYMENT...{ENDC}")
-            script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'remove_simulations.py')
-            subprocess.run(['python', script_path, '--full-prod'])
             return True
 
         if command.startswith("adb_cmd "):

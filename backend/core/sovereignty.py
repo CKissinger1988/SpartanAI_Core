@@ -20,8 +20,7 @@ class SovereigntyCore:
         """AI-driven KYC, profile scraping, voiceprint registration, and VAC generation."""
         print(f"Jeeves: Initiating AI KYC and Voice-Registration for user: {username}...")
         
-        # Simulate voiceprint hashing and generate 6-digit VAC
-        voiceprint_hash = hashlib.sha256(voice_sample.encode()).hexdigest()
+                voiceprint_hash = hashlib.sha256(voice_sample.encode()).hexdigest()
         vac = str(random.randint(100000, 999999))
         
         profile_data = {
@@ -66,8 +65,7 @@ class SovereigntyCore:
     def scan_threats(self):
         """Heuristic threat scanning across system logs and behavioral data."""
         threats = []
-        # Simulate heuristic checks
-        if os.path.exists("data/unauthorized_access.log"):
+                if os.path.exists("data/unauthorized_access.log"):
             threats.append("Emergent threat: Multiple unauthorized login attempts detected.")
         
         if not threats:
