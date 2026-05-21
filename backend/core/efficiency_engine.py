@@ -1,6 +1,7 @@
 import psutil
 import threading
 import time
+import os
 
 class EfficiencyEngine:
     """Autonomous resource optimization to maximize JarvisAI performance."""
@@ -18,9 +19,20 @@ class EfficiencyEngine:
 
     def rebalance_resources(self):
         """Logic for autonomous resource shedding and re-prioritization."""
-        print(f"[EFFICIENCY]: High load detected ({psutil.cpu_percent()}%). Shedding non-critical processes...")
-        # Placeholder for dynamic resource shedding and process re-prioritization
-        pass
+        current_cpu = psutil.cpu_percent()
+        print(f"[EFFICIENCY]: High load detected ({current_cpu}%). Shedding non-critical priorities...")
+        try:
+            # Lower the priority of the current process to allow other system tasks to breathe
+            # On Windows, psutil.BELOW_NORMAL_PRIORITY_CLASS
+            p = psutil.Process(os.getpid())
+            if os.name == 'nt':
+                p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+            else:
+                p.nice(10) # Higher nice value means lower priority
+            
+            print(f"[EFFICIENCY]: Process re-prioritized to BELOW_NORMAL. System posture stabilized.")
+        except Exception as e:
+            print(f"[EFFICIENCY]: Failed to rebalance resources: {e}")
 
 # Initialize engine
 engine = EfficiencyEngine()

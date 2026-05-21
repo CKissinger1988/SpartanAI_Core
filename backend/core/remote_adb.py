@@ -9,7 +9,7 @@ class RemoteADBManager:
 
     def establish_tunnel(self, target_host):
         """Uses Cloudflare Tunnel for secure, NAT-traversing mobile connectivity."""
-        print(f"Jeeves: Establishing encrypted tunnel to {target_host}...")
+        print(f"Jarvis: Establishing encrypted tunnel to {target_host}...")
         # Start tunnel process in background
         proc = subprocess.Popen([self.tunnel_bin, "access", "tcp", "--hostname", target_host, "--url", "localhost:5037"])
         return proc

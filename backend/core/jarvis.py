@@ -1,12 +1,15 @@
 import subprocess
 import os
 import json
+import time
+import threading
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.swarm import SwarmCoordinator
 from backend.core.sentinel import SentinelRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
+from backend.core.monetization import MonetizationService
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -15,7 +18,8 @@ RED = '\033[91m'
 BOLD = '\033[1m'
 ENDC = '\033[0m'
 
-class Jeeves:
+class Jarvis:
+    """The Supreme AI Orchestrator of the NexusAI ecosystem."""
     def __init__(self):
         self.status = "Online"
         self.authenticated = False
@@ -27,6 +31,21 @@ class Jeeves:
         self.efficiency = EfficiencyEngine()
         self.audio = AudioManager() # Audio manager
         self.audio.verify_audio() # Autonomous verification
+        self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
+        threading.Thread(target=self.monetization.run, daemon=True).start()
+        self.heartbeat_file = ".jarvis_heartbeat"
+        self._start_heartbeat()
+
+    def _start_heartbeat(self):
+        """Starts a background thread to update the heartbeat file for Sentinel monitoring."""
+        def heartbeat_loop():
+            while True:
+                with open(self.heartbeat_file, 'w') as f:
+                    f.write(str(time.time()))
+                time.sleep(10)
+        
+        thread = threading.Thread(target=heartbeat_loop, daemon=True)
+        thread.start()
 
     def handle_command(self, command):
         """Processes voice/text commands with hierarchical access."""
@@ -40,7 +59,7 @@ class Jeeves:
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
-            print(f"\n{GREEN}{BOLD}Jeeves: Sovereign authority recognized. Access granted, Creator.{ENDC}")
+            print(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
         if command.startswith("register "):
@@ -68,7 +87,7 @@ class Jeeves:
                 if authenticated:
                     self.authenticated = True
                     self.user_role = "AuthenticatedUser"
-                    print(f"{GREEN}Jeeves: Identity verified. Access granted, {username}.{ENDC}")
+                    print(f"{GREEN}Jarvis: Identity verified. Access granted, {username}.{ENDC}")
                     return True
             return False
 
@@ -82,7 +101,7 @@ class Jeeves:
 
         # 2. Restricted Commands (Authenticated/Creator only)
         if self.user_role == "Public":
-            print(f"{RED}Jeeves: Insufficient privileges. Administrative control restricted to The Creator.{ENDC}")
+            print(f"{RED}Jarvis: Insufficient privileges. Administrative control restricted to The Creator.{ENDC}")
             return False
 
         if command == "view observations":
@@ -115,24 +134,24 @@ class Jeeves:
         # Creator-specific
         if self.user_role == "Creator":
             if command == "init_qr":
-                print(f"{CYAN}Jeeves: Initiating quantum-resistant communication handshake...{ENDC}")
+                print(f"{CYAN}Jarvis: Initiating quantum-resistant communication handshake...{ENDC}")
                 return True
             elif command == "shutdown":
-                print(f"{CYAN}Jeeves: Initiating total shutdown at Creator's request.{ENDC}")
+                print(f"{CYAN}Jarvis: Initiating total shutdown at Creator's request.{ENDC}")
                 return True
 
-        print(f"{CYAN}Jeeves: Command recognized but no specific handler for current role.{ENDC}")
+        print(f"{CYAN}Jarvis: Command recognized but no specific handler for current role.{ENDC}")
         return True
 
     def announce_status(self):
         """Runs the status check script and announces results."""
-        print(f"\n{CYAN}{BOLD}Jeeves: Initiating diagnostic sequence...{ENDC}")
+        print(f"\n{CYAN}{BOLD}Jarvis: Initiating diagnostic sequence...{ENDC}")
         script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'status_check.py')
         subprocess.run(['python', script_path])
-        print(f"\n{GREEN}{BOLD}Jeeves: Diagnostics complete. Sovereignty maintained.{ENDC}")
+        print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Sovereignty maintained.{ENDC}")
 
     def greet(self):
-        print("Jeeves Orchestrator Online. Awaiting command.")
+        print("Jarvis Supreme AI Online. Awaiting command.")
         self.status = "Online"
 
     def analyze(self, prompt):

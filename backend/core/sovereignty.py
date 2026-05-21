@@ -18,7 +18,7 @@ class SovereigntyCore:
 
     def create_profile(self, username, raw_data, voice_sample):
         """AI-driven KYC, profile scraping, voiceprint registration, and VAC generation."""
-        print(f"Jeeves: Initiating AI KYC and Voice-Registration for user: {username}...")
+        print(f"Jarvis: Initiating AI KYC and Voice-Registration for user: {username}...")
         
         voiceprint_hash = hashlib.sha256(voice_sample.encode()).hexdigest()
         vac = str(random.randint(100000, 999999))
@@ -40,7 +40,7 @@ class SovereigntyCore:
         with open(user_file, 'w') as f:
             json.dump(profile_data, f)
             
-        print(f"Jeeves: Profile synchronized. KYC complete for {username}. YOUR VAC IS: {vac}")
+        print(f"Jarvis: Profile synchronized. KYC complete for {username}. YOUR VAC IS: {vac}")
         return profile_data
 
     def verify_vac(self, username, vac_code):
@@ -87,7 +87,7 @@ class SovereigntyCore:
 
     def update_behavioral_profile(self, action):
         """BOE: Logs and analyzes behavioral patterns for anomaly detection."""
-        print(f"Jeeves: Analyzing behavioral pattern: {action}")
+        print(f"Jarvis: Analyzing behavioral pattern: {action}")
         observation = {
             "timestamp": time.time(),
             "action": action,
