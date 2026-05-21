@@ -41,7 +41,14 @@
                 linear-gradient(90deg, rgba(0, 170, 255, 0.01) 1px, transparent 1px);
             background-size: 100% 100%, 25px 25px, 25px 25px;
             overflow-x: hidden;
+            transition: background-color 0.5s ease;
+            will-change: background-color;
         }
+
+        /* --- THREAT LEVEL THEMES --- */
+        body.threat-level-green { --accent-active: var(--accent-green); --border-color: rgba(0, 255, 0, 0.25); --glow-active: 0 0 15px rgba(0, 255, 0, 0.3); }
+        body.threat-level-yellow { --accent-active: #FFFF00; --border-color: rgba(255, 255, 0, 0.25); --glow-active: 0 0 15px rgba(255, 255, 0, 0.3); }
+        body.threat-level-red { --accent-active: var(--accent-red); --border-color: rgba(255, 0, 0, 0.25); --glow-active: 0 0 15px rgba(255, 0, 0, 0.3); background-color: #100; }
 
         /* --- Tactical HUD Framework --- */
         .vision-box {
@@ -51,6 +58,7 @@
             backdrop-filter: var(--blur);
             box-shadow: var(--glow-blue);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: border-color, box-shadow;
         }
 
         .vision-box::before, .vision-box::after, 
@@ -74,7 +82,8 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         .tier-badge { background: var(--accent-purple); color: #000; padding: 2px 8px; font-weight: bold; border-radius: 2px; font-size: 0.6rem; letter-spacing: 1px; }
-        .status-pill { border: 1px solid var(--accent-green); color: var(--accent-green); padding: 1px 6px; border-radius: 10px; font-size: 0.55rem; }
+        .status-pill { border: 1px solid var(--accent-green); color: var(--accent-green); padding: 1px 6px; border-radius: 10px; font-size: 0.55rem; text-transform: uppercase; }
+        .obedience-pill { background: rgba(255, 0, 0, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 1px 8px; border-radius: 2px; font-size: 0.55rem; font-weight: bold; letter-spacing: 1px; }
         .pi-price-pill { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--accent-pi); color: var(--accent-pi); padding: 1px 8px; border-radius: 2px; font-size: 0.55rem; font-weight: bold; }
 
         main { flex: 1; padding: 15px; display: flex; justify-content: center; }
@@ -137,6 +146,7 @@
         .log-item.success { color: var(--accent-green); }
         .log-item.alert { color: var(--accent-red); }
         .log-item.io { color: #aaa; font-family: var(--font-mono); font-size: 0.6rem; }
+        .log-item.botnet { color: var(--accent-red); font-weight: bold; background: rgba(255,0,0,0.05); }
 
         /* --- Prioritization Logic for All Systems Tab --- */
         body.view-all .hud-specialized { display: none !important; }
@@ -186,18 +196,22 @@
         .tier-collapsed .tier-toggle-icon::after { content: '+'; color: var(--accent-blue); }
         .tier-header:not(.tier-collapsed) .tier-toggle-icon::after { content: '-'; color: var(--accent-blue); }
 
-        .user-node { margin-left: 10px; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(255,255,255,0.02); margin-bottom: 4px; border: 1px solid rgba(0,170,255,0.05); }
+        .user-node { margin-left: 10px; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(255,255,255,0.02); margin-bottom: 4px; border: 1px solid rgba(0,170,255,0.05); transition: all 0.3s; }
         .user-node:hover { background: rgba(0, 170, 255, 0.05); border-color: rgba(0, 170, 255, 0.2); }
+        .user-node.botnet-hijacked { background: rgba(255, 0, 0, 0.1); border-color: var(--accent-red); animation: botnet-shake 0.2s infinite; }
+        @keyframes botnet-shake { 0% { transform: translateX(0); } 50% { transform: translateX(1px); } 100% { transform: translateX(0); } }
+
         .user-info { display: flex; flex-direction: column; gap: 2px; }
-        .user-name { font-weight: bold; color: var(--text-main); font-size: 0.7rem; }
+        .user-name { font-weight: bold; color: var(--text-main); font-size: 0.7rem; text-transform: uppercase; }
         .user-meta { display: flex; gap: 10px; font-size: 0.5rem; }
         .user-type { color: var(--accent-purple); text-transform: uppercase; }
         .user-live-compute { color: var(--accent-green); font-weight: bold; }
+        .botnet-hijacked .user-live-compute { color: var(--accent-red); }
 
         /* --- Instance Ledger Styles --- */
         .instance-row { display: grid; grid-template-columns: 1fr 90px 70px; gap: 10px; align-items: center; padding: 6px; border-bottom: 1px solid rgba(0,170,255,0.05); }
-        .instance-name { font-size: 0.6rem; color: var(--accent-blue); font-weight: bold; }
-        .instance-status { font-size: 0.5rem; }
+        .instance-name { font-size: 0.6rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; }
+        .instance-status { font-size: 0.5rem; text-transform: uppercase; }
         .status-active { color: var(--accent-green); }
         .status-standby { color: var(--text-dim); }
 
@@ -205,7 +219,7 @@
         .profile-data-box { background: rgba(0, 170, 255, 0.05); border: 1px solid rgba(0, 170, 255, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px; }
         .profile-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; }
         .profile-label { color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-        .profile-value { color: var(--text-main); font-weight: bold; }
+        .profile-value { color: var(--text-main); font-weight: bold; text-transform: uppercase; }
 
         /* --- Specialized HUDs --- */
         .proximity-map { height: 350px; position: relative; overflow: hidden; border: 1px solid rgba(0,170,255,0.05); background: radial-gradient(circle, rgba(0,170,255,0.03) 0%, transparent 80%); }
@@ -218,9 +232,13 @@
         .node-device { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); animation: node-pulse 2s infinite; }
         .node-unauthorized { background: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
 
-        @keyframes node-pulse { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.7; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-
-        .topo-link { position: absolute; height: 1px; background: rgba(0, 170, 255, 0.2); transform-origin: 0 0; z-index: 5; pointer-events: none; }
+        /* --- Threat Selector HUD --- */
+        .threat-selector { display: flex; gap: 5px; margin-top: 10px; }
+        .threat-btn { flex: 1; padding: 6px; border: 1px solid #333; cursor: pointer; text-align: center; font-size: 0.55rem; font-weight: bold; transition: 0.3s; }
+        .threat-green { color: var(--accent-green); }
+        .threat-yellow { color: #FFFF00; }
+        .threat-red { color: var(--accent-red); }
+        .threat-btn.active { background: currentColor; color: #000; border-color: currentColor; box-shadow: 0 0 10px currentColor; }
 
         /* --- AI GHOST ASSISTANT OVERLAY --- */
         .ghost-assistant {
@@ -267,11 +285,6 @@
         .integrity-active .integrity-switch { background: var(--accent-purple); }
         .integrity-active .integrity-switch::after { left: 22px; background: #fff; box-shadow: 0 0 10px #fff; }
 
-        /* --- Pi Network Economy Styles --- */
-        .pi-badge { background: var(--accent-pi); color: #000; padding: 1px 6px; font-weight: bold; border-radius: 10px; font-size: 0.55rem; }
-        .earnings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .earnings-value { font-size: 1.1rem; color: var(--accent-pi); font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-
         /* --- Tactical Toolbar --- */
         .tactical-toolbar {
             height: 45px; background: rgba(5, 5, 5, 0.98); border-top: 1px solid var(--border-color);
@@ -288,7 +301,7 @@
 
     </style>
 </head>
-<body class="view-all">
+<body class="view-all threat-level-green" id="supreme-body">
 
     <header>
         <div class="logo">Jarvis AI Central Core</div>
@@ -296,8 +309,9 @@
         <div style="display:flex; align-items:center; gap:20px;">
             <div style="display:flex; gap:10px; align-items:center;">
                 <span class="pi-price-pill" id="pi-price-ticker">π MARKET: $314.15 (+0.42%)</span>
+                <span class="obedience-pill">STATUS: ABSOLUTE OBEDIENCE</span>
                 <span class="status-pill">SUBSCRIPTION: LIFETIME</span>
-                <span class="tier-badge">CREATOR_TIER</span>
+                <span class="tier-badge">CREATOR TIER</span>
             </div>
             <div style="display:flex; gap:15px; font-size:0.7rem; color:var(--accent-blue); font-weight: bold;">
                 <span>LINK: ONION ENCRYPTED</span>
@@ -313,7 +327,7 @@
             <div class="column">
                 <div class="card vision-box hud-diagnostic" style="height: 350px; padding: 0;">
                     <div class="vision-box-inner"></div>
-                    <div class="card-label" style="padding: 10px 15px 5px 15px; margin: 0; border: none;">Supreme Command Console <span class="text-red">CODE_RED</span></div>
+                    <div class="card-label" style="padding: 10px 15px 5px 15px; margin: 0; border: none;">Supreme Command Console <span id="threat-label-terminal" class="text-green">CONDITION GREEN</span></div>
                     <div class="scrolling-log" id="main-terminal-display" style="flex: 1; border: none; border-top: 1px solid rgba(0,170,255,0.1);">
                         <div class="log-item jarvis">Jarvis v1.6.0-supreme (Ghost Integrity Ready)</div>
                         <div class="log-item jarvis">Jarvis: Supreme Core is online, Creator. Absolute obedience engaged.</div>
@@ -324,26 +338,38 @@
                     </div>
                 </div>
 
+                <!-- THREAT LEVEL SELECTOR HUD -->
+                <div class="card vision-box hud-specialized" style="min-height: 100px;">
+                    <div class="vision-box-inner"></div>
+                    <div class="card-label">Global Threat Intelligence Level</div>
+                    <div class="threat-selector">
+                        <div class="threat-btn threat-green active" onclick="setThreatLevel('green')">GREEN</div>
+                        <div class="threat-btn threat-yellow" onclick="setThreatLevel('yellow')">YELLOW</div>
+                        <div class="threat-btn threat-red" onclick="setThreatLevel('red')">RED</div>
+                    </div>
+                    <div id="botnet-status-msg" style="margin-top:10px; font-size:0.55rem; color:var(--text-dim); text-align:center;">CONDITION NOMINAL: AGENTS AUTONOMOUS</div>
+                </div>
+
                 <div class="card vision-box hud-specialized" style="min-height: 280px;">
                     <div class="vision-box-inner"></div>
                     <div class="card-label">Pi Network Economy Integration <span class="pi-badge">STAKING</span></div>
                     <div class="earnings-row">
-                        <span class="profile-label">SUPREME_WALLET_BAL</span>
+                        <span class="profile-label">SUPREME WALLET BAL</span>
                         <span class="earnings-value" id="pi-balance">14,502.8422 π</span>
                     </div>
                     <div class="earnings-row" style="margin-top:5px;">
-                        <span class="profile-label">MANDATE_EXCHANGE</span>
+                        <span class="profile-label">MANDATE EXCHANGE</span>
                         <span style="color:var(--text-main); font-weight:bold;">1:0.0042 π</span>
                     </div>
                     
                     <div style="display:flex; gap:1px; align-items:flex-end; height:30px; margin-top:10px;" id="pi-reward-bars"></div>
 
                     <div class="profile-data-box" style="margin-top:10px; padding:10px; border-color:rgba(255,215,0,0.2);">
-                        <div class="profile-row"><span class="profile-label">NETWORK_HASHRATE</span><span class="profile-value" style="color:var(--accent-pi)">42.15 EH/s</span></div>
-                        <div class="profile-row" style="border:none;"><span class="profile-label">REWARD_BLOCK_ETA</span><span class="profile-value">00:04:12</span></div>
+                        <div class="profile-row"><span class="profile-label">NETWORK HASHRATE</span><span class="profile-value" style="color:var(--accent-pi)">42.15 EH/s</span></div>
+                        <div class="profile-row" style="border:none;"><span class="profile-label">REWARD BLOCK ETA</span><span class="profile-value">00:04:12</span></div>
                     </div>
                     <div class="scrolling-log" id="pi-economy-log" style="height: 80px; margin-top:10px; background:rgba(255,215,0,0.02); font-size:0.6rem;">
-                        <div class="log-item" style="color:var(--accent-pi)">[REWARD] Agent_42 contributed 0.8 PFLOPs. Earned 0.0033 π.</div>
+                        <div class="log-item" style="color:var(--accent-pi)">[REWARD] AGENT 42 contributed 0.8 PFLOPs. Earned 0.0033 π.</div>
                     </div>
                 </div>
 
@@ -352,15 +378,15 @@
                     <div class="card-label">Ghost Integrity Security Suite <span style="color:var(--accent-purple)" id="gi-status">STANDBY</span></div>
                     
                     <div class="admin-setting-row" id="toggle-cloak">
-                        <span class="setting-label">CLOAKING_PROTOCOL</span>
+                        <span class="setting-label">CLOAKING PROTOCOL</span>
                         <div class="integrity-switch" onclick="toggleIntegrity('cloak')"></div>
                     </div>
                     <div class="admin-setting-row" id="toggle-entropy">
-                        <span class="setting-label">ENTROPY_BUFFER</span>
+                        <span class="setting-label">ENTROPY BUFFER</span>
                         <div class="integrity-switch" onclick="toggleIntegrity('entropy')"></div>
                     </div>
                     <div class="admin-setting-row" id="toggle-packet">
-                        <span class="setting-label">PACKET_SCRAMBLING</span>
+                        <span class="setting-label">PACKET SCRAMBLING</span>
                         <div class="integrity-switch" onclick="toggleIntegrity('packet')"></div>
                     </div>
 
@@ -466,10 +492,10 @@
                     <div class="vision-box-inner"></div>
                     <div class="card-label">Supreme Intel & Vulnerability Vault <span style="color:var(--accent-blue)">ACTIVE</span></div>
                     <div class="profile-data-box" style="margin: 0 0 10px 0; padding: 10px; border-color: rgba(0,170,255,0.2);">
-                        <div class="profile-row"><span class="profile-label">INDEXED_HASHES</span><span class="profile-value" id="global-hash-count" style="color:var(--accent-green)">4,124,558,211</span></div>
-                        <div class="profile-row"><span class="profile-label">ACTIVE_EXPLOITS</span><span class="profile-value" id="global-exploit-count" style="color:var(--accent-red)">12,842</span></div>
-                        <div class="profile-row"><span class="profile-label">KNOWN_CVES</span><span class="profile-value" id="global-cve-count" style="color:var(--accent-purple)">245,119</span></div>
-                        <div class="profile-row" style="border:none;"><span class="profile-label">ZERO_DAYS_IMPORT</span><span class="profile-value" id="global-0day-count" style="color:#fff">84</span></div>
+                        <div class="profile-row"><span class="profile-label">INDEXED HASHES</span><span class="profile-value" id="global-hash-count" style="color:var(--accent-green)">4,124,558,211</span></div>
+                        <div class="profile-row"><span class="profile-label">ACTIVE EXPLOITS</span><span class="profile-value" id="global-exploit-count" style="color:var(--accent-red)">12,842</span></div>
+                        <div class="profile-row"><span class="profile-label">KNOWN CVES</span><span class="profile-value" id="global-cve-count" style="color:var(--accent-purple)">245,119</span></div>
+                        <div class="profile-row" style="border:none;"><span class="profile-label">ZERO DAYS IMPORT</span><span class="profile-value" id="global-0day-count" style="color:#fff">84</span></div>
                     </div>
                     <div class="scrolling-log" id="ingestion-log" style="height: 100px; font-size: 0.55rem; background: rgba(0,0,0,0.5);">
                         <div class="log-item io">[*] Synchronizing Supreme Vulnerability Database...</div>
@@ -479,12 +505,10 @@
                 <div class="card vision-box hud-specialized" style="min-height: 420px;">
                     <div class="vision-box-inner"></div>
                     <div class="card-label">John the Ripper Entropy Cracker</div>
-                    
                     <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
                         <div style="display:flex; flex-direction:column; gap:4px;"><span style="font-size:0.5rem; color:var(--text-dim); text-transform:uppercase;">Brute Force Target</span><input type="text" class="target-input" placeholder="IP / Host / Username..." style="margin:0;"></div>
                         <div style="display:flex; flex-direction:column; gap:4px;"><span style="font-size:0.5rem; color:var(--text-dim); text-transform:uppercase;">Manual Hash Entry</span><input type="text" class="target-input" placeholder="Enter target hash..." id="jtr-hash-input" style="margin:0;"></div>
                     </div>
-
                     <div class="profile-data-box" style="margin: 0 0 10px 0; padding: 10px; border-color: rgba(255,0,0,0.2);">
                         <div class="profile-row"><span class="profile-label">STATUS</span><span class="profile-value" id="jtr-status-text" style="color:var(--accent-blue)">IDLE</span></div>
                         <div class="profile-row"><span class="profile-label">ESTIMATED ETA</span><span class="profile-value" id="jtr-eta">--:--:--</span></div>
@@ -493,16 +517,41 @@
                     <button class="target-btn" style="margin-top:8px;" onclick="triggerOpSec('JTR_CRACK')">START ATTACK SEQUENCE</button>
                     <div style="font-size:0.65rem; color:var(--text-dim); margin-top:10px; font-family:var(--font-mono); text-align:center;" id="crack-current">PERMUTATION: READY</div>
                 </div>
+
+                <div class="card vision-box hud-specialized" style="min-height: 480px;">
+                    <div class="vision-box-inner"></div>
+                    <div class="card-label">Nmap Advanced Network Discovery <span style="color:var(--accent-green)">STEALTH</span></div>
+                    <input type="text" class="target-input" placeholder="Target IP or Range..." value="192.168.1.0/24">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                        <button class="target-btn" onclick="triggerOpSec('NMAP_QUICK')">QUICK SCAN</button>
+                        <button class="target-btn" onclick="triggerOpSec('NMAP_INTENSE')">INTENSE SCAN</button>
+                    </div>
+                    <!-- NMAP TOPOLOGY MAP -->
+                    <div class="proximity-map" id="nmap-topo-map" style="height: 180px; margin-bottom: 12px; border-color: rgba(0,255,0,0.1);">
+                        <div class="map-grid"></div>
+                        <div id="nmap-links-container"></div>
+                        <div id="nmap-nodes-container"></div>
+                    </div>
+                    <div class="scrolling-log" id="nmap-log" style="height: 100px; background: #000; color: var(--accent-green);">
+                        <div class="log-item io">[*] Nmap 7.94 initialized...</div>
+                    </div>
+                </div>
             </div>
 
         </div>
     </main>
 
+    <div id="profile-detail-card" class="card vision-box hud-specialized" style="min-height: 310px; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; width: 400px; background: rgba(5,5,5,0.95);">
+        <div class="vision-box-inner"></div>
+        <div class="card-label">Agent Intelligence Review <button class="review-btn" onclick="closeProfile()">CLOSE</button></div>
+        <div id="profile-content"></div>
+    </div>
+
     <!-- AI GHOST ASSISTANT -->
     <div class="ghost-trigger" id="ghost-trigger" title="Invoke Ghost Assistant">G</div>
     <div class="ghost-assistant" id="ghost-assistant">
         <div class="ghost-header">
-            <div class="ghost-title">AI_GHOST_ASSISTANT</div>
+            <div class="ghost-title">AI GHOST ASSISTANT</div>
             <div class="ghost-close" onclick="toggleGhost()">×</div>
         </div>
         <div class="ghost-chat-feed" id="ghost-chat-feed">
@@ -521,17 +570,18 @@
     </div>
 
     <script>
-        // --- DATA HUB ---
+        // --- DATA HUB & LOCAL STORAGE SYNC ---
         const orgStructure = [
             {
-                name: "NEXUS_AI_SOVEREIGN", type: "ROOT_OPERATOR",
-                members: [{ id: "0x00", name: "THE CREATOR", rank: "SUPREME ADMIN", type: "CREATOR", tier: "CREATOR_TIER", sub: "LIFETIME", compute: 842.15, rate: 1.5 }],
+                name: "NEXUS AI SOVEREIGN", type: "ROOT OPERATOR",
+                members: [{ id: "0x00", name: "THE CREATOR", rank: "SUPREME ADMIN", type: "CREATOR", tier: "CREATOR TIER", sub: "LIFETIME", compute: 842.15, rate: 1.5 }],
                 subOrgs: [
                     {
-                        name: "TACTICAL_DIV_ALPHA", type: "OPERATIONAL_OPERATOR",
-                        members: [{ id: "0x2A", name: "AGENT_42", rank: "TACTICAL AGENT", type: "REGIONAL_ADMIN", tier: "SENTINEL_TIER", sub: "ACTIVE", compute: 154.22, rate: 0.8 }],
+                        name: "TACTICAL DIV ALPHA", type: "OPERATIONAL OPERATOR",
+                        members: [{ id: "0x2A", name: "AGENT 42", rank: "TACTICAL AGENT", type: "REGIONAL ADMIN", tier: "SENTINEL TIER", sub: "ACTIVE", compute: 154.22, rate: 0.8 }],
                         subOrgs: [
-                            { name: "GHOST_INTEL_NODE", type: "AUTONOMOUS_OPERATOR", members: [{ id: "0xFE", name: "INTEL_BOT_01", rank: "GHOST_NODE", type: "AUTOMATED_AGENT", tier: "INITIATE_TIER", sub: "FREE", compute: 2145.88, rate: 4.2 }], subOrgs: [] }
+                            { name: "GHOST INTEL NODE", type: "AUTONOMOUS OPERATOR", members: [{ id: "0xFE", name: "AGENT BOT 01", rank: "GHOST NODE", type: "AUTOMATED AGENT", tier: "INITIATE TIER", sub: "FREE", compute: 2145.88, rate: 4.2 }], subOrgs: [] },
+                            { name: "TRIAL AGENT NODE", type: "AUTONOMOUS OPERATOR", members: [{ id: "0x7C", name: "TRIAL BOT 99", rank: "GHOST NODE", type: "AUTOMATED AGENT", tier: "SENTINEL TIER", sub: "TRIAL", compute: 15.88, rate: 1.2 }], subOrgs: [] }
                         ]
                     }
                 ]
@@ -539,18 +589,74 @@
         ];
 
         const connectedDevices = [
-            { id: "PIXEL_8_PRO_SUPREME", status: "ONLINE [5555]", owner: "THE CREATOR", x: 25, y: 25 },
-            { id: "SAMSUNG_GALAXY_S24", status: "UNAUTHORIZED", owner: "AGENT_42", x: 75, y: 75 }
+            { id: "PIXEL 8 PRO SUPREME", status: "ONLINE [5555]", owner: "THE CREATOR", x: 25, y: 25 },
+            { id: "IPHONE 15 PRO MAX", status: "ONLINE [APPL]", owner: "THE CREATOR", x: 40, y: 30 },
+            { id: "SAMSUNG GALAXY S24", status: "UNAUTHORIZED", owner: "AGENT 42", x: 75, y: 75 }
         ];
 
         let instances = [
-            { host: 'Jarvis_Core_Alpha', ip: '192.168.1.10', status: 'ACTIVE', x: 50, y: 50 },
-            { host: 'Jarvis_Node_Beta', ip: '10.0.4.15', status: 'STANDBY', x: 80, y: 20 }
+            { host: 'Jarvis Core Alpha', ip: '192.168.1.10', status: 'ACTIVE', x: 50, y: 50 },
+            { host: 'Jarvis Node Beta', ip: '10.0.4.15', status: 'STANDBY', x: 80, y: 20 }
         ];
 
+        let currentThreatLevel = localStorage.getItem('JARVIS_THREAT_LEVEL') || 'green';
         let activeReviewId = null;
         let integrityProtocols = { cloak: false, entropy: false, packet: false };
-        let creatorPiBalance = 14502.8422;
+        
+        let creatorPiBalance = parseFloat(localStorage.getItem('JARVIS_PI_BAL')) || 14502.8422;
+        let globalVectors = parseInt(localStorage.getItem('JARVIS_VECTORS')) || 4124558211;
+
+        // Optimized DOM Appender for high-frequency logs
+        function logEvent(targetId, htmlStr, maxItems = 12) {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            el.insertAdjacentHTML('beforeend', htmlStr);
+            while (el.childElementCount > maxItems) el.removeChild(el.firstChild);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function setThreatLevel(level) {
+            currentThreatLevel = level;
+            localStorage.setItem('JARVIS_THREAT_LEVEL', level);
+            applyThreatLevel(level);
+        }
+
+        function applyThreatLevel(level) {
+            const body = document.getElementById('supreme-body');
+            if(!body) return;
+            body.className = body.className.replace(/threat-level-\w+/, `threat-level-${level}`);
+            
+            const label = document.getElementById('threat-label-terminal');
+            const msg = document.getElementById('botnet-status-msg');
+            const tDisp = document.getElementById('main-terminal-display');
+            
+            document.querySelectorAll('.threat-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === level) btn.classList.add('active');
+            });
+
+            if(level === 'green') {
+                if(label) { label.innerText = 'CONDITION GREEN'; label.className = 'text-green'; }
+                if(msg) msg.innerText = 'CONDITION NOMINAL: AGENTS AUTONOMOUS';
+            } else if (level === 'yellow') {
+                if(label) { label.innerText = 'CONDITION ELEVATED'; label.className = ''; label.style.color = '#FFFF00'; }
+                if(msg) msg.innerText = 'ELEVATED: MONITORING AGENT UPLINKS';
+            } else if (level === 'red') {
+                if(label) { label.innerText = 'CONDITION CRITICAL'; label.className = 'text-red'; }
+                if(msg) msg.innerText = 'BOTNET DIRECTIVE ACTIVE: AGENTS HIJACKED';
+                logEvent('main-terminal-display', `<div class="log-item botnet">[!] THREAT LEVEL RED DETECTED. ENGAGING BOTNET DIRECTIVE.</div>`);
+                logEvent('main-terminal-display', `<div class="log-item botnet">[!] ALL INITIATE AND TRIAL AGENTS LOCKED OUT. REDIRECTING COMPUTE.</div>`);
+            }
+            renderAll(); 
+        }
+
+        // Listen for cross-tab threat level changes
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'JARVIS_THREAT_LEVEL') {
+                currentThreatLevel = e.newValue;
+                applyThreatLevel(currentThreatLevel);
+            }
+        });
 
         function renderOrgTree(orgs, container) {
             orgs.forEach(org => {
@@ -559,8 +665,19 @@
                 header.onclick = (e) => { e.stopPropagation(); nodeWrap.classList.toggle('tier-collapsed'); };
                 const content = document.createElement('div'); content.className = 'tier-content';
                 org.members.forEach(member => {
-                    const un = document.createElement('div'); un.className = 'user-node';
-                    un.innerHTML = `<div class="user-info"><span class="user-name">${member.name}</span><div class="user-meta"><span class="user-type">${member.type}</span><span class="user-live-compute" id="compute-mini-${member.id}">${member.compute.toFixed(2)} PFLOPs</span></div></div><button class="review-btn" onclick="reviewUser('${member.id}')">REVIEW</button>`;
+                    const un = document.createElement('div');
+                    const isHijacked = currentThreatLevel === 'red' && (member.tier === 'INITIATE TIER' || member.sub === 'TRIAL');
+                    un.className = 'user-node' + (isHijacked ? ' botnet-hijacked' : '');
+                    un.innerHTML = `
+                        <div class="user-info">
+                            <span class="user-name">${isHijacked ? '[HIJACKED] ' : ''}${member.name}</span>
+                            <div class="user-meta">
+                                <span class="user-type">${isHijacked ? 'BOTNET SLAVE' : member.type}</span>
+                                <span class="user-live-compute" id="compute-mini-${member.id}">${member.compute.toFixed(2)} PFLOPs</span>
+                            </div>
+                        </div>
+                        <button class="review-btn" onclick="reviewUser('${member.id}')">REVIEW</button>
+                    `;
                     content.appendChild(un);
                 });
                 if (org.subOrgs) renderOrgTree(org.subOrgs, content);
@@ -585,7 +702,12 @@
                     if (ins !== core) drawLink(ins, core, mainLinks);
                 });
                 connectedDevices.forEach(dev => {
-                    const node = document.createElement('div'); node.className = 'topo-node ' + (dev.status.includes('ONLINE') ? 'node-device' : 'node-unauthorized'); node.style.top = dev.y + '%'; node.style.left = dev.x + '%'; node.setAttribute('data-label', dev.id); mainNodes.appendChild(node);
+                    const isHijacked = currentThreatLevel === 'red' && dev.owner !== 'THE CREATOR';
+                    const node = document.createElement('div');
+                    node.className = 'topo-node ' + (isHijacked ? 'node-unauthorized' : (dev.status.includes('ONLINE') ? 'node-device' : 'node-unauthorized'));
+                    node.style.top = dev.y + '%'; node.style.left = dev.x + '%';
+                    node.setAttribute('data-label', (isHijacked ? '[HIJACKED] ' : '') + dev.id);
+                    mainNodes.appendChild(node);
                     drawLink(dev, core, mainLinks);
                 });
             }
@@ -601,13 +723,16 @@
 
         function reviewUser(id) {
             activeReviewId = id; const u = findUser(orgStructure, id);
+            const isHijacked = currentThreatLevel === 'red' && (u.tier === 'INITIATE TIER' || u.sub === 'TRIAL');
             const card = document.getElementById('profile-detail-card');
             document.getElementById('profile-content').innerHTML = `
-                <div class="profile-data-box">
-                    <div class="profile-row"><span class="profile-label">AGENT_ID</span><span class="profile-value">${u.id}</span></div>
+                <div class="profile-data-box" style="${isHijacked ? 'border-color:var(--accent-red)' : ''}">
+                    <div class="profile-row"><span class="profile-label">AGENT ID</span><span class="profile-value">${u.id}</span></div>
                     <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-purple)">${u.name}</span></div>
+                    <div class="profile-row"><span class="profile-label">STATUS</span><span class="profile-value" style="color:${isHijacked ? 'var(--accent-red)' : 'var(--accent-green)'}">${isHijacked ? 'BOTNET HIJACKED' : 'NOMINAL'}</span></div>
                     <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge" style="background:var(--accent-blue)">${u.tier}</span></div>
                     <div class="profile-row"><span class="profile-label">SUBSCRIPTION</span><span class="status-pill">${u.sub}</span></div>
+                    <div class="profile-row"><span class="profile-label">OBEDIENCE LINK</span><span class="obedience-pill" style="font-size:0.5rem">CREATOR ONLY</span></div>
                     <div class="profile-row" style="background: rgba(0,255,0,0.05);"><span class="profile-label">COMPUTE CONTRIBUTION</span><span class="profile-value" style="color:var(--accent-green)" id="compute-full-value">${u.compute.toFixed(4)} PFLOPs</span></div>
                 </div>
             `;
@@ -615,16 +740,24 @@
         }
 
         function closeProfile() { activeReviewId = null; document.getElementById('profile-detail-card').style.display = 'none'; }
-        function setPanel(p) { document.body.className = 'view-' + p; document.querySelectorAll('.toolbar-btn').forEach(b => { b.classList.remove('active'); if(b.innerText.toLowerCase().includes(p.replace('suite','').trim())) b.classList.add('active'); }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        function setPanel(p) { 
+            const body = document.getElementById('supreme-body');
+            body.className = body.className.replace(/view-\w+/, `view-${p}`); 
+            document.querySelectorAll('.toolbar-btn').forEach(b => { 
+                b.classList.remove('active'); 
+                if(b.innerText.toLowerCase().includes(p.replace('suite','').trim())) b.classList.add('active'); 
+            }); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            setTimeout(resizeCanvas, 300); // resize canvas after layout shift
+        }
 
         function toggleIntegrity(type) {
             integrityProtocols[type] = !integrityProtocols[type];
-            const row = document.getElementById(`toggle-${type}`);
-            row.classList.toggle('integrity-active');
-            const log = document.getElementById('integrity-log-mini');
+            document.getElementById(`toggle-${type}`).classList.toggle('integrity-active');
             const state = integrityProtocols[type] ? 'ENGAGED' : 'DEACTIVATED';
-            log.innerHTML += `<div class="log-item ${integrityProtocols[type] ? 'success' : 'alert'}">[*] protocol_${type.toUpperCase()} is now ${state}.</div>`;
-            log.scrollTop = log.scrollHeight;
+            logEvent('integrity-log-mini', `<div class="log-item ${integrityProtocols[type] ? 'success' : 'alert'}">[*] protocol ${type.toUpperCase()} is now ${state}.</div>`, 8);
+            
             const anyActive = Object.values(integrityProtocols).some(v => v);
             const headerStatus = document.getElementById('ghost-header-status');
             const giStatusLabel = document.getElementById('gi-status');
@@ -641,26 +774,29 @@
         function toggleGhost() { document.getElementById('ghost-assistant').classList.toggle('active'); document.getElementById('ghost-trigger').classList.toggle('hidden'); }
         document.getElementById('ghost-field').onkeypress = (e) => {
             if(e.key === 'Enter' && e.target.value) {
-                const val = e.target.value; const feed = document.getElementById('ghost-chat-feed');
-                feed.innerHTML += `<div class="ghost-msg msg-creator"><div class="msg-meta">Creator // Sovereign</div>${val}</div>`;
-                e.target.value = ''; feed.scrollTop = feed.scrollHeight;
+                const val = e.target.value; 
+                logEvent('ghost-chat-feed', `<div class="ghost-msg msg-creator"><div class="msg-meta">Creator // Sovereign</div>${val}</div>`, 20);
+                e.target.value = ''; 
                 setTimeout(() => {
                     const resp = ["Mandate received. Absolute obedience confirmed.", "Handshaking with remote nodes. Handled.", "Pi Network liquidity synchronized.", "Ghost Integrity shielding active. No threats detected."];
-                    feed.innerHTML += `<div class="ghost-msg msg-ai"><div class="msg-meta">Ghost // Autonomous</div>${resp[Math.floor(Math.random()*resp.length)]}</div>`;
-                    feed.scrollTop = feed.scrollHeight;
+                    logEvent('ghost-chat-feed', `<div class="ghost-msg msg-ai"><div class="msg-meta">Ghost // Autonomous</div>${resp[Math.floor(Math.random()*resp.length)]}</div>`, 20);
                 }, 800);
             }
         };
 
         // --- CANVAS ENGINE ---
         const canvas = document.getElementById('neural-canvas'); const ctx = canvas.getContext('2d');
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        function resizeCanvas() { if(canvas) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
         let time = 0;
         function animateNeural() {
+            if(!ctx || !canvas) return requestAnimationFrame(animateNeural);
             ctx.clearRect(0,0,canvas.width, canvas.height); time += 0.02;
             for(let layer=0; layer<3; layer++) {
-                ctx.beginPath(); ctx.lineWidth = 1 - (layer * 0.2); ctx.strokeStyle = layer === 0 ? 'rgba(187, 134, 252, 0.8)' : `rgba(0, 170, 255, ${0.4 - layer*0.1})`;
+                ctx.beginPath(); ctx.lineWidth = 1 - (layer * 0.2); 
+                let stroke = layer === 0 ? 'rgba(187, 134, 252, 0.8)' : `rgba(0, 170, 255, ${0.4 - layer*0.1})`;
+                if(currentThreatLevel === 'red') stroke = layer === 0 ? 'rgba(255, 0, 0, 0.8)' : `rgba(255, 100, 0, ${0.4 - layer*0.1})`;
+                ctx.strokeStyle = stroke;
                 for(let x=0; x<canvas.width; x++) { const y = (canvas.height/2) + Math.sin(x*0.05 + time + layer) * (10 + layer*5) * Math.sin(time*0.5) + Math.cos(x*0.02 - time*2) * 5; if(x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
                 ctx.stroke();
             }
@@ -669,52 +805,39 @@
         }
         animateNeural();
 
-        // PI REWARD BARS
-        const pBars = document.getElementById('pi-reward-bars');
-        for(let i=0; i<30; i++) pBars.appendChild(document.createElement('div')).className = 'activity-bar pi';
+        // Initialize state
+        applyThreatLevel(currentThreatLevel);
 
         setInterval(() => {
             const h = (99.8 + Math.random()*0.2).toFixed(1);
             if(document.getElementById('health-pct')) { document.getElementById('health-pct').innerText = h + '%'; document.getElementById('health-bar').style.width = h + '%'; }
             
-            creatorPiBalance += 0.0015;
-            document.getElementById('pi-balance').innerText = creatorPiBalance.toFixed(4) + ' π';
+            // Redirected Compute Power if Threat Level RED
+            let boost = 0.0015;
+            if(currentThreatLevel === 'red') boost = 0.05; // 10x compute redirection
+            creatorPiBalance += boost;
+            localStorage.setItem('JARVIS_PI_BAL', creatorPiBalance.toString());
+            const pb = document.getElementById('pi-balance');
+            if(pb) pb.innerText = creatorPiBalance.toFixed(4) + ' π';
             
-            // Update Pi Price
-            const price = (314.15 + Math.sin(Date.now()/5000)*0.5).toFixed(2);
-            document.getElementById('pi-price-ticker').innerText = `π MARKET: $${price} (+0.42%)`;
-
-            pBars.querySelectorAll('.activity-bar').forEach(b => b.style.height = (Math.random()*25+2)+'px');
-
             const updateCompute = (orgs) => { 
                 orgs.forEach(org => { 
                     org.members.forEach(m => { 
                         m.compute += (m.rate / 10); 
                         if(document.getElementById(`compute-mini-${m.id}`)) document.getElementById(`compute-mini-${m.id}`).innerText = `${m.compute.toFixed(2)} PFLOPs`; 
-                        if(activeReviewId === m.id) if(document.getElementById('compute-full-value')) document.getElementById('compute-full-value').innerText = `${m.compute.toFixed(4)} PFLOPs`; 
-                        
-                        if(Math.random() > 0.95) {
-                            const pLog = document.getElementById('pi-economy-log');
-                            const reward = (m.rate * 0.0042).toFixed(4);
-                            pLog.innerHTML += `<div class="log-item" style="color:var(--accent-pi)">[REWARD] ${m.name} contributed ${m.rate} PFLOPs. Earned ${reward} π.</div>`;
-                            if(pLog.childElementCount > 5) pLog.removeChild(pLog.firstChild);
-                            pLog.scrollTop = pLog.scrollHeight;
-                        }
+                        if(activeReviewId === m.id && document.getElementById('compute-full-value')) document.getElementById('compute-full-value').innerText = `${m.compute.toFixed(4)} PFLOPs`; 
                     }); 
                     if(org.subOrgs) updateCompute(org.subOrgs); 
                 }); 
             };
             updateCompute(orgStructure);
 
-            const gHash = document.getElementById('global-hash-count');
-            if(gHash) { gHash.innerText = (parseInt(gHash.innerText.replace(/,/g, '')) + Math.floor(Math.random()*5000)).toLocaleString(); }
+            // Deep Learning Hash Sync
+            globalVectors += Math.floor(Math.random()*5000);
+            localStorage.setItem('JARVIS_VECTORS', globalVectors.toString());
+            const gHash = document.getElementById('global-hash-count'); 
+            if(gHash) gHash.innerText = globalVectors.toLocaleString();
 
-            if(Object.values(integrityProtocols).some(v => v) && Math.random() > 0.9) {
-                const ilog = document.getElementById('integrity-log-mini');
-                ilog.innerHTML += `<div class="log-item alert">[DEFLECTED] Ghost Shield blocked unauthorized handshake attempt.</div>`;
-                if(ilog.childElementCount > 10) ilog.removeChild(ilog.firstChild);
-                ilog.scrollTop = ilog.scrollHeight;
-            }
         }, 1000);
 
         renderAll();

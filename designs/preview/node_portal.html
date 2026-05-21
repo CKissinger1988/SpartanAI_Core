@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JarvisAI | Node Portal (Initiate Tier)</title>
+    <title>JarvisAI | Node Portal (Free Tier)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -15,13 +15,15 @@
             --accent-dim: #113311;
             --accent-pi: #FFD700;
             --accent-purple: #BB86FC;
+            --accent-blue: #00AAFF;
+            --accent-red: #FF0000;
             --border-color: rgba(0, 255, 0, 0.1);
             --text-main: #E0E0E0;
             --font-mono: 'Fira Code', monospace;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--core-bg); color: var(--text-main); font-family: var(--font-mono); font-size: 10px; }
+        body { background-color: var(--core-bg); color: var(--text-main); font-family: var(--font-mono); font-size: 10px; transition: background-color 0.5s ease; }
 
         header {
             height: 45px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
@@ -30,96 +32,101 @@
         .tier-badge { background: var(--accent-green); color: #000; padding: 2px 8px; font-weight: bold; border-radius: 2px; font-size: 0.6rem; letter-spacing: 1px; }
         .status-pill { border: 1px solid var(--accent-green); color: var(--accent-green); padding: 1px 6px; border-radius: 10px; font-size: 0.55rem; }
 
-        main { padding: 20px; display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; height: calc(100vh - 90px); justify-content: center; }
+        main { padding: 20px; display: flex; flex-direction: column; gap: 20px; max-width: 600px; margin: 0 auto; min-height: calc(100vh - 90px); justify-content: flex-start; }
 
-        .vision-box { border: 1px solid var(--border-color); background: var(--surface-bg); padding: 20px; text-align: center; }
+        .vision-box { border: 1px solid var(--border-color); background: var(--surface-bg); padding: 20px; text-align: center; position: relative; }
         .card-label { font-size: 0.6rem; color: var(--accent-green); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; }
 
         .compute-value { font-size: 2.5rem; font-weight: 700; color: var(--accent-green); text-shadow: 0 0 15px rgba(0,255,0,0.3); margin-bottom: 10px; }
         .mandate-count { font-size: 0.8rem; color: #666; margin-bottom: 20px; }
 
-        .neural-link-mini { height: 40px; background: var(--accent-dim); border: 1px solid var(--border-color); position: relative; overflow: hidden; margin-top: 10px; }
-        .wave-bar { position: absolute; bottom: 0; width: 2px; background: var(--accent-green); transition: height 0.2s; }
+        /* --- Lockout Botnet Overlay --- */
+        .botnet-lockout {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 0, 0, 0.95); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: var(--accent-red); font-family: var(--font-mono);
+            backdrop-filter: blur(10px);
+        }
+        .botnet-lockout.active { display: flex; }
+        .lockout-icon { font-size: 3rem; margin-bottom: 20px; animation: pulse-red 1s infinite; }
+        .lockout-title { font-size: 1.5rem; font-weight: bold; letter-spacing: 5px; margin-bottom: 15px; border: 2px solid var(--accent-red); padding: 10px 30px; }
+        .lockout-msg { font-size: 0.8rem; line-height: 1.6; max-width: 400px; color: #fff; }
 
-        .upgrade-btn { background: var(--accent-green); color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; font-size: 0.8rem; }
-        .upgrade-btn:hover { background: #fff; }
+        @keyframes pulse-red { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
 
         .footer-nav { position: fixed; bottom: 0; width: 100%; height: 45px; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-around; background: #000; }
         .nav-item { color: #444; text-transform: uppercase; font-size: 0.65rem; }
         .nav-item.active { color: var(--accent-green); }
 
-        /* --- Profile Data Styles --- */
         .profile-data-box { background: rgba(0, 255, 0, 0.05); border: 1px solid rgba(0, 255, 0, 0.1); padding: 15px; margin-top: 10px; border-radius: 4px; text-align: left; }
         .profile-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.7rem; border-bottom: 1px solid rgba(0,255,0,0.05); padding-bottom: 4px; }
         .profile-label { color: #555; text-transform: uppercase; letter-spacing: 1px; }
         .profile-value { color: #fff; font-weight: bold; }
-
-        .pi-value { color: var(--accent-pi); font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .pi-value { color: var(--accent-pi); font-size: 1.1rem; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
+    <!-- BOTNET LOCKOUT OVERLAY -->
+    <div id="lockout-hub" class="botnet-lockout">
+        <div class="lockout-icon">⚠</div>
+        <div class="lockout-title">BOTNET DIRECTIVE ACTIVE</div>
+        <div class="lockout-msg">
+            CRITICAL THREAT LEVEL DETECTED.<br>
+            LOCAL INTERACTION SUSPENDED BY THE CREATOR.<br><br>
+            COMPUTE RESOURCES HIJACKED FOR SOVEREIGN DEFENSE.
+        </div>
+    </div>
+
     <header>
-        <div style="font-weight:bold; color:var(--accent-green)">JarvisAI // Node_Portal</div>
+        <div style="font-weight:bold; color:var(--accent-green)">Jarvis AI // Node Portal</div>
         <div style="display:flex; align-items:center; gap:10px;">
-            <span style="color:rgba(187,134,252,0.4); font-size:0.6rem; font-weight:bold;">SHIELD: GHOST [PASSIVE]</span>
             <span class="status-pill">SUBSCRIPTION: FREE</span>
-            <span class="tier-badge">INITIATE_TIER</span>
+            <span class="tier-badge">INITIATE TIER</span>
         </div>
     </header>
 
     <main>
         <div class="vision-box">
             <div class="card-label">Active Compute Contribution</div>
-            <div class="compute-value" id="live-pflops">154.22</div>
+            <div class="compute-value" id="live-pflops">2145.88</div>
             <div style="color:var(--accent-green); font-size:0.7rem; margin-bottom:5px;">PETAFLOPS CONTRIBUTED</div>
-            <div class="mandate-count">NETWORK MANDATES EARNED: <span id="mandate-val">842</span></div>
-            
-            <div class="card-label" style="margin-top:20px;">Projected Pi Rewards</div>
-            <div class="pi-value" id="live-pi">0.0354 π</div>
+            <div class="mandate-count">NETWORK MANDATES EARNED: <span id="mandate-val">5410</span></div>
+            <div class="card-label">Projected Pi Rewards</div>
+            <div class="pi-value" id="live-pi">12.4482 π</div>
         </div>
 
-        <!-- AGENT PROFILE -->
         <div class="vision-box">
             <div class="card-label">Agent Intelligence Profile</div>
             <div class="profile-data-box">
-                <div class="profile-row"><span class="profile-label">AGENT_ID</span><span class="profile-value">0xFE</span></div>
-                <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-green)">INTEL_BOT_01</span></div>
-                <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge">INITIATE_TIER</span></div>
-                <div class="profile-row" style="border:none;"><span class="profile-label">SHIELD_INTEGRITY</span><span style="color:var(--accent-purple); opacity:0.5; font-size:0.6rem;">PASSIVE_ONLY</span></div>
+                <div class="profile-row"><span class="profile-label">AGENT ID</span><span class="profile-value">0xFE</span></div>
+                <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-green)">AGENT BOT 01</span></div>
+                <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge">INITIATE TIER</span></div>
             </div>
-        </div>
-
-        <div class="vision-box" style="border-style: dashed;">
-            <div class="card-label">Restricted Capabilities</div>
-            <div style="font-size:0.7rem; color:#666; line-height:1.6;">
-                Ghost Shield (Active): LOCKED<br>
-                Reward Multiplier (x10): LOCKED<br>
-                Nmap Discovery: LOCKED<br>
-                Metasploit Console: LOCKED
-            </div>
-            <button class="upgrade-btn">Unlock Full Compendium</button>
         </div>
     </main>
 
-    <div class="footer-nav">
-        <div class="nav-item active">Home</div>
-        <div class="nav-item">Earnings</div>
-        <div class="nav-item">Profile</div>
-    </div>
-
     <script>
-        let pflops = 154.22;
-        let mandates = 842;
-        let pi = 0.0354;
+        let pflops = 2145.88;
+        let pi = 12.4482;
+
+        function applyThreatLevel(level) {
+            const lockout = document.getElementById('lockout-hub');
+            if(level === 'red') lockout.classList.add('active');
+            else lockout.classList.remove('active');
+        }
+
+        // 0ms Latency Storage Sync
+        applyThreatLevel(localStorage.getItem('JARVIS_THREAT_LEVEL') || 'green');
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'JARVIS_THREAT_LEVEL') applyThreatLevel(e.newValue);
+        });
 
         setInterval(() => {
-            pflops += 0.0001;
-            pi += 0.00001;
-            if(Math.random() > 0.98) mandates++;
+            pflops += 0.0001; pi += 0.00001;
             document.getElementById('live-pflops').innerText = pflops.toFixed(2);
-            document.getElementById('mandate-val').innerText = mandates;
             document.getElementById('live-pi').innerText = pi.toFixed(4) + " π";
         }, 200);
     </script>

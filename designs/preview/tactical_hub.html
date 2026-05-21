@@ -22,7 +22,9 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--core-bg); color: var(--text-main); font-family: var(--font-mono); font-size: 10px; overflow-x: hidden; }
+        body { background-color: var(--core-bg); color: var(--text-main); font-family: var(--font-mono); font-size: 10px; overflow-x: hidden; transition: background-color 0.5s ease; }
+
+        body.threat-level-red { background-color: #100; }
 
         header {
             height: 45px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
@@ -37,6 +39,7 @@
         .card-label { font-size: 0.65rem; color: var(--accent-blue); margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid rgba(0,170,255,0.1); padding-bottom: 5px; }
 
         .scrolling-log { height: 120px; background: #000; padding: 10px; overflow-y: auto; color: #aaa; font-size: 0.75rem; border: 1px solid rgba(0,170,255,0.05); }
+        .scrolling-log::-webkit-scrollbar { display: none; }
         .log-item { margin-bottom: 4px; }
         .log-item.success { color: var(--accent-green); }
         .log-item.alert { color: var(--accent-red); }
@@ -56,8 +59,20 @@
         .nav-btn { color: #666; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; padding: 5px 15px; border: 1px solid transparent; }
         .nav-btn.active { color: var(--accent-blue); border-color: var(--accent-blue); }
 
-        .restricted-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; text-align: center; }
-        .restricted-msg { color: var(--accent-red); font-weight: bold; border: 1px solid var(--accent-red); padding: 10px; }
+        /* --- Lockout Botnet Overlay --- */
+        .botnet-lockout {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 0, 0, 0.95); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: var(--accent-red); font-family: var(--font-mono);
+            backdrop-filter: blur(10px);
+        }
+        .botnet-lockout.active { display: flex; }
+        .lockout-icon { font-size: 3rem; margin-bottom: 20px; animation: pulse-red 1s infinite; }
+        .lockout-title { font-size: 1.5rem; font-weight: bold; letter-spacing: 5px; margin-bottom: 15px; border: 2px solid var(--accent-red); padding: 10px 30px; }
+        .lockout-msg { font-size: 0.8rem; line-height: 1.6; max-width: 400px; color: #fff; }
+
+        @keyframes pulse-red { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
 
         /* --- Profile & Economy Styles --- */
         .profile-data-box { background: rgba(0, 170, 255, 0.05); border: 1px solid rgba(0, 170, 255, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px; }
@@ -76,14 +91,25 @@
 
     </style>
 </head>
-<body>
+<body id="tactical-body">
+
+    <!-- BOTNET LOCKOUT OVERLAY (FOR TRIAL USERS) -->
+    <div id="lockout-hub" class="botnet-lockout">
+        <div class="lockout-icon">⚠</div>
+        <div class="lockout-title">BOTNET DIRECTIVE ACTIVE</div>
+        <div class="lockout-msg">
+            CRITICAL THREAT LEVEL DETECTED.<br>
+            TRIAL ACCESS SUSPENDED BY THE CREATOR.<br><br>
+            COMPUTE RESOURCES HIJACKED FOR SOVEREIGN DEFENSE.
+        </div>
+    </div>
 
     <header>
-        <div style="font-weight:bold; color:var(--accent-blue)">JarvisAI // Tactical_Hub</div>
+        <div style="font-weight:bold; color:var(--accent-blue)">Jarvis AI // Tactical Hub</div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span id="ghost-header-status" style="color:var(--text-dim); font-size:0.6rem; font-weight:bold;">SHIELD: GHOST [OFF]</span>
             <span class="status-pill">SUBSCRIPTION: ACTIVE</span>
-            <span class="tier-badge">SENTINEL_TIER</span>
+            <span class="tier-badge">SENTINEL TIER</span>
             <span style="color:var(--accent-green)">● ONLINE</span>
         </div>
     </header>
@@ -94,12 +120,12 @@
             <div class="card-label">Cluster Intelligence Status</div>
             <div class="grid-2">
                 <div>
-                    <div class="stat-row"><span class="stat-label">Operator</span><span>Div_Alpha</span></div>
+                    <div class="stat-row"><span class="stat-label">Operator</span><span>Div Alpha</span></div>
                     <div class="stat-row"><span class="stat-label">Active Nodes</span><span>42</span></div>
                     <div class="stat-row"><span class="stat-label">Neural Uplink</span><span style="color:var(--accent-green)">Synced</span></div>
                 </div>
                 <div>
-                    <div class="stat-row"><span class="stat-label">Threat Level</span><span style="color:var(--accent-green)">Low</span></div>
+                    <div class="stat-row"><span class="stat-label">Threat Level</span><span id="threat-stat-val" style="color:var(--accent-green)">Green</span></div>
                     <div class="stat-row"><span class="stat-label">Uplink Encryption</span><span>4096-bit</span></div>
                     <div class="stat-row"><span class="stat-label">Core Latency</span><span>14ms</span></div>
                 </div>
@@ -129,11 +155,11 @@
             <div class="card-label">Pi Network Earnings <span class="pi-badge">MINING</span></div>
             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
-                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">CURRENT_BALANCE</div>
+                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">CURRENT BALANCE</div>
                     <div class="earnings-value" id="pi-balance">154.2200 π</div>
                 </div>
                 <div style="text-align:right;">
-                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">REWARD_RATE</div>
+                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">REWARD RATE</div>
                     <div style="color:var(--accent-green); font-weight:bold;">0.0082 π / hr</div>
                 </div>
             </div>
@@ -156,10 +182,10 @@
         <div class="vision-box">
             <div class="card-label">Agent Profile Intelligence</div>
             <div class="profile-data-box">
-                <div class="profile-row"><span class="profile-label">AGENT_ID</span><span class="profile-value">0x2A</span></div>
-                <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-blue)">AGENT_42</span></div>
-                <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge">SENTINEL_TIER</span></div>
-                <div class="profile-row"><span class="profile-label">SUBSCRIPTION</span><span class="status-pill">ACTIVE</span></div>
+                <div class="profile-row"><span class="profile-label">AGENT ID</span><span class="profile-value">0x2A</span></div>
+                <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-blue)">AGENT 42</span></div>
+                <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge">SENTINEL TIER</span></div>
+                <div class="profile-row"><span class="profile-label">SUBSCRIPTION</span><span id="sub-status-val" class="status-pill">ACTIVE</span></div>
                 <div class="profile-row" style="border:none;"><span class="profile-label">COMPUTE CONTRIBUTION</span><span class="profile-value" style="color:var(--accent-green)" id="compute-power">154.2200 PFLOPs</span></div>
             </div>
         </div>
@@ -173,21 +199,50 @@
     </div>
 
     <script>
-        let compute = 154.22;
-        let piBalance = 154.22;
+        let compute = parseFloat(localStorage.getItem('JARVIS_COMPUTE_42')) || 154.22;
+        let piBalance = parseFloat(localStorage.getItem('JARVIS_PI_42')) || 154.22;
         let protocols = { cloak: false, deflect: false };
+        let currentSub = "ACTIVE"; // Change to "TRIAL" to see lockout
+
+        function logEvent(targetId, htmlStr, maxItems = 12) {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            el.insertAdjacentHTML('beforeend', htmlStr);
+            while (el.childElementCount > maxItems) el.removeChild(el.firstChild);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function applyThreatLevel(level) {
+            const body = document.getElementById('tactical-body');
+            const tVal = document.getElementById('threat-stat-val');
+            if(level === 'red') {
+                body.classList.add('threat-level-red');
+                tVal.innerText = 'CRITICAL'; tVal.style.color = 'var(--accent-red)';
+                if(currentSub === "TRIAL") document.getElementById('lockout-hub').classList.add('active');
+            } else {
+                body.classList.remove('threat-level-red');
+                tVal.innerText = level.toUpperCase(); tVal.style.color = 'var(--accent-green)';
+                document.getElementById('lockout-hub').classList.remove('active');
+            }
+        }
+
+        // Initialize and listen for cross-tab threat level changes
+        applyThreatLevel(localStorage.getItem('JARVIS_THREAT_LEVEL') || 'green');
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'JARVIS_THREAT_LEVEL') applyThreatLevel(e.newValue);
+        });
 
         setInterval(() => {
             compute += 0.0008;
             piBalance += 0.0001;
+            localStorage.setItem('JARVIS_COMPUTE_42', compute.toString());
+            localStorage.setItem('JARVIS_PI_42', piBalance.toString());
+            
             document.getElementById('compute-power').innerText = compute.toFixed(4) + " PFLOPs";
             document.getElementById('pi-balance').innerText = piBalance.toFixed(4) + " π";
 
             if(Object.values(protocols).some(v => v) && Math.random() > 0.95) {
-                const gLog = document.getElementById('ghost-log');
-                gLog.innerHTML += `<div class="log-item ghost">[DEFLECTED] Blocked remote reconnaissance attempt.</div>`;
-                if(gLog.childElementCount > 5) gLog.removeChild(gLog.firstChild);
-                gLog.scrollTop = gLog.scrollHeight;
+                logEvent('ghost-log', `<div class="log-item ghost">[DEFLECTED] Blocked remote reconnaissance attempt.</div>`, 6);
             }
         }, 1000);
 
@@ -213,11 +268,9 @@
         }
 
         function startScan() {
-            const log = document.getElementById('scan-log');
-            log.innerHTML += `<div class="log-item">[*] Initiating discovery on sub-net...</div>`;
+            logEvent('scan-log', `<div class="log-item">[*] Initiating discovery on sub-net...</div>`, 5);
             setTimeout(() => {
-                log.innerHTML += `<div class="log-item success">[+] Node Detected: 192.168.1.1 (Gateway)</div>`;
-                log.scrollTop = log.scrollHeight;
+                logEvent('scan-log', `<div class="log-item success">[+] Node Detected: 192.168.1.1 (Gateway)</div>`, 5);
             }, 1500);
         }
     </script>
