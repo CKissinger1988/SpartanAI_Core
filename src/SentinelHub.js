@@ -6,20 +6,28 @@ import 'xterm/css/xterm.css';
 
 const SentinelHub = () => {
   const termRef = useRef(null);
+  const fitAddon = useRef(new FitAddon());
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     const term = new Terminal({ fontSize: 14 });
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
+    term.loadAddon(fitAddon.current);
     term.loadAddon(new WebglAddon());
     term.open(termRef.current);
-    fitAddon.fit();
+    fitAddon.current.fit();
+
+    const handleResize = () => {
+      fitAddon.current.fit();
+    };
+    window.addEventListener('resize', handleResize);
 
     // In a real implementation, connect to node-pty here
     term.write('Sentinel Hub Terminal Ready...');
 
-    return () => term.dispose();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      term.dispose();
+    };
   }, []);
 
   return (

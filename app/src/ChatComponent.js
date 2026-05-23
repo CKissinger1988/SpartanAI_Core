@@ -109,7 +109,7 @@ const ChatComponent = () => {
 
     const messageBoxStyle = {
         flex: 1,
-        border: '1px solid #005500',
+        border: '1px solid rgba(0, 170, 255, 0.2)',
         padding: '20px',
         overflowY: 'auto',
         display: 'flex',
@@ -119,8 +119,8 @@ const ChatComponent = () => {
 
     const inputStyle = {
         background: '#0a0a0a',
-        border: '1px solid #00ff00',
-        color: '#00ff00',
+        border: '1px solid #00AAFF',
+        color: '#00AAFF',
         padding: '15px',
         fontFamily: 'monospace',
         fontSize: '16px',
@@ -133,7 +133,7 @@ const ChatComponent = () => {
             <div style={messageBoxStyle} ref={scrollRef}>
                 {messages.map((m, i) => (
                     <div key={i} style={{ marginBottom: '10px', animation: 'fadeIn 0.5s', whiteSpace: 'pre-wrap' }}>
-                        <span style={{ color: m.sender === 'SYSTEM' ? '#00ff00' : '#00aa00', fontWeight: 'bold' }}>
+                        <span style={{ color: m.sender === 'SYSTEM' ? '#00AAFF' : 'rgba(0, 170, 255, 0.8)', fontWeight: 'bold' }}>
                             [{m.sender}]>
                         </span>
                         <span style={{ marginLeft: '10px', color: '#fff' }}>{m.text}</span>
@@ -151,9 +151,9 @@ const ChatComponent = () => {
                 <button 
                     onClick={toggleVoice}
                     style={{ 
-                        background: isListening ? '#ff0000' : '#005500', 
+                        background: isListening ? '#ff0000' : 'rgba(0, 170, 255, 0.2)', 
                         color: '#fff', 
-                        border: '1px solid #00ff00', 
+                        border: '1px solid #00AAFF', 
                         padding: '0 20px', 
                         cursor: 'pointer', 
                         fontWeight: 'bold' 
@@ -163,7 +163,7 @@ const ChatComponent = () => {
                 </button>
                 <button 
                     onClick={sendMessage}
-                    style={{ background: '#00ff00', color: '#000', border: 'none', padding: '0 30px', cursor: 'pointer', fontWeight: 'bold' }}
+                    style={{ background: '#00AAFF', color: '#000', border: 'none', padding: '0 30px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                     SEND
                 </button>

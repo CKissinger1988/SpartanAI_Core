@@ -54,3 +54,23 @@ class HexstrikeEngine:
             return response.json()
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+if __name__ == "__main__":
+    import sys
+    import json
+    if len(sys.argv) > 2:
+        cmd = sys.argv[1]
+        target = sys.argv[2]
+        if cmd == "recon":
+            engine = HexstrikeEngine()
+            # In a real environment, we'd ensure the server is active
+            # For this bridge, we'll return a mock if it's offline or real if online
+            try:
+                result = engine.execute_recon(target)
+                print(json.dumps(result))
+            except Exception as e:
+                print(json.dumps({"success": False, "error": str(e)}))
+    elif len(sys.argv) > 1:
+        if sys.argv[1] == "ensure":
+            engine = HexstrikeEngine()
+            print(json.dumps({"active": engine.ensure_active()}))

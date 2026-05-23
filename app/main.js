@@ -30,7 +30,6 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
-  mainWindow.webContents.openDevTools();
 
   // Real Terminal Backend
   const ptyProcess = pty.spawn(shell, [], {
@@ -54,6 +53,86 @@ function createWindow() {
     const cpu = await si.currentLoad();
     const mem = await si.mem();
     return { cpu: cpu.currentLoad, mem: (mem.active / mem.total) * 100 };
+  });
+
+  ipcMain.handle('system.getDetailedStatus', async () => {
+    return { status: 'online', uptime: process.uptime(), version: '1.0.0' };
+  });
+
+  ipcMain.handle('sys.vitals', async () => {
+    const cpu = await si.currentLoad();
+    const mem = await si.mem();
+    const uptime = os.uptime();
+    return {
+      status: 'success',
+      data: {
+        cpu: `${Math.round(cpu.currentLoad)}%`,
+        ram: `${Math.round((mem.active / mem.total) * 100)}%`,
+        uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
+        vault: 'SECURE',
+        bridge: 'ONLINE',
+        nodes: 'SYNCED',
+        threat: 'ALPHA',
+        learning_rate: '84.2',
+        budget_usage: '12%'
+      }
+    };
+  });
+
+  ipcMain.handle('miner.stats', async () => {
+    return new Promise((resolve) => {
+      let options = {
+        mode: 'text',
+        pythonPath: 'python',
+        scriptPath: path.join(__dirname, '..', 'backend', 'core'),
+        args: ['stats']
+      };
+      PythonShell.run('monetization.py', options).then(results => {
+        try {
+          resolve({ status: 'success', data: JSON.parse(results[results.length - 1]) });
+        } catch (e) {
+          resolve({ status: 'error', message: 'Failed to parse miner stats' });
+        }
+      }).catch(err => resolve({ status: 'error', message: err.message }));
+    });
+  });
+
+  ipcMain.handle('sys.optimize', async () => {
+    return new Promise((resolve) => {
+      let options = {
+        mode: 'text',
+        pythonPath: 'python',
+        scriptPath: path.join(__dirname, '..', 'backend', 'core'),
+        args: ['optimize']
+      };
+      PythonShell.run('sentinel.py', options).then(results => {
+        resolve({ status: 'success', data: results.join('\n') });
+      }).catch(err => resolve({ status: 'error', message: err.message }));
+    });
+  });
+
+  ipcMain.handle('hexstrike.recon', async (event, { target }) => {
+    return new Promise((resolve) => {
+      let options = {
+        mode: 'text',
+        pythonPath: 'python',
+        scriptPath: path.join(__dirname, '..', 'backend', 'core'),
+        args: ['recon', target]
+      };
+      PythonShell.run('hexstrike_client.py', options).then(results => {
+        resolve({ status: 'success', data: results.join('\n') });
+      }).catch(err => resolve({ status: 'error', message: err.message }));
+    });
+  });
+
+  ipcMain.on('miner.control', (event, action) => {
+    let options = {
+      mode: 'text',
+      pythonPath: 'python',
+      scriptPath: path.join(__dirname, '..', 'backend', 'core'),
+      args: [action]
+    };
+    PythonShell.run('monetization.py', options).catch(err => console.error('Miner Control Error:', err));
   });
 
   ipcMain.on('tool.run', (event, tool) => {

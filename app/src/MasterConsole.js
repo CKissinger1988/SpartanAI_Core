@@ -34,7 +34,7 @@ const MasterConsole = () => {
 
     const containerStyle = {
         padding: '20px',
-        color: '#00ff00',
+        color: '#00AAFF',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -44,11 +44,11 @@ const MasterConsole = () => {
     const tableStyle = {
         width: '100%',
         borderCollapse: 'collapse',
-        background: 'rgba(0,10,0,0.3)'
+        background: 'rgba(0, 170, 255, 0.03)'
     };
 
     const thTdStyle = {
-        border: '1px solid #005500',
+        border: '1px solid rgba(0, 170, 255, 0.2)',
         padding: '12px',
         textAlign: 'left',
         fontSize: '12px'
@@ -62,11 +62,11 @@ const MasterConsole = () => {
 
     return (
         <div style={containerStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00ff00', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00AAFF', paddingBottom: '10px' }}>
                 <h2 style={{ margin: 0, letterSpacing: '2px' }}>GLOBAL INSTANCE REGISTRY [C2]</h2>
                 <button 
                     onClick={fetchRegistry}
-                    style={{ background: 'transparent', border: '1px solid #00ff00', color: '#00ff00', padding: '5px 15px', cursor: 'pointer' }}
+                    style={{ background: 'transparent', border: '1px solid #00AAFF', color: '#00AAFF', padding: '5px 15px', cursor: 'pointer' }}
                 >
                     REFRESH_NODES
                 </button>
@@ -77,7 +77,7 @@ const MasterConsole = () => {
             <div style={{ flex: 1, overflowY: 'auto' }}>
                 <table style={tableStyle}>
                     <thead>
-                        <tr style={{ background: '#003300' }}>
+                        <tr style={{ background: 'rgba(0, 170, 255, 0.05)' }}>
                             <th style={thTdStyle}>INSTANCE_ID</th>
                             <th style={thTdStyle}>ONION_UPLINK</th>
                             <th style={thTdStyle}>PLATFORM</th>
@@ -89,13 +89,13 @@ const MasterConsole = () => {
                         {instances.map((node, i) => (
                             <tr key={node.id} style={{ background: i % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'transparent' }}>
                                 <td style={thTdStyle}>{node.id}</td>
-                                <td style={{...thTdStyle, color: '#00aa00'}}>{node.onion}</td>
+                                <td style={{...thTdStyle, color: 'rgba(0, 170, 255, 0.8)'}}>{node.onion}</td>
                                 <td style={thTdStyle}>{node.metadata?.platform || 'UNKNOWN'}</td>
                                 <td style={thTdStyle}>{new Date(node.last_seen).toLocaleString()}</td>
                                 <td style={thTdStyle}>
                                     <button 
                                         onClick={() => connectToInstance(node.onion)}
-                                        style={{ background: '#00ff00', color: '#000', border: 'none', padding: '2px 10px', fontWeight: 'bold', cursor: 'pointer' }}
+                                        style={{ background: '#00AAFF', color: '#000', border: 'none', padding: '2px 10px', fontWeight: 'bold', cursor: 'pointer' }}
                                     >
                                         CONNECT
                                     </button>

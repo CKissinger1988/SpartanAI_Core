@@ -39,7 +39,7 @@ const IoTDashboard = () => {
 
     const containerStyle = {
         padding: '20px',
-        color: '#00ff00',
+        color: '#00AAFF',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -53,8 +53,8 @@ const IoTDashboard = () => {
     };
 
     const cardStyle = {
-        background: 'rgba(0, 20, 0, 0.4)',
-        border: '1px solid #005500',
+        background: 'rgba(0, 170, 255, 0.05)',
+        border: '1px solid rgba(0, 170, 255, 0.2)',
         padding: '15px',
         position: 'relative',
         transition: 'all 0.3s'
@@ -62,11 +62,11 @@ const IoTDashboard = () => {
 
     return (
         <div style={containerStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00ff00', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00AAFF', paddingBottom: '10px' }}>
                 <h2 style={{ margin: 0, letterSpacing: '2px' }}>SMART_VECTORS // IoT DISCOVERY</h2>
                 <button 
                     onClick={scanNetwork}
-                    style={{ background: '#005500', border: '1px solid #00ff00', color: '#00ff00', padding: '5px 15px', cursor: 'pointer', fontWeight: 'bold' }}
+                    style={{ background: 'rgba(0, 170, 255, 0.2)', border: '1px solid #00AAFF', color: '#00AAFF', padding: '5px 15px', cursor: 'pointer', fontWeight: 'bold' }}
                     disabled={loading}
                 >
                     {loading ? 'SCANNING_GRID...' : 'SCAN_NETWORK'}
@@ -78,21 +78,21 @@ const IoTDashboard = () => {
             <div style={{ flex: 1, overflowY: 'auto' }}>
                 <div style={gridStyle}>
                     {devices.map((dev, i) => (
-                        <div key={i} style={cardStyle} onMouseEnter={e => e.currentTarget.style.borderColor = '#00ff00'} onMouseLeave={e => e.currentTarget.style.borderColor = '#005500'}>
-                            <div style={{ fontSize: '10px', color: '#005500', position: 'absolute', top: '5px', right: '10px' }}>{dev.type}</div>
+                        <div key={i} style={cardStyle} onMouseEnter={e => e.currentTarget.style.borderColor = '#00AAFF'} onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0, 170, 255, 0.2)'}>
+                            <div style={{ fontSize: '10px', color: 'rgba(0, 170, 255, 0.2)', position: 'absolute', top: '5px', right: '10px' }}>{dev.type}</div>
                             <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>{dev.name.split('.')[0]}</div>
-                            <div style={{ fontSize: '12px', color: '#00aa00' }}>IP: {dev.addresses[0]}</div>
-                            <div style={{ fontSize: '12px', color: '#00aa00' }}>PORT: {dev.port}</div>
+                            <div style={{ fontSize: '12px', color: 'rgba(0, 170, 255, 0.8)' }}>IP: {dev.addresses[0]}</div>
+                            <div style={{ fontSize: '12px', color: 'rgba(0, 170, 255, 0.8)' }}>PORT: {dev.port}</div>
                             
                             <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
                                 <button 
                                     onClick={() => engageDevice(dev)}
-                                    style={{ background: '#00ff00', color: '#000', border: 'none', padding: '5px 10px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', flex: 1 }}
+                                    style={{ background: '#00AAFF', color: '#000', border: 'none', padding: '5px 10px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', flex: 1 }}
                                 >
                                     AI_ENGAGE
                                 </button>
                                 <button 
-                                    style={{ background: 'transparent', color: '#00ff00', border: '1px solid #00ff00', padding: '5px 10px', fontSize: '10px', cursor: 'pointer', flex: 1 }}
+                                    style={{ background: 'transparent', color: '#00AAFF', border: '1px solid #00AAFF', padding: '5px 10px', fontSize: '10px', cursor: 'pointer', flex: 1 }}
                                     onClick={() => alert(`PROPERTIES:\n${JSON.stringify(dev.properties, null, 2)}`)}
                                 >
                                     INTEL
@@ -101,7 +101,7 @@ const IoTDashboard = () => {
                         </div>
                     ))}
                     {devices.length === 0 && !loading && (
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', border: '1px dashed #003300', color: '#003300' }}>
+                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', border: '1px dashed rgba(0, 170, 255, 0.05)', color: 'rgba(0, 170, 255, 0.05)' }}>
                             NO SMART VECTORS DETECTED IN LOCAL BROADCAST DOMAIN.
                         </div>
                     )}

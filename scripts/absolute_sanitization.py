@@ -43,7 +43,7 @@ def absolute_purge():
     
     # 2. Surgical removal from mixed-use files
     TARGET_FILES = [
-        "backend/core/jeeves.py",
+        "backend/core/jarvis.py",
         "backend/core/sentinel.py",
         "backend/core/sovereignty.py",
         "scripts/nexus_ssh.py",
@@ -57,9 +57,13 @@ def absolute_purge():
             continue
             
         print(f"{CYAN}[*] Sanitizing file: {file_path}{ENDC}")
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}")
+            continue
+            
         original_content = content
         
         # Apply surgical patterns
@@ -67,21 +71,24 @@ def absolute_purge():
             content = re.sub(pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
         
         # Additional cleanup for specific logic blocks
-        if file_path == "backend/core/jeeves.py":
-            # Remove RedTeamSimulator import and usage more specifically if needed
-            content = re.sub(r'from backend\.core\.sovereignty_upgrades import SwarmCoordinator, RedTeamSimulator', 'from backend.core.sovereignty_upgrades import SwarmCoordinator', content)
+        if file_path == "backend/core/jarvis.py":
+            # Remove legacy orchestrator references if any
+            content = content.replace("Jeeves", "Jarvis")
 
         if content != original_content:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(content)
-            print(f"{GREEN}    -> Sanitization applied.{ENDC}")
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print(f"{GREEN}    -> Sanitization applied.{ENDC}")
+            except Exception as e:
+                print(f"Error writing to {file_path}: {e}")
         else:
             print(f"    -> No simulation traces found.")
 
     # 3. Update GEMINI.md with Zero Simulation Policy
     if os.path.exists("GEMINI.md"):
         policy = "\n- **Zero Simulation Policy:** All code, configuration, and tools must be designed for real-world, production-grade operations only. Simulation, sandboxing, and mock-logic are strictly prohibited to maintain operational integrity.\n"
-        with open("GEMINI.md", 'r', encoding='utf-8') as f:
+        with open("GEMINI.md", 'r', encoding='utf-8', errors='ignore') as f:
             gemini_content = f.read()
         
         if "Zero Simulation Policy" not in gemini_content:
@@ -102,10 +109,13 @@ def absolute_purge():
         "rm -rf ~/nexusai/scripts/remove_simulations.py",
         "rm -rf ~/nexusai/scripts/field_prep_secure.sh",
         "rm -rf ~/nexusai/backend/core/sovereignty_upgrades.py",
-        "find ~/nexusai -name '*mock_system*' -type d -exec rm -rf {} +",
+        "find ~/nexusai -name '*mock_system*' -type d -exec rm -rf {} +"
     ]
     for cmd in wsl_cmds:
-        subprocess.run(["wsl", "-d", "kali-linux", "bash", "-c", cmd])
+        try:
+            subprocess.run(["wsl", "-d", "kali-linux", "bash", "-c", cmd], stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
     
     print(f"{RED}{BOLD}--- ABSOLUTE SANITIZATION COMPLETE ---{ENDC}")
 
