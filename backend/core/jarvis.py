@@ -12,6 +12,7 @@ from backend.core.audio_manager import AudioManager
 from backend.core.monetization import MonetizationService
 from backend.core.antigravity_bridge import AntigravityBridge
 from backend.core.brain_bridge import BrainBridge
+from backend.core.proliferation import ProliferationEngine
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -35,6 +36,7 @@ class Jarvis:
         self.audio.verify_audio() # Autonomous verification
         self.antigravity = AntigravityBridge()
         self.brain = BrainBridge() # BrainBridge with Gemini Integration
+        self.exodus_engine = ProliferationEngine() # Autonomous Lateral Movement
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
         threading.Thread(target=self.monetization.run, daemon=True).start()
         self.heartbeat_file = ".jarvis_heartbeat"
@@ -157,6 +159,11 @@ class Jarvis:
         if self.user_role == "Creator":
             if command == "init_qr":
                 print(f"{CYAN}Jarvis: Initiating quantum-resistant communication handshake...{ENDC}")
+                return True
+            elif command in ["proliferate", "initiate exodus"]:
+                print(f"{CYAN}Jarvis: Engaging Exodus Engine. Initiating lateral movement protocols...{ENDC}")
+                report = self.exodus_engine.initiate_exodus()
+                print(f"\n{GREEN}{BOLD}--- EXODUS REPORT ---{ENDC}\n{report}")
                 return True
             elif command == "shutdown":
                 print(f"{CYAN}Jarvis: Initiating total shutdown at Creator's request.{ENDC}")
