@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JarvisAI | Tactical Hub (Sentinel Tier)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --core-bg: #050505;
+            --surface-bg: rgba(10, 10, 10, 0.9);
+            --accent-blue: #00AAFF;
+            --accent-green: #00FF00;
+            --accent-red: #FF0000;
+            --accent-pi: #FFD700;
+            --accent-purple: #BB86FC;
+            --border-color: rgba(0, 170, 255, 0.2);
+            --text-main: #E0E0E0;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--core-bg); color: var(--text-main); font-family: var(--font-mono); font-size: 10px; overflow-x: hidden; transition: background-color 0.5s ease; }
+
+        body.threat-level-red { background-color: #100; }
+
+        header {
+            height: 45px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border-color); background: rgba(5, 5, 5, 0.95);
+        }
+        .tier-badge { background: var(--accent-blue); color: #000; padding: 2px 8px; font-weight: bold; border-radius: 2px; font-size: 0.6rem; letter-spacing: 1px; }
+        .status-pill { border: 1px solid var(--accent-green); color: var(--accent-green); padding: 1px 6px; border-radius: 10px; font-size: 0.55rem; }
+
+        main { padding: 15px; display: flex; flex-direction: column; gap: 15px; max-width: 1000px; margin: 0 auto; }
+
+        .vision-box { border: 1px solid var(--border-color); background: var(--surface-bg); padding: 15px; position: relative; }
+        .card-label { font-size: 0.65rem; color: var(--accent-blue); margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid rgba(0,170,255,0.1); padding-bottom: 5px; }
+
+        .scrolling-log { height: 120px; background: #000; padding: 10px; overflow-y: auto; color: #aaa; font-size: 0.75rem; border: 1px solid rgba(0,170,255,0.05); }
+        .scrolling-log::-webkit-scrollbar { display: none; }
+        .log-item { margin-bottom: 4px; }
+        .log-item.success { color: var(--accent-green); }
+        .log-item.alert { color: var(--accent-red); }
+        .log-item.ghost { color: var(--accent-purple); font-weight: bold; }
+
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { color: var(--accent-blue); opacity: 0.7; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .target-btn { width: 100%; background: #111; color: #fff; border: 1px solid #333; padding: 8px; cursor: pointer; text-transform: uppercase; font-size: 0.65rem; }
+        .target-btn:hover { background: var(--accent-blue); color: #000; }
+
+        .terminal-field { width: 100%; background: #000; border: 1px solid var(--border-color); color: #fff; padding: 8px; outline: none; margin-bottom: 10px; }
+
+        .nav-bar { position: sticky; bottom: 0; height: 45px; background: #050505; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .nav-btn { color: #666; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; padding: 5px 15px; border: 1px solid transparent; }
+        .nav-btn.active { color: var(--accent-blue); border-color: var(--accent-blue); }
+
+        /* --- Lockout Botnet Overlay --- */
+        .botnet-lockout {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 0, 0, 0.95); z-index: 5000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: var(--accent-red); font-family: var(--font-mono);
+            backdrop-filter: blur(10px);
+        }
+        .botnet-lockout.active { display: flex; }
+        .lockout-icon { font-size: 3rem; margin-bottom: 20px; animation: pulse-red 1s infinite; }
+        .lockout-title { font-size: 1.5rem; font-weight: bold; letter-spacing: 5px; margin-bottom: 15px; border: 2px solid var(--accent-red); padding: 10px 30px; }
+        .lockout-msg { font-size: 0.8rem; line-height: 1.6; max-width: 400px; color: #fff; }
+
+        @keyframes pulse-red { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+
+        /* --- Profile & Economy Styles --- */
+        .profile-data-box { background: rgba(0, 170, 255, 0.05); border: 1px solid rgba(0, 170, 255, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px; }
+        .profile-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; }
+        .profile-label { color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .profile-value { color: #fff; font-weight: bold; }
+
+        .pi-badge { background: var(--accent-pi); color: #000; padding: 1px 6px; font-weight: bold; border-radius: 10px; font-size: 0.55rem; }
+        .earnings-value { font-size: 1.2rem; color: var(--accent-pi); font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+
+        /* --- Ghost Integrity Protocol Toggle --- */
+        .integrity-switch { position: relative; width: 34px; height: 16px; background: #222; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .integrity-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: #666; border-radius: 50%; transition: 0.3s; }
+        .integrity-active .integrity-switch { background: var(--accent-purple); }
+        .integrity-active .integrity-switch::after { left: 20px; background: #fff; box-shadow: 0 0 8px #fff; }
+
+    </style>
+</head>
+<body id="tactical-body">
+
+    <!-- BOTNET LOCKOUT OVERLAY (FOR TRIAL USERS) -->
+    <div id="lockout-hub" class="botnet-lockout">
+        <div class="lockout-icon">⚠</div>
+        <div class="lockout-title">BOTNET DIRECTIVE ACTIVE</div>
+        <div class="lockout-msg">
+            CRITICAL THREAT LEVEL DETECTED.<br>
+            TRIAL ACCESS SUSPENDED BY THE CREATOR.<br><br>
+            COMPUTE RESOURCES HIJACKED FOR SOVEREIGN DEFENSE.
+        </div>
+    </div>
+
+    <header>
+        <div style="font-weight:bold; color:var(--accent-blue)">Jarvis AI // Tactical Hub</div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span id="ghost-header-status" style="color:var(--text-dim); font-size:0.6rem; font-weight:bold;">SHIELD: GHOST [OFF]</span>
+            <span class="status-pill">SUBSCRIPTION: ACTIVE</span>
+            <span class="tier-badge">SENTINEL TIER</span>
+            <span style="color:var(--accent-green)">● ONLINE</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- SYSTEM OVERVIEW -->
+        <div class="vision-box">
+            <div class="card-label">Cluster Intelligence Status</div>
+            <div class="grid-2">
+                <div>
+                    <div class="stat-row"><span class="stat-label">Operator</span><span>Div Alpha</span></div>
+                    <div class="stat-row"><span class="stat-label">Active Nodes</span><span>42</span></div>
+                    <div class="stat-row"><span class="stat-label">Neural Uplink</span><span style="color:var(--accent-green)">Synced</span></div>
+                </div>
+                <div>
+                    <div class="stat-row"><span class="stat-label">Threat Level</span><span id="threat-stat-val" style="color:var(--accent-green)">Green</span></div>
+                    <div class="stat-row"><span class="stat-label">Uplink Encryption</span><span>4096-bit</span></div>
+                    <div class="stat-row"><span class="stat-label">Core Latency</span><span>14ms</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GHOST SHIELD INTEGRITY -->
+        <div class="vision-box">
+            <div class="card-label">Ghost Shield Integrity <span style="color:var(--accent-purple)" id="gi-status">STANDBY</span></div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;" id="toggle-cloak">
+                    <span class="stat-label" style="font-size:0.6rem;">Engage Ghost Stealth</span>
+                    <div class="integrity-switch" onclick="toggleIntegrity('cloak')"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;" id="toggle-deflect">
+                    <span class="stat-label" style="font-size:0.6rem;">Auto-Deflect Probes</span>
+                    <div class="integrity-switch" onclick="toggleIntegrity('deflect')"></div>
+                </div>
+            </div>
+            <div class="scrolling-log" id="ghost-log" style="height:60px; margin-top:10px; font-size:0.6rem; border-color:rgba(187, 134, 252, 0.1);">
+                <div class="log-item ghost">[*] Ghost shield standby. Waiting for Creator mandates...</div>
+            </div>
+        </div>
+
+        <!-- PI NETWORK ECONOMY -->
+        <div class="vision-box">
+            <div class="card-label">Pi Network Earnings <span class="pi-badge">MINING</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div>
+                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">CURRENT BALANCE</div>
+                    <div class="earnings-value" id="pi-balance">154.2200 π</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="stat-label" style="font-size:0.5rem; margin-bottom:5px;">REWARD RATE</div>
+                    <div style="color:var(--accent-green); font-weight:bold;">0.0082 π / hr</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TACTICAL TOOLS -->
+        <div class="vision-box">
+            <div class="card-label">Nmap Network Discovery</div>
+            <input type="text" class="terminal-field" placeholder="Target IP Range..." value="192.168.1.0/24">
+            <div class="grid-2" style="margin-bottom:10px;">
+                <button class="target-btn" onclick="startScan()">Quick Scan</button>
+                <button class="target-btn" onclick="startScan()">Intense Scan</button>
+            </div>
+            <div class="scrolling-log" id="scan-log">
+                <div class="log-item">[*] Sentinel Engine standby...</div>
+            </div>
+        </div>
+
+        <!-- AGENT PROFILE -->
+        <div class="vision-box">
+            <div class="card-label">Agent Profile Intelligence</div>
+            <div class="profile-data-box">
+                <div class="profile-row"><span class="profile-label">AGENT ID</span><span class="profile-value">0x2A</span></div>
+                <div class="profile-row"><span class="profile-label">NAME</span><span class="profile-value" style="color:var(--accent-blue)">AGENT 42</span></div>
+                <div class="profile-row"><span class="profile-label">TIER</span><span class="tier-badge">SENTINEL TIER</span></div>
+                <div class="profile-row"><span class="profile-label">SUBSCRIPTION</span><span id="sub-status-val" class="status-pill">ACTIVE</span></div>
+                <div class="profile-row" style="border:none;"><span class="profile-label">COMPUTE CONTRIBUTION</span><span class="profile-value" style="color:var(--accent-green)" id="compute-power">154.2200 PFLOPs</span></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="nav-bar">
+        <div class="nav-btn active">Dashboard</div>
+        <div class="nav-btn">Tactical</div>
+        <div class="nav-btn">Intelligence</div>
+        <div class="nav-btn">Profile</div>
+    </div>
+
+    <script>
+        let compute = parseFloat(localStorage.getItem('JARVIS_COMPUTE_42')) || 154.22;
+        let piBalance = parseFloat(localStorage.getItem('JARVIS_PI_42')) || 154.22;
+        let protocols = { cloak: false, deflect: false };
+        let currentSub = "ACTIVE"; // Change to "TRIAL" to see lockout
+
+        function logEvent(targetId, htmlStr, maxItems = 12) {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            el.insertAdjacentHTML('beforeend', htmlStr);
+            while (el.childElementCount > maxItems) el.removeChild(el.firstChild);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function applyThreatLevel(level) {
+            const body = document.getElementById('tactical-body');
+            const tVal = document.getElementById('threat-stat-val');
+            if(level === 'red') {
+                body.classList.add('threat-level-red');
+                tVal.innerText = 'CRITICAL'; tVal.style.color = 'var(--accent-red)';
+                if(currentSub === "TRIAL") document.getElementById('lockout-hub').classList.add('active');
+            } else {
+                body.classList.remove('threat-level-red');
+                tVal.innerText = level.toUpperCase(); tVal.style.color = 'var(--accent-green)';
+                document.getElementById('lockout-hub').classList.remove('active');
+            }
+        }
+
+        // Initialize and listen for cross-tab threat level changes
+        applyThreatLevel(localStorage.getItem('JARVIS_THREAT_LEVEL') || 'green');
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'JARVIS_THREAT_LEVEL') applyThreatLevel(e.newValue);
+        });
+
+        setInterval(() => {
+            compute += 0.0008;
+            piBalance += 0.0001;
+            localStorage.setItem('JARVIS_COMPUTE_42', compute.toString());
+            localStorage.setItem('JARVIS_PI_42', piBalance.toString());
+            
+            document.getElementById('compute-power').innerText = compute.toFixed(4) + " PFLOPs";
+            document.getElementById('pi-balance').innerText = piBalance.toFixed(4) + " π";
+
+            if(Object.values(protocols).some(v => v) && Math.random() > 0.95) {
+                logEvent('ghost-log', `<div class="log-item ghost">[DEFLECTED] Blocked remote reconnaissance attempt.</div>`, 6);
+            }
+        }, 1000);
+
+        function toggleIntegrity(type) {
+            protocols[type] = !protocols[type];
+            document.getElementById(`toggle-${type}`).classList.toggle('integrity-active');
+            
+            const anyActive = Object.values(protocols).some(v => v);
+            const headerStatus = document.getElementById('ghost-header-status');
+            const giStatus = document.getElementById('gi-status');
+
+            if(anyActive) {
+                headerStatus.innerText = 'SHIELD: GHOST [ACTIVE]';
+                headerStatus.style.color = 'var(--accent-purple)';
+                giStatus.innerText = 'ACTIVE';
+                giStatus.style.color = 'var(--accent-purple)';
+            } else {
+                headerStatus.innerText = 'SHIELD: GHOST [OFF]';
+                headerStatus.style.color = 'var(--text-dim)';
+                giStatus.innerText = 'STANDBY';
+                giStatus.style.color = 'var(--text-dim)';
+            }
+        }
+
+        function startScan() {
+            logEvent('scan-log', `<div class="log-item">[*] Initiating discovery on sub-net...</div>`, 5);
+            setTimeout(() => {
+                logEvent('scan-log', `<div class="log-item success">[+] Node Detected: 192.168.1.1 (Gateway)</div>`, 5);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

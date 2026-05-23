@@ -4,48 +4,6 @@ import sys
 import json
 import threading
 import time
-<<<<<<< Updated upstream
-import grpc
-import uuid
-from datetime import datetime
-
-# Attempt to import generated stubs
-try:
-    import jarvis_pb2
-    import jarvis_pb2_grpc
-except ImportError:
-    print("[WARNING] gRPC stubs not found. Run 'python -m grpc_tools.protoc' to generate.")
-
-class JarvisMobileSupreme:
-    def __init__(self, page: ft.Page):
-        self.page = page
-        self.page.title = "JARVISAI // SUPREME MOBILE"
-        self.page.theme_mode = ft.ThemeMode.DARK
-        self.page.bgcolor = "#050505"
-        self.page.padding = 0
-        
-        self.client_id = f"mobile-operator-{uuid.uuid4().hex[:8]}"
-        self.admin_token = ""
-        self.channel = None
-        self.stub = None
-        
-        # Ghost Integrity: Anti-Debug (Basic Python Check)
-        self._enforce_ghost_integrity()
-
-    def _enforce_ghost_integrity(self):
-        if sys.gettrace() is not None:
-            print("[GHOST] Debugger detected. Terminating mobile core.")
-            sys.exit(1)
-
-    def build(self):
-        # UI Elements
-        self.chat_history = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
-        self.status_bar = ft.Text("STATUS: CONNECTING...", color="#00FF00", size=10)
-        
-        # Economy Stats
-        self.balance_text = ft.Text("Credits: --", size=12, color="#00AAFF")
-        self.pi_earned_text = ft.Text("Pi Earned: --", size=12, color="#FFD700")
-=======
 import uuid
 from datetime import datetime
 
@@ -143,7 +101,8 @@ class JarvisMobileSupreme:
             content=ft.Column([
                 ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color="#FF0000", size=60),
                 ft.Text("BOTNET DIRECTIVE ACTIVE", size=20, color="#FF0000", weight="bold", text_align="center"),
-                ft.Text("CRITICAL THREAT LEVEL DETECTED.\nCOMPUTE RESOURCES HIJACKED FOR SOVEREIGN DEFENSE.", size=12, color="#FFFFFF", text_align="center"),
+                ft.Text("CRITICAL THREAT LEVEL DETECTED.
+COMPUTE RESOURCES HIJACKED FOR SOVEREIGN DEFENSE.", size=12, color="#FFFFFF", text_align="center"),
             ], alignment="center", horizontal_alignment="center"),
             bgcolor="rgba(10, 0, 0, 0.98)",
             padding=40,
@@ -153,49 +112,20 @@ class JarvisMobileSupreme:
             top=0, left=0, right=0, bottom=0,
             z_index=1000
         )
->>>>>>> Stashed changes
 
         # Tabs
         self.tabs = ft.Tabs(
             selected_index=0,
             tabs=[
-<<<<<<< Updated upstream
-                ft.Tab(text="CORE", icon=ft.icons.RECORD_VOICE_OVER, content=self.jarvis_view()),
-                ft.Tab(text="ECONOMY", icon=ft.icons.ACCOUNT_BALANCE_WALLET, content=self.economy_view()),
-                ft.Tab(text="SYSTEM", icon=ft.icons.DASHBOARD, content=self.system_view()),
-=======
                 ft.Tab(text="COMMAND", icon=ft.icons.TERMINAL, content=self.command_view()),
                 ft.Tab(text="ECONOMY", icon=ft.icons.ACCOUNT_BALANCE_WALLET, content=self.economy_view()),
                 ft.Tab(text="OPSEC", icon=ft.icons.SECURITY, content=self.opsec_view()),
->>>>>>> Stashed changes
             ],
             expand=True
         )
 
         # Main Layout
         self.page.add(
-<<<<<<< Updated upstream
-            ft.Container(
-                content=ft.Row([
-                    ft.Text("JARVIS // SUPREME", size=18, color="#00FF00", weight="bold"),
-                    ft.IconButton(ft.icons.SECURITY, icon_color="#FF0000", on_click=lambda _: self.trigger_code_red())
-                ], alignment="spaceBetween"),
-                padding=20, bgcolor="#111111"
-            ),
-            self.tabs,
-            ft.Container(
-                content=ft.Row([self.status_bar, self.balance_text, self.pi_earned_text], alignment="spaceBetween"),
-                padding=10, bgcolor="#0A0A0A"
-            )
-        )
-        
-        # Initialize Connection
-        threading.Thread(target=self.initialize_grpc, daemon=True).start()
-
-    def jarvis_view(self):
-        self.chat_input = ft.TextField(
-            hint_text="Enter Command or 'Code Red'...",
-=======
             ft.Stack([
                 ft.Column([
                     ft.Container(
@@ -225,7 +155,6 @@ class JarvisMobileSupreme:
     def command_view(self):
         self.chat_input = ft.TextField(
             hint_text="Execute Mandate...",
->>>>>>> Stashed changes
             border_color="#00FF00",
             expand=True,
             on_submit=lambda e: self.send_command(e.control.value)
@@ -242,13 +171,6 @@ class JarvisMobileSupreme:
         return ft.Column([
             ft.Container(
                 content=ft.Column([
-<<<<<<< Updated upstream
-                    ft.Text("METERED BILLING", size=16, weight="bold"),
-                    ft.ElevatedButton("REFRESH STATS", on_click=lambda _: self.update_economy_stats()),
-                    ft.Divider(),
-                    ft.Text("PI NETWORK SYNERGY", size=16, weight="bold"),
-                    ft.ElevatedButton("REFILL VIA PI", on_click=lambda _: self.initiate_pi_refill(), bgcolor="#00FF00", color="black"),
-=======
                     ft.Text("PI NETWORK ECONOMY", size=16, weight="bold", color="#FFD700"),
                     ft.Container(
                         content=ft.Row([
@@ -266,23 +188,11 @@ class JarvisMobileSupreme:
                     ft.Divider(height=20, color="transparent"),
                     ft.Text("COMPUTE CONTRIBUTION", size=14, weight="bold"),
                     ft.Text("154.22 PETAFLOPS", size=12, color="#00AAFF")
->>>>>>> Stashed changes
                 ]),
                 padding=20
             )
         ])
 
-<<<<<<< Updated upstream
-    def system_view(self):
-        return ft.Column([
-            ft.Container(
-                content=ft.Column([
-                    ft.Text("GHOST INTEGRITY: ACTIVE", color="#00FF00"),
-                    ft.Text("MTLS AUTHENTICATION: ENFORCED", color="#00FF00"),
-                    ft.Divider(),
-                    ft.Text("SYMMETRIC BRAIN", size=16, weight="bold"),
-                    ft.ElevatedButton("GLOBAL INTEL SEARCH", on_click=lambda _: self.global_search())
-=======
     def opsec_view(self):
         return ft.Column([
             ft.Container(
@@ -293,83 +203,17 @@ class JarvisMobileSupreme:
                     ft.Divider(),
                     ft.Text("ZERO DAY INTELLIGENCE", size=16, weight="bold"),
                     ft.Text("NO ACTIVE THREATS DETECTED", color="#00FF00", size=12)
->>>>>>> Stashed changes
                 ]),
                 padding=20
             )
         ])
 
-<<<<<<< Updated upstream
-    def initialize_grpc(self):
-        try:
-            # mTLS Configuration (Assuming certs are bundled or downloaded)
-            # For mobile, we'd typically use secure storage for these.
-            self.channel = grpc.secure_channel("your-cloud-server:50051", grpc.ssl_channel_credentials())
-            self.stub = jarvis_pb2_grpc.JarvisServiceStub(self.channel)
-            self.status_bar.value = "STATUS: ENCRYPTED LINK ACTIVE"
-            self.update_economy_stats()
-            self.page.update()
-        except Exception as e:
-            self.status_bar.value = f"STATUS: LINK FAILED"
-            self.page.update()
-
-    def send_command(self, cmd):
-        if not cmd: return
-        if cmd.strip().lower() == "code red":
-            self.trigger_code_red()
-            return
-
-        self.chat_history.controls.append(ft.Text(f"[OPERATOR]: {cmd}", color="#00AA00"))
-        self.chat_input.value = ""
-        self.page.update()
-
-        def stream_call():
-            metadata = [('admin-token', self.admin_token)] if self.admin_token else []
-            responses = self.stub.StreamOperator(iter([jarvis_pb2.OperatorRequest(client_id=self.client_id, command=cmd)]), metadata=metadata)
-            for r in responses:
-                self.chat_history.controls.append(ft.Text(f"[JARVIS]: {r.message}", color="#00FF00"))
-                if r.action_type == "SUPREME_EXECUTION":
-                    self.chat_history.controls.append(ft.Text("[PRIME DIRECTIVE ENGAGED]", color="#FF0000", weight="bold"))
-                self.page.update()
-                self.update_economy_stats()
-
-        threading.Thread(target=stream_call, daemon=True).start()
-
-    def trigger_code_red(self):
-        self.log_to_chat("[SYSTEM]: INITIATING CODE RED OVERRIDE", "#FF0000")
-        # In a real app, this would show a secure password dialog
-        # self.stub.ElevatePrivileges(...)
-        pass
-
-    def update_economy_stats(self):
-        if not self.stub: return
-        res = self.stub.GetUsageStats(jarvis_pb2.UsageRequest(client_id=self.client_id))
-        self.balance_text.value = f"Credits: {res.current_balance:.2f}"
-        self.page.update()
-
-    def log_to_chat(self, text, color="#00FF00"):
-        self.chat_history.controls.append(ft.Text(text, color=color))
-        self.page.update()
-
-def main(page: ft.Page):
-    app = JarvisMobileSupreme(page)
-    app.build()
-=======
     def sync_engine(self):
         """Simulates real-time synchronization with the Supreme Core."""
         while True:
-            # Randomly simulate threat level shift for demonstration or poll a real source
-            # In this project context, we assume a shared threat state
-            # self.threat_level = get_global_threat() 
-            
-            # UI Update Logic
+            # 0ms Latency Storage Sync (Simulated for Mobile)
             self.pi_balance += 0.0001
             self.pi_text.value = f"{self.pi_balance:.4f} π"
-            
-            # Check for Botnet Directive (Level RED)
-            # For the "memo", we will respect the storage key if we were on the same machine
-            # But since it's a mobile sim, we'll just keep it synchronized with any future logic.
-            
             self.page.update()
             time.sleep(2)
 
@@ -387,7 +231,6 @@ def main(page: ft.Page):
 def main(page: ft.Page):
     app = JarvisMobileSupreme(page)
     app.run()
->>>>>>> Stashed changes
 
 if __name__ == "__main__":
     ft.app(target=main)

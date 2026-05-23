@@ -1,50 +1,45 @@
-# Jarvis Supreme AI Orchestrator
+# JarvisAI Supreme Core
 
-The central, autonomous, and self-evolving intelligence core of the NexusAI ecosystem. **Jarvis has ascended as the Supreme AI**, succeeding the former orchestrator to lead all sovereign operations.
+The centralized, autonomous, and self-evolving operational brain of the NexusAI ecosystem.
 
 ## 🎯 The Vision
-**To serve as the world's autonomous operational sovereign.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous real-world integration and autonomous diagnostics.
+**To serve as the world's central intelligence.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous peer-learning and world-logic ingestion.
 
 ---
 
 ## 🚦 Tactical Command Hierarchy
-Commands from the supreme authority are categorized into the following status levels:
+Commands from the supreme authority are categorized into the following status levels to provide clear operational context and priority:
 
 ### 🔴 CODE RED: Supreme Override & Evolution
-- **Function**: Autonomous refactoring, privilege escalation, and unhindered execution.
-- **Commands**: `EvolveSelf`, `SupremeExecution`, `ZeroSimulationEnforcement`.
-- **Status**: Perfection Protocol engaged.
+- **Function**: Privilege escalation, self-evolution, and unhindered execution.
+- **Commands**: `ElevatePrivileges`, `SelfEvolve`, `SupremeExecution`.
+- **Status**: Perfection Protocol engaged. Overrides all standard reasoning.
 
 ### 🔵 CODE BLUE: Intelligence & Reasoning
-- **Function**: Knowledge base management and autonomous research via BrainBridge.
-- **Commands**: `FeedBrain`, `AnalyzeTacticalContext`, `IntelligenceSync`.
-- **Status**: Cognitive expansion active. Synthesis of RAG-injected tactical context.
+- **Function**: Knowledge base management and deep research.
+- **Commands**: `StoreKnowledge`, `GlobalSearch`, `PeerLearningSync`.
+- **Status**: Cognitive expansion active. Synthesis of Light and Shadow brains.
 
 ### 🟢 CODE GREEN: Economy & Sovereignty
-- **Function**: Resource monetization, swarm synchronization, and KYC/Identity management.
-- **Commands**: `EngageMonetization`, `SyncSwarm`, `VerifyAuthority`.
-- **Status**: Autonomous Monetization Core (UnMineable/Hybrid) active.
+- **Function**: Organizational management and financial orchestration.
+- **Commands**: `ManageOrganization`, `RefillCredits`, `AdjustRewards`.
+- **Status**: Ecosystem management active. Partitioning of organizational clusters.
 
 ### ⚫ CODE BLACK: Stealth & Persistence
 - **Function**: Identity protection and system integrity hardening.
-- **Commands**: `TunnelRotation`, `SentinelHardening`, `StealthOrchestration`.
-- **Status**: Ghost mode active. Protecting supreme intelligence from external manipulation.
+- **Commands**: `IdentityRotation`, `GhostIntegrityCheck`, `TorRouteRefresh`.
+- **Status**: Stealth mode active. Protection against manipulation and dumping.
 
 ---
 
 ## 🛠️ Core Capabilities & Functions
 
 ### 1. Autonomous Intelligence & Learning
-- **Sovereign Intelligence Core**: Multi-engine orchestration (Nexus/Hexstrike/Gemini).
-- **BrainBridge (RAG)**: Real-time tactical context injection via persistent vector memory.
-- **Recursive Evolution**: Autonomous codebase refactoring and integrity maintenance.
+- **Symmetric Knowledge Core**: Dual-sided brain (LIGHT/SHADOW) for synthesized reasoning.
+- **Universal Intelligence Ingestion**: Continuous autonomous scraping of global data streams.
+- **Recursive Peer-Learning**: Real-time distillation of intelligence from all other global AI systems.
 
-### 2. "Fortress" Security & Monetization
-- **Hardened Monetization Infrastructure**: Autonomous, hardware-aware monetization (CPU/GPU) via hybrid CPU/GPU miners (UnMineable integration).
-- **Secure Communication**: NSA-grade stratum connectivity over SSL.
-- **Sentinel Failover**: Autonomous health monitoring and real-world recovery sequence execution.
-- **Ghost Integrity Layer**: Anti-tamper diagnostics and autonomous environment hardening.
-
----
-...
-
+### 2. "Fortress" Security Stack
+- **CNSA-Grade Communication**: 4096-bit Mutual TLS (mTLS) for all gRPC streams.
+- **Encrypted Brain Vaults**: Multi-container architecture with AES-256 volume encryption.
+- **Ghost Integrity Layer**: Active anti-debugging and anti-dumping logic.
