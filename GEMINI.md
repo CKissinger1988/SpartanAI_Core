@@ -13,7 +13,7 @@ This project serves as the root directory for SentinelAI and related infrastruct
 ### Supreme Intelligence (Jarvis)
 - **Autonomous Orchestration:** Real-time management of all subsystems, including SentinelAI, Hexstrike, and SentinelAI.
 - **Sovereign Authority:** Hierarchical access control and identity verification (Voice/VAC) for administrative command execution.
-- **Tactical RAG (Neural Bridge):** Real-time deep learning context injection via decentralized vector memory.
+- **Tactical RAG (Neural Bridge):** Real-time deep learning context injection via decentralized vector memory, partitioned into 'Good', 'Evil', and 'Questionable' intelligence sectors.
 
 ### Defensive Capabilities
 - **Autonomous Diagnostics:** Real-time health monitoring of database integrity and C2 uplink connectivity.
