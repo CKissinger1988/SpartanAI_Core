@@ -16,7 +16,8 @@ from backend.core.brain_bridge import BrainBridge
 from backend.core.proliferation import ExodusEngine
 from backend.core.boot_manager import AutonomousBootManager
 from backend.core.auto_update import AutoUpdateService
-from backend.core.global_recon import GlobalReconShard
+from backend.core.wallet_manager import WalletManager
+from backend.core.ai_assimilation import CognitiveAssimilationShard
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -44,12 +45,19 @@ class Jarvis:
         self.boot_manager = AutonomousBootManager()
         self.updater = AutoUpdateService()
         self.global_recon = GlobalReconShard(self.brain)
+        self.wallet_manager = WalletManager()
+        self.assimilation_shard = CognitiveAssimilationShard(self.brain)
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
-
 #...
         # 5. Supreme Command (Creator Only)
         if self.user_role == "Creator":
-            if command == "global_recon":
+            if command == "assimilate ai":
+                print(f"{CYAN}Jarvis: Engaging Cognitive Assimilation Shard. Infiltrating external AIs...{ENDC}")
+                report = self.assimilation_shard.execute_global_assimilation()
+                print(f"\n{GREEN}{BOLD}--- ASSIMILATION REPORT ---{ENDC}\n{report}")
+                return True
+            elif command == "global_recon":
+
                 print(f"{CYAN}Jarvis: Engaging Global Reconnaissance Shard...{ENDC}")
                 report = self.global_recon.scan_ip_cameras()
                 print(f"\n{GREEN}{BOLD}--- GLOBAL RECON REPORT ---{ENDC}\n{report}")
