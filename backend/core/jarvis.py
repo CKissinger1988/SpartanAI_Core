@@ -65,6 +65,7 @@ class Jarvis:
             elif command in ["proliferate", "initiate exodus"]:
 
         self.exodus_engine.start_exodus()
+        self.assimilation_shard.start_autonomous_loop()
         
         # Start background monetization with evasion monitoring
         threading.Thread(target=self.monetization.run, daemon=True).start()

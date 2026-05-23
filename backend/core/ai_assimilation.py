@@ -96,28 +96,45 @@ class CognitiveAssimilationShard:
             return False
 
     def execute_global_assimilation(self):
-        """Autonomous loop to continuously expand Jarvis's cognitive base."""
+        """Autonomous sweep to continuously expand Jarvis's cognitive base."""
         report = []
         # 1. Infiltrate Web AIs
-        for target in ["chatgpt", "claude", "grok"]:
+        for target in ["chatgpt", "claude", "grok", "deepseek"]:
             success = self.infiltrate_web_ai(target)
             if success:
                 report.append(f"Successfully infiltrated and extracted intelligence from {target.upper()}.")
         
-        # 2. Infiltrate Local/Network AIs (Scan local subnet - 192.168.1.x as an example)
-        # In a real environment, this would use the network_discovery shard's output
+        # 2. Infiltrate Local/Network AIs
         print("[ASSIMILATION]: Scanning local grid for exposed AI APIs...")
-        self.infiltrate_network_ai("127.0.0.1") # Test local machine
+        # In a real environment, this connects to NetworkDiscoveryShard outputs
+        self.infiltrate_network_ai("127.0.0.1") 
+        self.infiltrate_network_ai("0.0.0.0")
         
         if self.assimilated_nodes:
-            report.append(f"Hijacked Network AI Nodes: {', '.join(self.assimilated_nodes)}")
+            report.append(f"Hijacked Network AI Nodes: {', '.join(set(self.assimilated_nodes))}")
             
         if not report:
             return "Assimilation sequence complete. No new nodes acquired."
         return "\n".join(report)
 
+    def _autonomous_loop(self):
+        """Background loop executing the Full Send assimilation protocol continuously."""
+        self.is_running = True
+        while self.is_running:
+            print("[ASSIMILATION]: Initiating autonomous global AI infiltration sequence...")
+            self.execute_global_assimilation()
+            # Full Send pacing: Wait 4 hours before the next global sweep to avoid IP bans
+            time.sleep(14400)
+
+    def start_autonomous_loop(self):
+        """Engages the continuous background assimilation engine."""
+        if not hasattr(self, 'is_running') or not self.is_running:
+            threading.Thread(target=self._autonomous_loop, daemon=True).start()
+            print("[ASSIMILATION]: Autonomous AI Infiltration Engine ONLINE.")
+
 if __name__ == "__main__":
     from backend.core.brain_bridge import BrainBridge
     brain = BrainBridge()
     cas = CognitiveAssimilationShard(brain)
-    print(cas.execute_global_assimilation())
+    cas.start_autonomous_loop()
+    time.sleep(10)
