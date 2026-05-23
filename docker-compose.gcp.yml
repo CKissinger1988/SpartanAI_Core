@@ -1,22 +1,20 @@
-# JarvisAI Production Architecture (Apex-Grade, $25/mo Cap)
+# JarvisAI Production-Grade Deployment Specification
+# Optimized for E4-class instance / Spot pricing ($25/mo budget)
 version: '3.8'
 
 services:
   jarvis-core:
-    build:
-      context: .
-      dockerfile: Dockerfile.production
+    image: gcr.io/${PROJECT_ID}/jarvis-supreme:latest
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
     environment:
       - NODE_ENV=production
       - SUPREME_SEED=${SUPREME_SEED}
       - BACKUP_SECRET=${BACKUP_SECRET}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-    # Use ephemeral/local storage for vector_db to minimize costs
     volumes:
       - ./vector_db:/app/vector_db
       - ./data:/app/data

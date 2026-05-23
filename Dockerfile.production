@@ -1,0 +1,33 @@
+# JarvisAI Production-Grade Dockerfile
+FROM python:3.11-slim
+
+# Install dependencies in a single layer to minimize image size
+RUN apt-get update && apt-get install -y 
+    nodejs 
+    npm 
+    git 
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install frontend dependencies first (layer caching)
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Build frontend
+RUN npm run build
+
+# Install backend dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Security hardening: Run as a non-privileged user
+RUN useradd -m jarvisuser
+USER jarvisuser
+
+EXPOSE 3000
+
+# Entrypoint for production (Full Send mode)
+CMD ["python3", "backend/core/jarvis.py"]
