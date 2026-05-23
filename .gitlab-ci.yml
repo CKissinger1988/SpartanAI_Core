@@ -1,36 +1,22 @@
 # .gitlab-ci.yml
-# SENTINELAI Autonomous Build & Release Pipeline
+# SENTINELAI Autonomous Build, Release, and Pages Pipeline
 stages:
   - build
   - release
+  - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
 
-build_binaries:
-  stage: build
-  image: docker:20.10
-  services:
-    - docker:20.10-dind
+# ... existing build_binaries and release_job ...
+
+pages:
+  stage: deploy
   script:
-    - echo "[+] Constructing hardened environment..."
-    - docker build -t nexus-ai-builder .
-    - echo "[+] Extracting production binaries..."
-    - mkdir -p ./release
-    - docker run --rm -v "$(pwd)/release:/output" nexus-ai-builder bash -c "cp -r /opt/nexus-ai/dist/* /output/"
-    - tar -czvf "NEXUS_AI_DEPLOYMENT.tar.gz" -C ./release .
+    - mkdir -p public
+    - cp -r web_portal/public/* public/
   artifacts:
     paths:
-      - NEXUS_AI_DEPLOYMENT.tar.gz
-    expire_in: 1 week
-
-release_job:
-  stage: release
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache curl
-  script:
-    - echo "[+] Publishing release to GitLab..."
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file NEXUS_AI_DEPLOYMENT.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/nexus-ai/${CI_COMMIT_TAG}/NEXUS_AI_DEPLOYMENT.tar.gz"'
+      - public
   only:
-    - tags
+    - main
