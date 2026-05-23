@@ -8,9 +8,32 @@ const si = require('systeminformation');
 const path = require('path');
 
 const app = express();
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            "default-src": ["'self'"],
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            "style-src": ["'self'", "'unsafe-inline'"],
+            "img-src": ["'self'", "data:"],
+            "connect-src": ["'self'"]
+        },
+    },
+}));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+    console.log(`REQ: ${req.method} ${req.url}`);
+    next();
+});
+
+const publicPath = path.join(__dirname, 'public');
+console.log(`Public directory: ${publicPath}`);
+app.use(express.static(publicPath));
+
+app.get('/', (req, res) => {
+    const indexPath = path.join(publicPath, 'index.html');
+    console.log(`GET / matched. Serving: ${indexPath}`);
+    res.sendFile(indexPath);
+});
 
 const apiKeys = new Map();
 

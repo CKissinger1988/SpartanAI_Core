@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import CreatorDashboard from './CreatorDashboard';
+import AxiomV2 from './AxiomV2';
 import LoginComponent from './LoginComponent';
+
+const isPreviewMode = false;
 
 const SentinelHub = () => {
     const [user, setUser] = useState(null);
@@ -9,7 +11,7 @@ const SentinelHub = () => {
         return <LoginComponent onLogin={setUser} />;
     }
 
-    return <CreatorDashboard user={user} />;
+    return <AxiomV2 user={user} />;
 };
 
 export default SentinelHub;

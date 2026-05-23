@@ -31,6 +31,28 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 
+  // Create Widget
+  const isWidgetOnly = process.argv.includes('--widget-only');
+  const widgetWindow = new BrowserWindow({
+    width: 300,
+    height: 200,
+    frame: false,
+    alwaysOnTop: true,
+    show: isWidgetOnly,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+  widgetWindow.loadFile(path.join(__dirname, 'widget.html'));
+  widgetWindow.setPosition(100, 100);
+
+  if (!isWidgetOnly) {
+    // Hide widget if not explicitly asked for it or handle as needed
+    // widgetWindow.hide();
+  }
+
   // Real Terminal Backend
   const ptyProcess = pty.spawn(shell, [], {
     name: 'xterm-color',
