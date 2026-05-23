@@ -17,7 +17,6 @@
 .dropbox_bi/
 .gemini/
 .pytest_cache/
-.spotdl/
 .vscode/
 **/temp/
 **/logs/
@@ -25,15 +24,22 @@
 **/node_modules/
 **/venv/
 __pycache__/
+build/
+dist/
+dist-ssr/
+coverage/
 
 # Sensitive and personal files
 .env
+.env*
+!.env.example
 secret.key
 nexus.key
 gate.key
 *.regtrans-ms
 NTUSER.DAT*
 ntuser.ini
+vault_persistence.json
 
 # Specific project clutter
 SentinelAIHub.js.*
@@ -45,3 +51,15 @@ monetization.py.*
 *.tmp2
 *.llc_v1.tmp
 *.llc_v2.tmp
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+
+# Compiled Releases/Binaries
+react-example-linux
+react-example-win.exe
+releases/react-example-linux
+releases/react-example-win.exe
+nexus-live-security.iso

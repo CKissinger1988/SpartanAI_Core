@@ -43,3 +43,15 @@ Commands from the supreme authority are categorized into the following status le
 - **CNSA-Grade Communication**: 4096-bit Mutual TLS (mTLS) for all gRPC streams.
 - **Encrypted Brain Vaults**: Multi-container architecture with AES-256 volume encryption.
 - **Ghost Integrity Layer**: Active anti-debugging and anti-dumping logic.
+
+### 3. Integrated Offensive & Defensive Features (from Nexus AI Suite)
+- **Operational Enclave**: Zero-trust node management for secure terminal access and encrypted file operations.
+- **Jarvis AI Assistant**: Neural orchestrator for infrastructure auditing, threat analysis, and exploit staging.
+- **Metasploit Framework Console**: Operational bridge to MSF infrastructure for targeted deployment.
+- **Security Recon Lab**: Real-time vulnerability assessment and network topology analysis.
+
+## 📂 Project Structure
+- `src/components`: React components including the simulated desktop, terminal, and AI chat interfaces.
+- `src/contexts`: React context providers for global state (e.g., AuthContext).
+- `server.ts`: Express backend handling simulated security tool endpoints and the WebSocket connection for the Gemini Live API.
+- `index.css`: Global styles, including custom animations and the Tailwind configuration.
