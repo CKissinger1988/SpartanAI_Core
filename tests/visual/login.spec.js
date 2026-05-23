@@ -17,7 +17,7 @@ test.describe('SENTINELAI Supreme UI - Visual Validation', () => {
     await page.goto('http://localhost:3000');
     
     const operatorInput = page.locator('#operator-id');
-    await operatorInput.fill('CKissinger');
+    await operatorInput.fill('SUPREME_OPERATOR');
     
     // Capture glow effect
     await page.screenshot({ path: 'tests/visual/screenshots/login-glow-active.png' });
@@ -35,7 +35,7 @@ test.describe('SENTINELAI Supreme UI - Visual Validation', () => {
   test('LoginComponent: Authentication Handshake Animation', async ({ page }) => {
     await page.goto('http://localhost:3000');
     
-    await page.locator('#operator-id').fill('CKissinger');
+    await page.locator('#operator-id').fill('SUPREME_OPERATOR');
     await page.locator('#access-key').fill('wrong_key');
     await page.click('button:has-text("ESTABLISH_UPLINK")');
     

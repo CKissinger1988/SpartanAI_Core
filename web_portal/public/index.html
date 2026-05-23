@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINELAI // Infrastructure Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #E8EDF2;
+            --primary-blue: #00AAFF;
+            --text-dark: #2C3E50;
+            --text-secondary: #7F8C8D;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 15px 45px rgba(0, 100, 200, 0.1);
+            --border: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #E8EDF2 100%);
+            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 30px;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 30px 0;
+            letter-spacing: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            color: #34495E;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 170, 255, 0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .card:active { transform: scale(0.98); }
+
+        .card::after {
+            content: 'SYNCING...';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--primary-blue);
+            letter-spacing: 2px;
+            z-index: 100;
+        }
+        .card.syncing::after { display: flex; }
+
+        h3 {
+            margin: 0 0 20px 0;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .gauge-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+        }
+
+        .gauge-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .gauge-bg { fill: none; stroke: #D1D9E6; stroke-width: 8; }
+        .gauge-progress { 
+            fill: none; 
+            stroke: var(--primary-blue); 
+            stroke-width: 10; 
+            stroke-dasharray: 283; 
+            stroke-dashoffset: 283; 
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            filter: drop-shadow(0 0 5px rgba(0, 170, 255, 0.4));
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #34495E;
+        }
+
+        .terminal-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            font-family: 'Fira Code', monospace;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        #trace-logs {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        canvas#threat-map {
+            width: 100%;
+            height: 250px;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #D1D9E6;
+        }
+
+        /* Large Touch Interactive Area */
+        .touch-input {
+            width: 100%;
+            padding: 20px 25px;
+            border-radius: 20px;
+            border: 1px solid #D1D9E6;
+            background: #fff;
+            margin-top: 20px;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .touch-input:focus { border-color: var(--primary-blue); box-shadow: 0 0 20px rgba(0, 170, 255, 0.1); }
+
+    </style>
+</head>
+<body>
+    <h1>SENTINELAI // INFRASTRUCTURE</h1>
+    
+    <div class="dashboard-grid">
+        <div class="card" id="map-card" style="cursor: default;">
+            <h3>Intrusion Proximity Map</h3>
+            <canvas id="threat-map"></canvas>
+        </div>
+        <div class="terminal-card">
+            <h3>Trace Activity Log</h3>
+            <div id="trace-logs">> Trace Engine: [ACTIVE] - L2CAP Handshake Verified...</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card" onclick="syncCard(this)">
+            <h3>Network Latency</h3>
+            <div class="gauge-container">
+                <svg class="gauge-svg"><circle class="gauge-bg" cx="70" cy="70" r="45"/><circle id="net-gauge" class="gauge-progress" cx="70" cy="70" r="45"/></svg>
+                <div id="net-metric" class="gauge-text">12ms</div>
+            </div>
+        </div>
+        <div class="card" onclick="syncCard(this)">
+            <h3>IO Processing</h3>
+            <div class="gauge-container">
+                <svg class="gauge-svg"><circle class="gauge-bg" cx="70" cy="70" r="45"/><circle id="disk-gauge" class="gauge-progress" cx="70" cy="70" r="45"/></svg>
+                <div id="disk-metric" class="gauge-text">18%</div>
+            </div>
+        </div>
+        <div class="card" onclick="syncCard(this)">
+            <h3>Thermal Matrix</h3>
+            <div class="gauge-container">
+                <svg class="gauge-svg"><circle class="gauge-bg" cx="70" cy="70" r="45"/><circle id="temp-gauge" class="gauge-progress" cx="70" cy="70" r="45"/></svg>
+                <div id="temp-metric" class="gauge-text">42°C</div>
+            </div>
+        </div>
+        <div class="card" onclick="syncCard(this)">
+            <h3>Core Integrity</h3>
+            <div class="gauge-container">
+                <svg class="gauge-svg"><circle class="gauge-bg" cx="70" cy="70" r="45"/><circle id="kernel-gauge" class="gauge-progress" cx="70" cy="70" r="45"/></svg>
+                <div id="kernel-metric" class="gauge-text">100%</div>
+            </div>
+        </div>
+    </div>
+
+    <input type="text" class="touch-input" placeholder="ISSUE INFRASTRUCTURE DIRECTIVE...">
+
+    <script>
+        function syncCard(el) {
+            el.classList.add('syncing');
+            setTimeout(() => el.classList.remove('syncing'), 1200);
+        }
+        
+        // Simple gauge animation logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const setGauge = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.style.strokeDashoffset = 283 - (283 * val / 100);
+            };
+            setGauge('net-gauge', 65);
+            setGauge('disk-gauge', 18);
+            setGauge('temp-gauge', 42);
+            setGauge('kernel-gauge', 100);
+        });
+    </script>
+</body>
+</html>

@@ -10,7 +10,7 @@ const path = require('path');
 const app = express();
 app.use(helmet());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const apiKeys = new Map();
 
@@ -66,4 +66,4 @@ app.get('/api/security-telemetry', (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('Secure portal online on port 3000.'));
+app.listen(3001, () => console.log('Secure portal online on port 3001.'));

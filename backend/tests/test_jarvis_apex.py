@@ -3,12 +3,18 @@ import os
 import json
 import time
 from backend.core.jarvis import Jarvis
+from backend.core.global_recon import GlobalReconShard
 
 @pytest.fixture
 def jarvis():
     # Ensure a clean environment for testing
     if os.path.exists(".jarvis_heartbeat"):
         os.remove(".jarvis_heartbeat")
+    # Patch GlobalReconShard to avoid initialization during tests
+    from unittest.mock import MagicMock
+    import backend.core.jarvis as jarvis_module
+    jarvis_module.GlobalReconShard = MagicMock()
+    
     instance = Jarvis()
     yield instance
     # Clean up

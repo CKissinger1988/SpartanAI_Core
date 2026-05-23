@@ -3,9 +3,14 @@ import os
 
 class RemoteADBManager:
     """Enhancement: Advanced management of remote device connections via ADB with cross-network tunnel support."""
-    def __init__(self, adb_path=r"C:\Program Files\platform-tools\adb.exe", tunnel_bin=r"C:\Users\ckiss\.remoteadb\bin\cloudflared.exe"):
+    def __init__(self, adb_path=r"C:\Program Files\platform-tools\adb.exe", tunnel_bin=None):
         self.adb_path = adb_path
-        self.tunnel_bin = tunnel_bin
+        if not tunnel_bin:
+            win_home = os.environ.get('USERPROFILE', r'C:\Users\Public')
+            self.tunnel_bin = os.path.join(win_home, r".remoteadb\bin\cloudflared.exe")
+        else:
+            self.tunnel_bin = tunnel_bin
+
 
     def establish_tunnel(self, target_host):
         """Uses Cloudflare Tunnel for secure, NAT-traversing mobile connectivity."""
