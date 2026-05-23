@@ -49,6 +49,7 @@ function createWindow() {
     }
   });
   ghostWidget.loadFile(path.join(__dirname, 'widget.html'));
+  ghostWidget.show();
   
   // Position in bottom-right corner
   const { screen } = require('electron');
