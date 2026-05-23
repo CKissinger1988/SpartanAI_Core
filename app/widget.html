@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root { --threat-color: #00FF00; }
+        body {
+            background: radial-gradient(circle, rgba(10,20,10,0.8) 0%, rgba(0,0,0,1) 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-app-region: drag;
+        }
+        #alien-head {
+            width: 80px;
+            height: 80px;
+            fill: var(--threat-color);
+            filter: drop-shadow(0 0 15px var(--threat-color));
+            animation: pulse 3s infinite ease-in-out, flicker 0.1s infinite;
+            cursor: pointer;
+            -webkit-app-region: no-drag;
+            transition: fill 0.5s, filter 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--threat-color)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 30px var(--threat-color)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--threat-color)); }
+        }
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+        #cmdInput { 
+            display: none; 
+            position: absolute; 
+            bottom: 20px;
+            background: linear-gradient(90deg, #001100, #003300);
+            border: 2px solid var(--threat-color);
+            color: var(--threat-color);
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            width: 80%;
+            box-shadow: 0 0 10px var(--threat-color);
+            -webkit-app-region: no-drag;
+        }
+    </style>
+</head>
+<body>
+    <svg id="alien-head" viewBox="0 0 24 24">
+        <path d="M12,2C8.14,2 5,5.14 5,9C5,13.67 8.35,17.44 12.75,18.57L12,22L15.25,18.57C19.65,17.44 23,13.67 23,9C23,5.14 19.86,2 16,2H12Z" />
+    </svg>
+    <input type="text" id="cmdInput" placeholder=">_ INPUT ALIEN MANDATE" />
+    <script>
+        const head = document.getElementById('alien-head');
+        const input = document.getElementById('cmdInput');
+        
+        async function updateThreatLevel() {
+            const vitals = await window.electronAPI.ipcRenderer.invoke('sys.vitals');
+            const level = vitals.data.threat; // ALPHA, BETA, DELTA
+            const colors = { 'ALPHA': '#00FF00', 'BETA': '#FFFF00', 'DELTA': '#FF0000' };
+            document.documentElement.style.setProperty('--threat-color', colors[level] || '#00FF00');
+        }
+
+        setInterval(updateThreatLevel, 5000);
+        updateThreatLevel();
+
+        head.addEventListener('click', () => {
+            input.style.display = 'block';
+            input.focus();
+        });
+        input.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const cmd = input.value;
+                input.style.display = 'none';
+                input.value = '';
+                const response = await window.electronAPI.ipcRenderer.invoke('ai.command', cmd);
+                console.log(response);
+            }
+        });
+    </script>
+</body>
+</html>
