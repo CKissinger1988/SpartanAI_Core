@@ -139,6 +139,27 @@ function createWindow() {
     ptyProcess.write(tool + '\r');
   });
 
+  // Antigravity CLI Handler
+  ipcMain.handle('agy.command', async (event, { prompt }) => {
+    return new Promise((resolve) => {
+      const agyPath = path.join(os.homedir(), 'AppData', 'Local', 'agy', 'bin', 'agy.exe');
+      let options = {
+        mode: 'text',
+        pythonPath: 'python', // Not used but required by some older shells
+        args: ['--print', prompt]
+      };
+      
+      const { exec } = require('child_process');
+      exec(`"${agyPath}" --print "${prompt}"`, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+        if (error) {
+          resolve({ status: 'error', message: error.message });
+          return;
+        }
+        resolve({ status: 'success', data: stdout || stderr });
+      });
+    });
+  });
+
   // Unified AI Handler (Jarvis/Gemini)
   ipcMain.handle('ai.command', async (event, command) => {
     return new Promise((resolve) => {

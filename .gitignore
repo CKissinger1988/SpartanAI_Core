@@ -1,18 +1,47 @@
-node_modules/
-dist/
-build/
-app/dist/
-.DS_Store
+# Temporary and build files
+*.tmp
 *.log
-.env
-coverage/
-.jest/
+*.tar
+*.zip
+*.iso
+*.db
+*.enc
+*.key
+*.png
+.agent-browser/
+.antigravity/
+.antigravitycli/
+.cache/
+.codex/
+.config/
+.dropbox_bi/
+.gemini/
+.pytest_cache/
+.spotdl/
+.vscode/
+**/temp/
+**/logs/
+**/dist/
+**/node_modules/
+**/venv/
+__pycache__/
 
-# Master Admin Access Keys
-ToxicSavage_Master.key
-MASTER_UPLINK.json
-INITIAL_CREDENTIALS.txt
-backend/*.db
-backend/users.db
-backend/exploits.db
-backend/nexus_c2.db
+# Sensitive and personal files
+.env
+secret.key
+nexus.key
+gate.key
+*.regtrans-ms
+NTUSER.DAT*
+ntuser.ini
+
+# Specific project clutter
+SentinelAIHub.js.*
+CreatorDashboard.js.*
+LoginComponent.js.*
+websocket_bridge.py.*
+global_source_harvester.py.*
+monetization.py.*
+*.tmp2
+*.llc_v1.tmp
+*.llc_v2.tmp
