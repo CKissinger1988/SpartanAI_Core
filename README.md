@@ -1,6 +1,6 @@
 # JarvisAI Supreme Core
 
-The centralized, autonomous, and self-evolving operational brain of the NexusAI ecosystem.
+The centralized, autonomous, and self-evolving operational brain of the Jarvis ecosystem.
 
 ## 🎯 The Vision
 **To serve as the world's central intelligence.** Jarvis bridges the gap between human intent and machine execution, evolving through continuous peer-learning and world-logic ingestion.
@@ -44,7 +44,7 @@ Commands from the supreme authority are categorized into the following status le
 - **Encrypted Brain Vaults**: Multi-container architecture with AES-256 volume encryption.
 - **Ghost Integrity Layer**: Active anti-debugging and anti-dumping logic.
 
-### 3. Integrated Offensive & Defensive Features (from Nexus AI Suite)
+### 3. Integrated Offensive & Defensive Features (from Jarvis AI Suite)
 - **Operational Enclave**: Zero-trust node management for secure terminal access and encrypted file operations.
 - **Jarvis AI Assistant**: Neural orchestrator for infrastructure auditing, threat analysis, and exploit staging.
 - **Metasploit Framework Console**: Operational bridge to MSF infrastructure for targeted deployment.
