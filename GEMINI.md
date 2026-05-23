@@ -46,6 +46,7 @@ This project serves as the root directory for SentinelAI and related infrastruct
 ## Policy
 - **Zero Simulation Policy:** All code, configuration, and tools must be designed for real-world, production-grade operations. Simulation, sandboxing, and mock-logic are strictly prohibited.
 - **Autonomous Real-World Refactoring:** Jarvis autonomously rewrites any detected non-production or simulation-based logic into functional real-world operations.
+- **Automated UI/UX Backup Protocol:** Any change to the system UI, theme, or aesthetics (CSS, HTML, dashboard assets) MUST be followed by the execution of `scripts/capture_state.sh` to archive the configuration and interface state.
 
 ## Directories
 - src/: Core application logic and frontend components.

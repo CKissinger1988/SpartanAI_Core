@@ -14,22 +14,25 @@ const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
 
 function createWindow() {
   const isKiosk = process.argv.includes('--kiosk');
+  const widgetOnly = process.argv.includes('--widget-only');
 
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    kiosk: isKiosk,
-    frame: !isKiosk,
-    fullscreen: isKiosk,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-      additionalArguments: [process.env.NEXUS_PREVIEW === 'true' || !app.isPackaged ? '--preview' : '']
-    }
-  });
+  if (!widgetOnly) {
+    mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      kiosk: isKiosk,
+      frame: !isKiosk,
+      fullscreen: isKiosk,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js'),
+        additionalArguments: [process.env.NEXUS_PREVIEW === 'true' || !app.isPackaged ? '--preview' : '']
+      }
+    });
 
-  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  }
 
   // Create Ghost Chat Widget
   const ghostWidget = new BrowserWindow({
@@ -62,7 +65,7 @@ function createWindow() {
   });
 
   ptyProcess.on('data', (data) => {
-    mainWindow.webContents.send('terminal.incomingData', data);
+    if (mainWindow) mainWindow.webContents.send('terminal.incomingData', data);
   });
 
   ipcMain.on('terminal.keystroke', (event, data) => {
