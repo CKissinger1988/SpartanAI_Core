@@ -1,0 +1,28 @@
+# JarvisAI Production Architecture (Apex-Grade, $25/mo Cap)
+version: '3.8'
+
+services:
+  jarvis-core:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - SUPREME_SEED=${SUPREME_SEED}
+      - BACKUP_SECRET=${BACKUP_SECRET}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    # Use ephemeral/local storage for vector_db to minimize costs
+    volumes:
+      - ./vector_db:/app/vector_db
+      - ./data:/app/data
+    networks:
+      - sentinel-mesh
+
+networks:
+  sentinel-mesh:
+    driver: bridge
