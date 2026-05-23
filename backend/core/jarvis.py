@@ -10,6 +10,8 @@ from backend.core.sentinel import SentinelRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
 from backend.core.monetization import MonetizationService
+from backend.core.antigravity_bridge import AntigravityBridge
+from backend.core.brain_bridge import BrainBridge
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -31,6 +33,8 @@ class Jarvis:
         self.efficiency = EfficiencyEngine()
         self.audio = AudioManager() # Audio manager
         self.audio.verify_audio() # Autonomous verification
+        self.antigravity = AntigravityBridge()
+        self.brain = BrainBridge() # BrainBridge with Gemini Integration
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
         threading.Thread(target=self.monetization.run, daemon=True).start()
         self.heartbeat_file = ".jarvis_heartbeat"
@@ -131,6 +135,24 @@ class Jarvis:
                 return True
             return False
 
+        if command.startswith("agy "):
+            prompt = command[4:]
+            res = self.antigravity.run_command(prompt)
+            if res["status"] == "success":
+                print(f"\n{GREEN}{BOLD}--- AGY RESPONSE ---{ENDC}\n{res['data']}")
+            else:
+                print(f"{RED}AGY Error: {res['message']}{ENDC}")
+            return True
+
+        if command.startswith("analyze ") or command.startswith("gemini "):
+            prompt = command.split(" ", 1)[1] if " " in command else ""
+            if prompt:
+                print(f"{CYAN}Jarvis: Engaging BrainBridge and Gemini Generative Core...{ENDC}")
+                response = self.brain.analyze_with_gemini(prompt)
+                print(f"\n{GREEN}{BOLD}--- SUPREME AI ANALYSIS ---{ENDC}\n{response}")
+                return True
+            return False
+
         # Creator-specific
         if self.user_role == "Creator":
             if command == "init_qr":
@@ -154,10 +176,11 @@ class Jarvis:
         print("Jarvis Supreme AI Online. Awaiting command.")
         self.status = "Online"
 
-    def analyze(self, prompt):
+    def analyze(self, prompt, use_context=True):
+        """Pass-through to BrainBridge Gemini integration."""
         return {
-            "analysis": "Analysis complete. All systems nominal.",
-            "recommendation": "Maintain current posture."
+            "analysis": self.brain.analyze_with_gemini(prompt, use_context),
+            "recommendation": "Follow generated protocols."
         }
 
     def get_status(self):
