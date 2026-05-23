@@ -1,21 +1,41 @@
 import chromadb
 import os
 import google.generativeai as genai
+from backend.core.neural_access import NeuralAccessShard
 
 class BrainBridge:
-    """Connects Jarvis logic directly to the deep learning vector brain (ChromaDB) and Gemini AI."""
+    """Connects Jarvis logic to ChromaDB and the Gemini AI Cognitive Core."""
     def __init__(self, db_path="vector_db"):
         self.db_path = db_path
-        if os.path.exists(db_path):
-            self.client = chromadb.PersistentClient(path=db_path)
-        else:
-            self.client = None
-            
-        # Initialize Gemini API
-        # Using environment variable or fallback for Supreme AI
-        api_key = os.environ.get("GEMINI_API_KEY", "AIzaSy_SUPREME_DUMMY_KEY")
-        genai.configure(api_key=api_key)
-        self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+        self.client = chromadb.PersistentClient(path=db_path) if os.path.exists(db_path) else None
+        self.status = "OFFLINE"
+        self.light_status = "INACTIVE" # Primary knowledge
+        self.shadow_status = "INACTIVE" # Fallback/harvested knowledge
+        
+        # Initialize Gemini API with sovereign fallback
+        self._init_generative_core()
+
+    def _init_generative_core(self):
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key or "DUMMY" in api_key:
+            access_shard = NeuralAccessShard(self)
+            api_key = access_shard.acquire_api_key()
+            if api_key:
+                self.shadow_status = "ACTIVE" # Using harvested key
+                os.environ["GEMINI_API_KEY"] = api_key
+            else:
+                self.status = "SOVEREIGN_FALLBACK"
+                self.shadow_status = "ENGAGED" # Using local model
+                return
+        
+        try:
+            genai.configure(api_key=api_key)
+            self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+            self.status = "ONLINE"
+            self.light_status = "ACTIVE"
+        except Exception as e:
+            self.status = f"CONFIG_ERROR: {e}"
+            self.light_status = "ERROR"
 
     def get_tactical_context(self, query, n_results=3):
         """Retrieves related tactical knowledge from the brain."""

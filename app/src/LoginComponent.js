@@ -6,12 +6,6 @@ const scanline = keyframes`
     100% { transform: translateY(100%); }
 `;
 
-const intensePulse = keyframes`
-    0% { box-shadow: 0 0 10px rgba(0, 170, 255, 0.4); }
-    50% { box-shadow: 0 0 25px rgba(0, 170, 255, 0.8); }
-    100% { box-shadow: 0 0 10px rgba(0, 170, 255, 0.4); }
-`;
-
 const noise = keyframes`
     0% { transform: translate(0,0) }
     10% { transform: translate(-5%,-5%) }
@@ -31,9 +25,10 @@ const Root = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #000;
-    color: #00AAFF;
-    font-family: 'Fira Code', monospace;
+    background-color: #E8EDF2;
+    background-image: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #E8EDF2 100%);
+    color: #2C3E50;
+    font-family: 'Inter', sans-serif;
     position: relative;
     overflow: hidden;
 
@@ -42,48 +37,25 @@ const Root = styled.div`
         position: absolute;
         top: -50%; left: -50%; width: 200%; height: 200%;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        opacity: 0.03;
+        opacity: 0.05;
         animation: ${noise} 0.5s steps(1) infinite;
         pointer-events: none;
     }
 `;
 
-const Scanline = styled.div`
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent 50%, rgba(0, 170, 255, 0.02) 50.5%);
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 10;
-`;
-
-const MovingScanline = styled.div`
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 2px;
-    background: rgba(0, 170, 255, 0.2);
-    animation: ${scanline} 8s linear infinite;
-    z-index: 11;
-`;
-
 const LoginBox = styled.div`
-    width: 450px;
-    padding: 60px 40px;
-    background: rgba(2, 2, 2, 0.98);
-    border: 1px solid #00AAFF;
-    box-shadow: 0 0 60px rgba(0, 170, 255, 0.15);
+    width: 480px;
+    padding: 70px 50px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 15px 45px rgba(0, 100, 200, 0.1);
+    border-radius: 30px;
     z-index: 100;
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    backdrop-filter: blur(40px);
+    gap: 40px;
     position: relative;
-
-    &::before {
-        content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
-        background: linear-gradient(45deg, #00AAFF, transparent, #00AAFF);
-        opacity: 0.1;
-        pointer-events: none;
-    }
 `;
 
 const Brand = styled.div`
@@ -91,22 +63,22 @@ const Brand = styled.div`
 `;
 
 const Title = styled.h1`
-    font-size: 2.4rem;
+    font-size: 2.8rem;
     margin: 0;
-    letter-spacing: 16px;
+    letter-spacing: 10px;
     font-weight: 900;
     text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 0 20px #00AAFF;
+    color: #34495E;
+    text-shadow: 0 0 15px rgba(0, 170, 255, 0.2);
 `;
 
 const Subtitle = styled.div`
-    font-size: 0.6rem;
-    color: #00AAFF;
-    letter-spacing: 6px;
-    margin-top: 12px;
-    opacity: 0.5;
+    font-size: 0.7rem;
+    color: #7F8C8D;
+    letter-spacing: 5px;
+    margin-top: 15px;
     text-transform: uppercase;
+    font-weight: 700;
 `;
 
 const Form = styled.form`
@@ -124,69 +96,69 @@ const InputGroup = styled.div`
 const Label = styled.label`
     font-size: 0.65rem;
     letter-spacing: 3px;
-    color: #444;
+    color: #94A3B8;
     text-transform: uppercase;
+    font-weight: 800;
 `;
 
 const Input = styled.input`
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid #111;
-    color: #fff;
-    padding: 16px;
-    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid #D1D9E6;
+    color: #2C3E50;
+    padding: 20px;
+    font-size: 1rem;
     font-family: inherit;
     outline: none;
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
+    transition: 0.4s;
+    border-radius: 15px;
+    width: 100%;
+    box-sizing: border-box;
 
     &:focus {
         border-color: #00AAFF;
-        background: rgba(0, 170, 255, 0.03);
-        box-shadow: 0 0 ${props => Math.min(30, props.valueLength * 2)}px rgba(0, 170, 255, 0.2);
+        background: #fff;
+        box-shadow: 0 0 20px rgba(0, 170, 255, 0.1);
     }
 `;
 
 const LoginButton = styled.button`
-    background: transparent;
-    color: #00AAFF;
-    border: 1px solid #00AAFF;
-    padding: 20px;
+    background: #00AAFF;
+    color: #fff;
+    border: none;
+    padding: 22px;
     cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: bold;
+    font-size: 0.9rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     transition: 0.4s;
-    border-radius: 2px;
-    margin-top: 10px;
-    position: relative;
-    overflow: hidden;
-
-    &::after {
-        content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.2), transparent);
-        transition: 0.5s;
-    }
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 170, 255, 0.3);
 
     &:hover {
-        background: rgba(0, 170, 255, 0.05);
-        color: #fff;
-        box-shadow: 0 0 40px rgba(0, 170, 255, 0.3);
-        &::after { left: 100%; }
+        background: #0088CC;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 170, 255, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
     }
 
     &:disabled {
-        opacity: 0.3;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 `;
 
 const HandshakeBar = styled.div`
-    height: 1px;
+    height: 4px;
     background: rgba(0, 170, 255, 0.1);
     width: 100%;
     margin-top: -15px;
+    border-radius: 2px;
     position: relative;
+    overflow: hidden;
     
     &::after {
         content: ""; position: absolute; left: 0; top: 0; height: 100%;
@@ -198,23 +170,26 @@ const HandshakeBar = styled.div`
 `;
 
 const ErrorMsg = styled.div`
-    color: #ff3b3b;
-    font-size: 0.65rem;
+    color: #E74C3C;
+    font-size: 0.7rem;
     text-align: center;
-    padding: 12px;
-    background: rgba(255, 59, 59, 0.05);
-    border: 1px solid rgba(255, 59, 59, 0.2);
-    letter-spacing: 2px;
+    padding: 15px;
+    background: rgba(231, 76, 60, 0.05);
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    border-radius: 12px;
+    letter-spacing: 1px;
     text-transform: uppercase;
+    font-weight: 700;
 `;
 
 const Footer = styled.div`
     margin-top: 5px;
-    font-size: 0.55rem;
-    color: #222;
+    font-size: 0.6rem;
+    color: #BDC3C7;
     text-align: center;
     letter-spacing: 2px;
     text-transform: uppercase;
+    font-weight: 600;
 `;
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI)
@@ -234,7 +209,6 @@ const LoginComponent = ({ onLogin }) => {
         setError('');
         setProgress(10);
         
-        // Simulate high-integrity handshake stages
         const steps = [30, 65, 90];
         for(let s of steps) {
             await new Promise(r => setTimeout(r, 400));
@@ -260,9 +234,6 @@ const LoginComponent = ({ onLogin }) => {
 
     return (
         <Root>
-            <Scanline />
-            <MovingScanline />
-            
             <LoginBox>
                 <Brand>
                     <Title>SENTINELAI</Title>
@@ -277,7 +248,6 @@ const LoginComponent = ({ onLogin }) => {
                             type="text" 
                             value={username} 
                             onChange={(e) => setUsername(e.target.value)}
-                            valueLength={username.length}
                             disabled={loading}
                             autoComplete="off"
                             placeholder="Identify..."
@@ -291,7 +261,6 @@ const LoginComponent = ({ onLogin }) => {
                             type="password" 
                             value={password} 
                             onChange={(e) => setPassword(e.target.value)}
-                            valueLength={password.length}
                             disabled={loading}
                             placeholder="Authorize..."
                         />
@@ -301,12 +270,12 @@ const LoginComponent = ({ onLogin }) => {
                     {error && <ErrorMsg>&gt; {error}</ErrorMsg>}
 
                     <LoginButton type="submit" disabled={loading}>
-                        {loading ? 'SYNCING...' : 'ESTABLISH_UPLINK'}
+                        {loading ? 'SYNCHRONIZING...' : 'ESTABLISH_UPLINK'}
                     </LoginButton>
                 </Form>
 
                 <Footer>
-                    ENCRYPTED VIA APEXVAULT // ZERO TRUST ACTIVE.
+                    ENCRYPTED VIA APEXVAULT // JARVIS OS v8.0
                 </Footer>
             </LoginBox>
         </Root>
