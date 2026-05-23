@@ -12,6 +12,20 @@ const intensePulse = keyframes`
     100% { box-shadow: 0 0 10px rgba(0, 170, 255, 0.4); }
 `;
 
+const noise = keyframes`
+    0% { transform: translate(0,0) }
+    10% { transform: translate(-5%,-5%) }
+    20% { transform: translate(-10%,5%) }
+    30% { transform: translate(5%,-10%) }
+    40% { transform: translate(-5%,15%) }
+    50% { transform: translate(-10%,5%) }
+    60% { transform: translate(15%,0) }
+    70% { transform: translate(0,10%) }
+    80% { transform: translate(-15%,0) }
+    90% { transform: translate(10%,5%) }
+    100% { transform: translate(5%,0) }
+`;
+
 const Root = styled.div`
     height: 100vh;
     display: flex;
@@ -22,12 +36,22 @@ const Root = styled.div`
     font-family: 'Fira Code', monospace;
     position: relative;
     overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.03;
+        animation: ${noise} 0.5s steps(1) infinite;
+        pointer-events: none;
+    }
 `;
 
 const Scanline = styled.div`
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent 50%, rgba(0, 170, 255, 0.05) 50.5%);
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 170, 255, 0.02) 50.5%);
     background-size: 100% 4px;
     pointer-events: none;
     z-index: 10;
@@ -37,26 +61,28 @@ const MovingScanline = styled.div`
     position: absolute;
     top: 0; left: 0; width: 100%; height: 2px;
     background: rgba(0, 170, 255, 0.2);
-    animation: ${scanline} 6s linear infinite;
+    animation: ${scanline} 8s linear infinite;
     z-index: 11;
 `;
 
 const LoginBox = styled.div`
     width: 450px;
     padding: 60px 40px;
-    background: rgba(5, 5, 5, 0.95);
+    background: rgba(2, 2, 2, 0.98);
     border: 1px solid #00AAFF;
-    box-shadow: 0 0 40px rgba(0, 170, 255, 0.2);
+    box-shadow: 0 0 60px rgba(0, 170, 255, 0.15);
     z-index: 100;
     display: flex;
     flex-direction: column;
     gap: 30px;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px);
     position: relative;
 
     &::before {
-        content: ""; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-        border: 1px solid rgba(0, 170, 255, 0.1); pointer-events: none;
+        content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+        background: linear-gradient(45deg, #00AAFF, transparent, #00AAFF);
+        opacity: 0.1;
+        pointer-events: none;
     }
 `;
 
@@ -65,21 +91,21 @@ const Brand = styled.div`
 `;
 
 const Title = styled.h1`
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     margin: 0;
-    letter-spacing: 12px;
+    letter-spacing: 16px;
     font-weight: 900;
     text-transform: uppercase;
     color: #fff;
-    text-shadow: 0 0 10px #00AAFF;
+    text-shadow: 0 0 20px #00AAFF;
 `;
 
 const Subtitle = styled.div`
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: #00AAFF;
-    letter-spacing: 4px;
-    margin-top: 10px;
-    opacity: 0.6;
+    letter-spacing: 6px;
+    margin-top: 12px;
+    opacity: 0.5;
     text-transform: uppercase;
 `;
 
@@ -92,84 +118,103 @@ const Form = styled.form`
 const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 `;
 
 const Label = styled.label`
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    color: #888;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: #444;
     text-transform: uppercase;
 `;
 
 const Input = styled.input`
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #222;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid #111;
     color: #fff;
-    padding: 15px;
+    padding: 16px;
     font-size: 0.9rem;
     font-family: inherit;
     outline: none;
-    transition: 0.3s;
-    border-radius: 4px;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
 
     &:focus {
         border-color: #00AAFF;
-        background: rgba(0, 170, 255, 0.05);
-        box-shadow: 0 0 15px rgba(0, 170, 255, 0.1);
+        background: rgba(0, 170, 255, 0.03);
+        box-shadow: 0 0 ${props => Math.min(30, props.valueLength * 2)}px rgba(0, 170, 255, 0.2);
     }
 `;
 
 const LoginButton = styled.button`
-    background: rgba(0, 170, 255, 0.1);
+    background: transparent;
     color: #00AAFF;
     border: 1px solid #00AAFF;
-    padding: 18px;
+    padding: 20px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 4px;
-    transition: 0.3s;
-    border-radius: 4px;
-    margin-top: 15px;
-    animation: ${intensePulse} 3s infinite ease-in-out;
+    letter-spacing: 5px;
+    transition: 0.4s;
+    border-radius: 2px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
 
-    &:hover {
-        background: rgba(0, 170, 255, 0.2);
-        color: #fff;
-        box-shadow: 0 0 30px rgba(0, 170, 255, 0.4);
-        transform: translateY(-2px);
+    &::after {
+        content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.2), transparent);
+        transition: 0.5s;
     }
 
-    &:active {
-        transform: translateY(0);
+    &:hover {
+        background: rgba(0, 170, 255, 0.05);
+        color: #fff;
+        box-shadow: 0 0 40px rgba(0, 170, 255, 0.3);
+        &::after { left: 100%; }
     }
 
     &:disabled {
-        opacity: 0.5;
+        opacity: 0.3;
         cursor: not-allowed;
-        animation: none;
+    }
+`;
+
+const HandshakeBar = styled.div`
+    height: 1px;
+    background: rgba(0, 170, 255, 0.1);
+    width: 100%;
+    margin-top: -15px;
+    position: relative;
+    
+    &::after {
+        content: ""; position: absolute; left: 0; top: 0; height: 100%;
+        background: #00AAFF;
+        width: ${props => props.progress}%;
+        transition: width 0.3s;
+        box-shadow: 0 0 10px #00AAFF;
     }
 `;
 
 const ErrorMsg = styled.div`
-    color: #F44336;
-    font-size: 0.7rem;
+    color: #ff3b3b;
+    font-size: 0.65rem;
     text-align: center;
-    padding: 10px;
-    background: rgba(244, 67, 54, 0.1);
-    border: 1px solid #F44336;
-    border-radius: 4px;
-    letter-spacing: 1px;
+    padding: 12px;
+    background: rgba(255, 59, 59, 0.05);
+    border: 1px solid rgba(255, 59, 59, 0.2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 `;
 
 const Footer = styled.div`
-    margin-top: 10px;
-    font-size: 0.6rem;
-    color: #333;
+    margin-top: 5px;
+    font-size: 0.55rem;
+    color: #222;
     text-align: center;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 `;
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI)
@@ -181,21 +226,33 @@ const LoginComponent = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setProgress(10);
         
+        // Simulate high-integrity handshake stages
+        const steps = [30, 65, 90];
+        for(let s of steps) {
+            await new Promise(r => setTimeout(r, 400));
+            setProgress(s);
+        }
+
         try {
             const result = await ipcRenderer.invoke('auth.login', { username, password });
+            setProgress(100);
             if (result.status === 'success') {
                 onLogin(result);
             } else {
                 setError(result.message || 'ACCESS DENIED');
+                setProgress(0);
             }
         } catch (err) {
             setError('SYSTEM FAILURE: AUTH LINK OFFLINE');
+            setProgress(0);
         } finally {
             setLoading(false);
         }
@@ -220,9 +277,10 @@ const LoginComponent = ({ onLogin }) => {
                             type="text" 
                             value={username} 
                             onChange={(e) => setUsername(e.target.value)}
+                            valueLength={username.length}
                             disabled={loading}
                             autoComplete="off"
-                            placeholder="Enter Identity..."
+                            placeholder="Identify..."
                         />
                     </InputGroup>
 
@@ -233,20 +291,22 @@ const LoginComponent = ({ onLogin }) => {
                             type="password" 
                             value={password} 
                             onChange={(e) => setPassword(e.target.value)}
+                            valueLength={password.length}
                             disabled={loading}
-                            placeholder="Enter Authorization..."
+                            placeholder="Authorize..."
                         />
                     </InputGroup>
 
-                    {error && <ErrorMsg>&gt; ERROR: {error}</ErrorMsg>}
+                    {loading && <HandshakeBar progress={progress} />}
+                    {error && <ErrorMsg>&gt; {error}</ErrorMsg>}
 
                     <LoginButton type="submit" disabled={loading}>
-                        {loading ? 'AUTHENTICATING...' : 'ESTABLISH_UPLINK'}
+                        {loading ? 'SYNCING...' : 'ESTABLISH_UPLINK'}
                     </LoginButton>
                 </Form>
 
                 <Footer>
-                    SECURE CONNECTION ENCRYPTED VIA APEXVAULT // UNAUTHORIZED ACCESS IS PROHIBITED.
+                    ENCRYPTED VIA APEXVAULT // ZERO TRUST ACTIVE.
                 </Footer>
             </LoginBox>
         </Root>

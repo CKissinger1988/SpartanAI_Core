@@ -17,7 +17,7 @@ class ProliferationEngine:
     def _generate_shard(self):
         """Creates the lightweight edge-node payload if it doesn't exist."""
         if not os.path.exists(self.payload_path):
-            shard_code = \"\"\"import time, requests, os, subprocess
+            shard_code = """import time, requests, os, subprocess
 # JARVIS ALIEN SHARD - EDGE NODE
 C2_URL = "http://localhost:9091/register"
 NODE_ID = "shard-" + str(os.getpid())
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     while True:
         register()
         time.sleep(60)
-\"\"\"
+"""
             with open(self.payload_path, "w") as f:
                 f.write(shard_code)
 

