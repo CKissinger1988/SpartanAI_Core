@@ -1,4 +1,75 @@
 import React from 'react';
+import styled, { keyframes } from 'styled-components';
+import { Terminal, Shield, Zap, Search, HardDrive, RefreshCw, Bot } from 'lucide-react';
+
+const popIn = keyframes`
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+`;
+
+const Root = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+`;
+
+const ToolCard = styled.div`
+    ${props => props.theme.effects.glass}
+    background: ${props => props.theme.colors.glass};
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: ${popIn} 0.4s ease-out backwards;
+    animation-delay: ${props => props.index * 0.04}s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: ${props => props.theme.effects.shadow};
+        border-color: ${props => props.theme.colors.primary};
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+`;
+
+const IconWrapper = styled.div`
+    width: 60px;
+    height: 60px;
+    background: ${props => props.theme.colors.bg};
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.colors.primary};
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 5px;
+`;
+
+const ToolName = styled.div`
+    color: ${props => props.theme.colors.text};
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+`;
+
+const ToolCmd = styled.div`
+    color: ${props => props.theme.colors.textSecondary};
+    font-size: 0.65rem;
+    font-family: 'Fira Code', monospace;
+    opacity: 0.7;
+    word-break: break-all;
+`;
 
 const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI)
     ? window.electronAPI.ipcRenderer
@@ -6,66 +77,48 @@ const ipcRenderer = (typeof window !== 'undefined' && window.electronAPI)
 
 const ToolDashboard = () => {
     const tools = [
-        { name: 'AI Analyze', cmd: 'analyze status' },
-        { name: 'Auto Exploit', cmd: 'exploit-run CVE-2021-44228' },
-        { name: 'Nmap', cmd: 'nmap -v localhost' },
-        { name: 'Metasploit', cmd: 'msfconsole -q -x "help"' },
-        { name: 'SQLMap', cmd: 'sqlmap --version' },
-        { name: 'Airmon-ng', cmd: 'airmon-ng --version' },
-        { name: 'Update Sys', cmd: 'sudo apt update' }
+        { name: 'AI Analyze', cmd: 'analyze status', icon: <Search size={24} /> },
+        { name: 'AI Assimilation', cmd: 'assimilate ai', icon: <Bot size={24} /> },
+        { name: 'Auto Exploit', cmd: 'exploit-run CVE-2021-44228', icon: <Zap size={24} /> },
+        { name: 'Nmap', cmd: 'nmap -v localhost', icon: <Terminal size={24} /> },
+        { name: 'Metasploit', cmd: 'msfconsole -q -x "help"', icon: <Shield size={24} /> },
+        { name: 'SQLMap', cmd: 'sqlmap --version', icon: <HardDrive size={24} /> },
+        { name: 'Airmon-ng', cmd: 'airmon-ng --version', icon: <RefreshCw size={24} /> },
+        { name: 'Update Sys', cmd: 'sudo apt update', icon: <RefreshCw size={24} /> }
     ];
 
     const runTool = async (cmd) => {
-        if (cmd.startsWith('analyze')) {
-            // Trigger AI analysis directly
+        if (cmd.startsWith('analyze') || cmd.startsWith('assimilate')) {
             const response = await ipcRenderer.invoke('ai.command', cmd);
-            alert(`AI Analysis:\n${response}`);
+            // In production, we'd use a themed dialog
         } else if (cmd.startsWith('exploit-run')) {
             const query = cmd.replace('exploit-run ', '');
             const exploit = await ipcRenderer.invoke('exploit.manage', { action: 'find', payload: query });
             if (exploit && exploit.content) {
                 ipcRenderer.send('terminal.keystroke', `# AUTO-EXPLOIT ENGAGED: ${exploit.name}\r`);
-                ipcRenderer.send('terminal.keystroke', `# SOURCE: ${exploit.url}\r`);
                 ipcRenderer.send('tool.run', `exploit-launch --cve ${exploit.cve} --payload-data "${btoa(exploit.content)}"`);
-            } else {
-                alert(`Exploit for '${query}' not found in database.`);
             }
         } else {
             ipcRenderer.send('tool.run', cmd);
         }
     };
 
-    const containerStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-        gap: '20px',
-        padding: '20px'
-    };
-
-    const cardStyle = {
-        background: '#0a0a0a',
-        border: '1px solid #005500',
-        padding: '15px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        transition: 'all 0.3s'
-    };
-
     return (
-        <div style={containerStyle}>
-            {tools.map(tool => (
-                <div 
+        <Root>
+            {tools.map((tool, i) => (
+                <ToolCard 
                     key={tool.name} 
-                    style={cardStyle} 
+                    index={i}
                     onClick={() => runTool(tool.cmd)}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#00ff00'}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#005500'}
                 >
-                    <div style={{ color: '#00ff00', fontSize: '18px', marginBottom: '10px' }}>{tool.name}</div>
-                    <div style={{ color: '#005500', fontSize: '10px' }}>{tool.cmd}</div>
-                </div>
+                    <IconWrapper>
+                        {tool.icon}
+                    </IconWrapper>
+                    <ToolName>{tool.name}</ToolName>
+                    <ToolCmd>{tool.cmd}</ToolCmd>
+                </ToolCard>
             ))}
-        </div>
+        </Root>
     );
 };
 
