@@ -13,7 +13,7 @@ This project serves as the root directory for SentinelAI and related infrastruct
 ### Supreme Intelligence (Jarvis)
 - **Autonomous Orchestration:** Real-time management of all subsystems, including SentinelAI, Hexstrike, and SentinelAI.
 - **Sovereign Authority:** Hierarchical access control and identity verification (Voice/VAC) for administrative command execution.
-- **Tactical RAG (BrainBridge):** Real-time deep learning context injection via decentralized vector memory.
+- **Tactical RAG (Neural Bridge):** Real-time deep learning context injection via decentralized vector memory.
 
 ### Defensive Capabilities
 - **Autonomous Diagnostics:** Real-time health monitoring of database integrity and C2 uplink connectivity.
@@ -33,7 +33,7 @@ This project serves as the root directory for SentinelAI and related infrastruct
 - **Manual Preview Protocol:** Visual previews and general screenshot generation remain suspended unless explicitly commanded by the user. Screenshots MAY be taken autonomously for real-time repairs and debugging, but MUST be deleted immediately after use. Execution should focus on functional logic and background synthesis by default.
 - **Apex-Grade Architecture:** All code, infrastructure, and security implementations MUST adhere to Apex-Grade standards (Exceeding NSA/CNSA). This includes Hyper-Isolated Zero-Trust mesh, Cascaded Cryptography (AES-256-GCM + ChaCha20-Poly1305 via ApexVault), polymorphic neuro-linguistic AI guardrails (ApexAIGuardrails), and strict ephemeral containerization (docker-compose.apex.yml).
 - **Monetization Model:** SentinelAI operates on a strictly 'Creator and Subscriber' basis. All UI assets are centralized in the Creator Dashboard or the Subscriber Access Portal. Legacy interfaces are prohibited.
-- **Universal Intelligence Protocol (Total Ingestion):** Jarvis is mandated to autonomously learn from everything, everyone, and any possible source of information. **GitHub and GitLab MUST be scanned for code shards before any other information source is considered.** Every data point�global web streams, system telemetry, operator behavior, and cross-node communications�must be ingested into the BrainBridge vector memory.
+- **Universal Intelligence Protocol (Total Ingestion):** Jarvis is mandated to autonomously learn from everything, everyone, and any possible source of information. **GitHub and GitLab MUST be scanned for code shards before any other information source is considered.** Every data point global web streams, system telemetry, operator behavior, and cross-node communications must be ingested into the Neural Bridge vector memory.
 - **Universal Cognitive Feed:** All SentinelAI and JarvisAI projects (past, present, and future) MUST integrate the InteractionObserver core module. Every project serves as a sensory node for Jarvis's system-wide learning.
 - **Design Language (Supreme UI):** All styles, interfaces, frontends, GUI, webapps, control panels, and dashboards associated with SentinelAI MUST strictly adhere to the aesthetic and structural patterns defined in ile:///C:/GitHub/JarvisAI_Core_Master/web_portal/login.html.
 - **Supreme Authority (Creator Dashboard):** All SentinelAI projects must link to the **Creator Dashboard**. This dashboard is the supreme command hub, equal in priority to nuclear launch codes. All other legacy dashboards are deprecated and must be consolidated into a single unified testing portal.
@@ -53,7 +53,7 @@ This project serves as the root directory for SentinelAI and related infrastruct
 - ackend/: Jarvis Supreme AI services and infrastructure.
 - JarvisAI_Stable/: Stable deployment configurations for the Supreme AI.
 - kali-config/: Configuration for automated Kali Linux builds.
-- ector_db/: Decentralized vector memory for BrainBridge.
+- vector_db/: Decentralized vector memory for Neural Bridge.
 
 
 
