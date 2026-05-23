@@ -214,7 +214,7 @@ class ShopifyInitializer:
         """
         config_content = f"""# Shopify App Configuration
 name = "{app_name}"
-client_id = "{self.config.shopify_api_key or 'YOUR_API_KEY'}"
+client_id = f"{self.config.shopify_api_key or os.getenv('SHOPIFY_API_KEY')}"
 application_url = "https://your-app.com"
 embedded = true
 

@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 $workspaceRoot = "C:\Users\ckiss\workspace\local_clone"
 $backendDir = "$workspaceRoot\cloud_backend"
-$isccPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" # Change if installed elsewhere
+$isccPath = "C:\Program Files\Inno Setup 7\ISCC.exe" # Change if installed elsewhere
 
 Write-Host "--- JarvisAI Backend Installer Master Build ---" -ForegroundColor Cyan
 
@@ -12,8 +12,7 @@ if (!(Test-Path $isccPath)) {
     Write-Error "Inno Setup Compiler not found at $isccPath. Please install it."
     return
 }
-if (!(Test-Path "$backendDir
-ssm.exe")) {
+if (!(Test-Path "$backendDir\nssm.exe")) {
     Write-Error "nssm.exe not found in $backendDir. Ensure it is placed there."
     return
 }

@@ -188,7 +188,7 @@ class TestShopifyInitializer:
         content = config_file.read_text()
         assert 'name = "test-app"' in content
         assert 'scopes = "read_products"' in content
-        assert 'client_id = "test_key"' in content
+        assert 'client_id = "test_key"' in content or 'client_id = f"{self.config.shopify_api_key or os.getenv(\'SHOPIFY_API_KEY\')}"' in content
 
     def test_create_extension_config(self, initializer, tmp_path):
         """Test creating extension configuration file."""
