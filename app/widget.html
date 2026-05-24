@@ -14,9 +14,9 @@
         }
         #hud {
             position: absolute; top: 10px; left: 10px;
-            font-family: 'Share Tech Mono', monospace; font-size: 10px;
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
             color: var(--threat-color); text-shadow: 0 0 5px var(--threat-color);
-            pointer-events: none; background: rgba(0, 0, 0, 0.5); padding: 5px;
+            pointer-events: none; background: rgba(0, 0, 0, 0.6); padding: 8px; border: 1px solid var(--threat-color);
         }
         #pi-prompt {
             position: absolute; bottom: 80px;
@@ -51,7 +51,11 @@
         UPLINK: <span id="uplink">STABLE</span><br>
         TX: <span id="tx">0.0</span> KB/s<br>
         NEURAL BRIDGE: <span id="ingest">0</span><br>
-        TOKENS: <span id="tokens">0</span>
+        TOKENS: <span id="tokens">0</span><br>
+        <hr style="border:0; border-top:1px solid #004400;">
+        PAYOUT: <span id="payout">0.00</span> PI<br>
+        PROFIT: <span id="profit">0.00</span> PI<br>
+        EXCHANGE: <span id="rate">1:100</span> PI/TKN
     </div>
     <div id="pi-prompt" onclick="buyTokens()">[!] LOW TOKENS - BUY WITH PI</div>
     <svg id="alien-head" viewBox="0 0 24 24">
@@ -69,6 +73,9 @@
             document.getElementById('tx').innerText = vitals.tx.toFixed(1);
             document.getElementById('ingest').innerText = vitals.ingestion.toLocaleString();
             document.getElementById('tokens').innerText = vitals.tokens.toLocaleString();
+            document.getElementById('payout').innerText = vitals.payout.toFixed(2);
+            document.getElementById('profit').innerText = vitals.profit.toFixed(2);
+            document.getElementById('rate').innerText = vitals.exchangeRate;
             
             const prompt = document.getElementById('pi-prompt');
             prompt.style.display = vitals.tokens < 500 ? 'block' : 'none';
