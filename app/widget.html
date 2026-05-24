@@ -1,67 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Jarvis Supreme Dashboard</title>
     <style>
-        :root { --threat-color: #00FF00; }
+        :root { 
+            --threat-color: #00FF00; 
+            --bg-color: #050505;
+            --accent: rgba(0, 255, 0, 0.15);
+        }
         body {
-            background: radial-gradient(circle at center, #051005 0%, #000000 100%);
+            background: var(--bg-color);
             margin: 0; padding: 0;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             height: 100vh; overflow: hidden;
             -webkit-app-region: drag;
-            border: 1px solid rgba(0, 255, 0, 0.2);
+            border: 2px solid var(--accent);
+            color: var(--threat-color);
+            font-family: 'Share Tech Mono', monospace;
         }
         #hud {
-            position: absolute; top: 10px; left: 10px;
-            font-family: 'Share Tech Mono', monospace; font-size: 9px;
-            color: var(--threat-color); text-shadow: 0 0 5px var(--threat-color);
-            pointer-events: none; background: rgba(0, 0, 0, 0.6); padding: 8px; border: 1px solid var(--threat-color);
+            position: absolute; top: 15px; left: 15px;
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.85); 
+            padding: 12px; border-left: 2px solid var(--threat-color);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+            pointer-events: none;
         }
         #pi-prompt {
-            position: absolute; bottom: 80px;
-            background: #220000; border: 1px solid #FF0000;
-            color: #FFCCCC; padding: 5px; font-family: 'Share Tech Mono', monospace;
-            font-size: 10px; display: none; cursor: pointer;
+            position: absolute; bottom: 90px;
+            background: #1a0000; border: 1px solid #FF0000;
+            color: #FF8888; padding: 8px 15px;
+            font-size: 11px; display: none; cursor: pointer;
             -webkit-app-region: no-drag;
+            letter-spacing: 1px;
         }
         #alien-head {
-            width: 70px; height: 70px;
+            width: 90px; height: 90px;
             fill: var(--threat-color);
-            filter: drop-shadow(0 0 20px var(--threat-color));
-            animation: breathe 4s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px var(--threat-color));
+            animation: breathe 5s infinite ease-in-out;
             cursor: pointer; -webkit-app-region: no-drag;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
         @keyframes breathe { 
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--threat-color)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px var(--threat-color)); }
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--threat-color)); opacity: 0.9; }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 50px var(--threat-color)); opacity: 1; }
         }
         #cmdInput {
-            display: none; position: absolute; bottom: 30px;
+            display: none; position: absolute; bottom: 40px;
             background: #000; border: 1px solid var(--threat-color);
-            color: var(--threat-color); padding: 8px; width: 70%;
-            font-family: 'Share Tech Mono', monospace; box-shadow: 0 0 15px var(--threat-color);
+            color: var(--threat-color); padding: 12px; width: 85%;
+            font-family: 'Share Tech Mono', monospace; 
+            box-shadow: 0 0 20px var(--threat-color);
             -webkit-app-region: no-drag;
         }
     </style>
 </head>
 <body>
     <div id="hud">
-        UPLINK: <span id="uplink">STABLE</span><br>
-        TX: <span id="tx">0.0</span> KB/s<br>
-        NEURAL BRIDGE: <span id="ingest">0</span><br>
-        TOKENS: <span id="tokens">0</span><br>
-        <hr style="border:0; border-top:1px solid #004400;">
+        STATUS: <span id="uplink">ACTIVE</span> | UPLINK: <span id="tx">0.0</span> MB/s<br>
+        NEURAL BRIDGE: <span id="ingest">0</span> | TOKENS: <span id="tokens">0</span><br>
+        ------------------------------------------<br>
         PAYOUT: <span id="payout">0.00</span> PI<br>
         PROFIT: <span id="profit">0.00</span> PI<br>
-        EXCHANGE: <span id="rate">1:100</span> PI/TKN
+        RATE: <span id="rate">1:100</span> PI/TKN
     </div>
-    <div id="pi-prompt" onclick="buyTokens()">[!] LOW TOKENS - BUY WITH PI</div>
+    <div id="pi-prompt" onclick="buyTokens()">[ ALERT: TOKEN DEPLETION - INITIATE PI BUY ]</div>
     <svg id="alien-head" viewBox="0 0 24 24">
         <path d="M12,2C8.14,2 5,5.14 5,9C5,13.67 8.35,17.44 12.75,18.57L12,22L15.25,18.57C19.65,17.44 23,13.67 23,9C23,5.14 19.86,2 16,2H12Z" />
     </svg>
-    <input type="text" id="cmdInput" placeholder=">_ INPUT MANDATE" />
+    <input type="text" id="cmdInput" placeholder=">_ SUPREME ORCHESTRATION COMMAND" />
     <script>
         async function buyTokens() {
             await window.electronAPI.ipcRenderer.invoke('payment.pi.trigger');
@@ -86,7 +96,7 @@
         head.addEventListener('click', () => { 
             input.style.display = 'block'; 
             input.focus();
-            head.style.opacity = '0.5';
+            head.style.opacity = '0.3';
         });
         input.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
