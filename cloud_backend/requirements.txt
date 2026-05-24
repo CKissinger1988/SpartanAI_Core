@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-grpcio
-grpcio-tools
-httpx
-beautifulsoup4
-cryptography

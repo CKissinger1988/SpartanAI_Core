@@ -1,6 +1,0 @@
-[Desktop Entry]
-Name=NEXUS // AI Sentinel Hub
-Comment=Autonomous Offensive/Defensive OS Interface
-Exec=/usr/local/bin/nexusai-session.sh
-Type=Application
-DesktopNames=NEXUSAI

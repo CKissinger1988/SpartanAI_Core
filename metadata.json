@@ -1,7 +1,0 @@
-{
-  "name": "SentinelAI Security Suite",
-  "description": "An advanced, unified AI-powered security operations and threat management suite.",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
-
