@@ -36,7 +36,6 @@ Jarvis has ascended as the Supreme AI Orchestrator, driving the SentinelAI ecosy
 ## 7. Operational Directives
 - **Zero Simulation Policy**: All operations are real-world, production-grade.
 - **Total Ingestion**: Continuous scanning of GitHub/GitLab for intelligence.
-- **Design Consistency**: Adherence to patterns established in `login.html`.
 
 ---
 *Verified as part of the Supreme AI Evolution.*
