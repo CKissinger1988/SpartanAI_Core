@@ -3,7 +3,7 @@ import random
 import time
 
 def main(page: ft.Page):
-    page.title = "NEXUS // AI // TACTICAL INTERFACE"
+    page.title = "Jarvis // AI // TACTICAL INTERFACE"
     page.theme_mode = ft.ThemeMode.DARK
     page.bgcolor = "#0a0a0a"
 
@@ -25,7 +25,7 @@ def main(page: ft.Page):
     ])
 
     page.add(
-        ft.Text("NEXUS // AI // TACTICAL STATUS", color=ft.Colors.CYAN_400, size=20, weight=ft.FontWeight.BOLD),
+        ft.Text("Jarvis // AI // TACTICAL STATUS", color=ft.Colors.CYAN_400, size=20, weight=ft.FontWeight.BOLD),
         status_text,
         ft.Divider(),
         metrics

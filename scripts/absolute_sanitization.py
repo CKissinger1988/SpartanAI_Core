@@ -33,7 +33,7 @@ SURGICAL_PATTERNS = [
 ]
 
 def absolute_purge():
-    print(f"{RED}{BOLD}--- NEXUS // AI: ABSOLUTE SANITIZATION ENGINE ---{ENDC}")
+    print(f"{RED}{BOLD}--- Jarvis // AI: ABSOLUTE SANITIZATION ENGINE ---{ENDC}")
     
     # 1. Delete dedicated simulation files
     for file_path in TRASH_FILES:
@@ -46,7 +46,7 @@ def absolute_purge():
         "backend/core/jarvis.py",
         "backend/core/sentinel.py",
         "backend/core/sovereignty.py",
-        "scripts/nexus_ssh.py",
+        "scripts/Jarvis_ssh.py",
         "scripts/test_jarvis_evolution.py",
         "JarvisAI_Stable/main.py",
         "GEMINI.md"
@@ -105,11 +105,11 @@ def absolute_purge():
     # 4. Cleanup Kali WSL
     print(f"{CYAN}[*] Synchronizing sanitization to WSL Kali...{ENDC}")
     wsl_cmds = [
-        "rm -rf ~/nexusai/scripts/purge_simulations.sh",
-        "rm -rf ~/nexusai/scripts/remove_simulations.py",
-        "rm -rf ~/nexusai/scripts/field_prep_secure.sh",
-        "rm -rf ~/nexusai/backend/core/sovereignty_upgrades.py",
-        "find ~/nexusai -name '*mock_system*' -type d -exec rm -rf {} +"
+        "rm -rf ~/SentinelAI/scripts/purge_simulations.sh",
+        "rm -rf ~/SentinelAI/scripts/remove_simulations.py",
+        "rm -rf ~/SentinelAI/scripts/field_prep_secure.sh",
+        "rm -rf ~/SentinelAI/backend/core/sovereignty_upgrades.py",
+        "find ~/SentinelAI -name '*mock_system*' -type d -exec rm -rf {} +"
     ]
     for cmd in wsl_cmds:
         try:

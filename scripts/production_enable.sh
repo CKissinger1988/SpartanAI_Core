@@ -1,5 +1,5 @@
 #!/bin/bash
-# NEXUS // AI - Production Deployment & Tool Enablement Script
+# Jarvis // AI - Production Deployment & Tool Enablement Script
 # FOR REAL-WORLD USE: Sanitizes system and enables the full Kali Linux arsenal.
 
 # ANSI Colors
@@ -10,7 +10,7 @@ RED='\033[91m'
 BOLD='\033[1m'
 ENDC='\033[0m'
 
-echo -e "${RED}${BOLD}--- NEXUS // AI: PRODUCTION DEPLOYMENT SEQUENCE ---${ENDC}"
+echo -e "${RED}${BOLD}--- Jarvis // AI: PRODUCTION DEPLOYMENT SEQUENCE ---${ENDC}"
 
 # 1. Run Secure Field Preparation (Sanitization)
 if [ -f "scripts/field_prep_secure.sh" ]; then

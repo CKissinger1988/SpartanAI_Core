@@ -8,9 +8,9 @@ RED = '\033[91m'
 BOLD = '\033[1m'
 ENDC = '\033[0m'
 
-def nexus_login():
+def Jarvis_login():
     """Simulates an SSH-based login portal for The Creator."""
-    print(f"\n{CYAN}{BOLD}NEXUS // AI // CREATOR ACCESS PORTAL{ENDC}")
+    print(f"\n{CYAN}{BOLD}Jarvis // AI // CREATOR ACCESS PORTAL{ENDC}")
     print(f"{CYAN}Establishing encrypted uplink...{ENDC}")
     
         username = input(f"{BOLD}User: {ENDC}")
@@ -20,7 +20,7 @@ def nexus_login():
 
     password = input(f"{BOLD}Passphrase: {ENDC}")
     # In a real scenario, this would check against a secure vault
-    if password == "nexus_admin_secure":
+    if password == "Jarvis_admin_secure":
         print(f"\n{GREEN}{BOLD}Authentication Successful. Welcome, Creator.{ENDC}")
         print(f"{CYAN}Session encrypted. Launching Jeeves Terminal...{ENDC}")
         
@@ -39,4 +39,4 @@ def nexus_login():
         print(f"{RED}Authentication Failed.{ENDC}")
 
 if __name__ == "__main__":
-    nexus_login()
+    Jarvis_login()

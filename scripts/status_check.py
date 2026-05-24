@@ -15,20 +15,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 def check_jarvis_status():
     """Reports status with dark pentester styling."""
     status_report = {
-        "NexusIntelligenceDB": "Offline",
+        "JarvisIntelligenceDB": "Offline",
         "JeevesOrchestrator": "Offline",
         "C2Uplink": "Offline",
         "Systems": "Nominal"
     }
 
     # Check Database
-    if os.path.exists("nexus_intelligence.db"):
+    if os.path.exists("Jarvis_intelligence.db"):
         try:
-            conn = sqlite3.connect("nexus_intelligence.db")
+            conn = sqlite3.connect("Jarvis_intelligence.db")
             conn.close()
-            status_report["NexusIntelligenceDB"] = "Online"
+            status_report["JarvisIntelligenceDB"] = "Online"
         except:
-            status_report["NexusIntelligenceDB"] = "Error"
+            status_report["JarvisIntelligenceDB"] = "Error"
 
     # Check Jeeves
     try:
@@ -42,7 +42,7 @@ def check_jarvis_status():
     if os.path.exists("gate.key"):
         status_report["C2Uplink"] = "Active"
 
-    print(f"\n{CYAN}{BOLD}--- NEXUS // AI // TACTICAL STATUS ---{ENDC}")
+    print(f"\n{CYAN}{BOLD}--- Jarvis // AI // TACTICAL STATUS ---{ENDC}")
     for system, status in status_report.items():
         color = GREEN if status in ["Online", "Active", "Nominal"] else RED
         print(f"{BOLD}{system:<25}{ENDC}: {color}{status}{ENDC}")

@@ -8,4 +8,5 @@ $Launcher = "run_app.py"
 Start-Process python -ArgumentList "$SentinelPath\$Launcher" -WindowStyle Hidden
 
 # Trigger updater
-Invoke-Expression "C:\Users\ckissebrand.ps1"
+Invoke-Expression "C:\Users\ckiss
+ebrand.ps1"

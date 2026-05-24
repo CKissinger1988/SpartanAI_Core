@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Parameters to be filled dynamically or via environment
     # Defaults updated based on gcp_deploy_jarvis_backend.sh
     INSTANCE = os.environ.get("JARVIS_INSTANCE", "jarvis-central-core")
-    PROJECT = os.environ.get("GCP_PROJECT", "nexusai-core-2026")
+    PROJECT = os.environ.get("GCP_PROJECT", "SentinelAI-core-2026")
     ZONE = os.environ.get("GCP_ZONE", "us-central1-a")
     
     link = ApexLink(INSTANCE, PROJECT, ZONE)
