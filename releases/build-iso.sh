@@ -129,6 +129,14 @@ echo -e "${YELLOW}[*] Launching live-build compilation. This may take several mi
 echo -e "${CYAN}=========================================================${NC}"
 
 # Pre-fix for chroot symlinks (required for live-build stability)
+mkdir -p config/hooks/early
+cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
+#!/bin/sh
+# Fix dangling symlinks in /boot *before* any hacks stage
+echo "[!] Purging dangling symlinks in /boot..."
+find /boot -type l -xtype l -delete
+EOF
+chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
 mkdir -p config/hooks/normal
 cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
 #!/bin/sh
@@ -171,6 +179,7 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
 
 
