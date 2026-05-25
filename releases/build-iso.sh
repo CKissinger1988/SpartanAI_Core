@@ -63,7 +63,7 @@ cd "$BUILD_WORKSPACE"
 # 5. Initialize live-build configuration
 echo -e "${YELLOW}[*] Initializing live-build structure...${NC}"
 lb config \
-    --binary-images iso-hybrid \
+    --binary-images iso \
     --distribution noble \
     --archive-areas "main contrib non-free non-free-firmware" \
     --apt-recommends false \
@@ -210,4 +210,13 @@ fi
 
 
 
+
+# Fix dangling symlinks
+mkdir -p config/hooks/early
+cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
+#!/bin/sh
+rm -f /boot/initrd.img /boot/initrd.img.old
+touch /boot/initrd.img /boot/initrd.img.old
+EOF
+chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
 
