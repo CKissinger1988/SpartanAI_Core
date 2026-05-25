@@ -133,6 +133,14 @@ mkdir -p config/hooks/normal
 cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
 #!/bin/sh
 # Fix dangling symlinks in /boot that cause chmod errors in lb_chroot_hacks
+echo "[!] Purging dangling symlinks in /boot..."
+rm -f /boot/initrd.img /boot/initrd.img.old
+EOF
+chmod +x config/hooks/normal/0000-fix-symlinks.hook.chroot
+mkdir -p config/hooks/normal
+cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
+#!/bin/sh
+# Fix dangling symlinks in /boot that cause chmod errors in lb_chroot_hacks
 if [ -L /boot/initrd.img ] && [ ! -e /boot/initrd.img ]; then
     echo "[!] Fixing dangling symlink: /boot/initrd.img"
     # Find the target if it exists, or create a dummy
@@ -155,6 +163,7 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
 
 
