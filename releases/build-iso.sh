@@ -132,6 +132,15 @@ echo -e "${CYAN}=========================================================${NC}"
 mkdir -p config/hooks/early
 cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
 #!/bin/sh
+# Force remove symlinks and replace with regular empty files
+echo "[!] Forcing regular files for /boot/initrd.img..."
+rm -f /boot/initrd.img /boot/initrd.img.old
+touch /boot/initrd.img /boot/initrd.img.old
+EOF
+chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
+mkdir -p config/hooks/early
+cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
+#!/bin/sh
 # Fix dangling symlinks in /boot *before* any hacks stage
 echo "[!] Purging dangling symlinks in /boot..."
 find /boot -type l -xtype l -delete
@@ -179,6 +188,7 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
 
 
