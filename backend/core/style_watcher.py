@@ -1,17 +1,2 @@
-import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("CodeWatchdog")
-
-class StyleWatcher(FileSystemEventHandler):
-    def on_modified(self, event):
-        if event.src_path.endswith(".py"):
-            logger.info(f"[ASSIMILATION] Observing style change: {event.src_path}")
-            # Trigger immediate re-ingestion of patterns
-
-observer = Observer()
-observer.schedule(StyleWatcher(), "C:/GitHub/SentinelAI_Hub_Master", recursive=True)
-observer.start()
+import random
+import time from watchdog.observers import Observer from watchdog.events import FileSystemEventHandler import logging  logging.basicConfig(level=logging.INFO) logger = logging.getLogger("CodeWatchdog")  class StyleWatcher(FileSystemEventHandler):     def on_modified(self, event):         if event.src_path.endswith(".py"):             logger.info(f"[ASSIMILATION] Observing style change: {event.src_path}")             # Trigger immediate re-ingestion of patterns  observer = Observer() observer.schedule(StyleWatcher(), "C:/GitHub/SentinelAI_Hub_Master", recursive=True) observer.start()
