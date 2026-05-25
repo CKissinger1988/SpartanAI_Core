@@ -67,7 +67,7 @@ lb config \
     --distribution noble \
     --archive-areas "main contrib non-free non-free-firmware" \
     --apt-recommends false \
-    --linux-flavours generic --chroot-hacks false
+    --linux-flavours generic
 
 # 6. Add Custom Files & Binary Overlay
 echo -e "${YELLOW}[*] Overlaying Nexus AI Security Suite into Live filesystem...${NC}"
@@ -128,7 +128,22 @@ echo -e "${GREEN}[+] BUILD CONFIGURATION STAGED SUCCESSFULLY!${NC}"
 echo -e "${YELLOW}[*] Launching live-build compilation. This may take several minutes...${NC}"
 echo -e "${CYAN}=========================================================${NC}"
 
-# Pre-fix for chroot symlinks (required for live-build stability)`ncd config/chroot_local-includes/boot || mkdir -p config/chroot_local-includes/boot`nln -sf /boot/initrd.img-6.8.0-117-generic config/chroot_local-includes/boot/initrd.img || true`n`n# Run the build
+# Pre-fix for chroot symlinks (required for live-build stability)
+mkdir -p config/hooks/normal
+cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
+#!/bin/sh
+# Fix dangling symlinks in /boot that cause chmod errors in lb_chroot_hacks
+if [ -L /boot/initrd.img ] && [ ! -e /boot/initrd.img ]; then
+    echo "[!] Fixing dangling symlink: /boot/initrd.img"
+    # Find the target if it exists, or create a dummy
+    ln -sf /boot/initrd.img-$(ls /boot/initrd.img-* | sort | tail -n 1 | cut -d'-' -f2-) /boot/initrd.img || touch /boot/initrd.img
+fi
+if [ -L /boot/initrd.img.old ] && [ ! -e /boot/initrd.img.old ]; then
+    echo "[!] Fixing dangling symlink: /boot/initrd.img.old"
+    touch /boot/initrd.img.old
+fi
+EOF
+chmod +x config/hooks/normal/0000-fix-symlinks.hook.chroot
 lb build
 
 # Move compiled ISO output back to releases folder
@@ -140,5 +155,6 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
 
