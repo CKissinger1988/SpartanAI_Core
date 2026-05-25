@@ -64,10 +64,10 @@ cd "$BUILD_WORKSPACE"
 echo -e "${YELLOW}[*] Initializing live-build structure...${NC}"
 lb config \
     --binary-images iso-hybrid \
-    --distribution bookworm \
+    --distribution noble \
     --archive-areas "main contrib non-free non-free-firmware" \
     --apt-recommends false \
-    --linux-flavours amd64
+    --linux-flavours generic
 
 # 6. Add Custom Files & Binary Overlay
 echo -e "${YELLOW}[*] Overlaying Nexus AI Security Suite into Live filesystem...${NC}"
