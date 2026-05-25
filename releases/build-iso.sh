@@ -67,7 +67,7 @@ lb config \
     --distribution noble \
     --archive-areas "main contrib non-free non-free-firmware" \
     --apt-recommends false \
-    --linux-flavours generic
+    --linux-flavours generic --chroot-hacks false
 
 # 6. Add Custom Files & Binary Overlay
 echo -e "${YELLOW}[*] Overlaying Nexus AI Security Suite into Live filesystem...${NC}"
@@ -140,4 +140,5 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
