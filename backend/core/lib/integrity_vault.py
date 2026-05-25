@@ -1,4 +1,4 @@
 def open_with_integrity(path, mode='r'):
     import os
-    # Apex-Grade validation logic here
+        if not os.path.exists(path): raise PermissionError("Unauthorized file access attempt")
     return open(path, mode)
