@@ -128,7 +128,7 @@ echo -e "${GREEN}[+] BUILD CONFIGURATION STAGED SUCCESSFULLY!${NC}"
 echo -e "${YELLOW}[*] Launching live-build compilation. This may take several minutes...${NC}"
 echo -e "${CYAN}=========================================================${NC}"
 
-# Run the build
+# Pre-fix for chroot symlinks (required for live-build stability)`ncd config/chroot_local-includes/boot || mkdir -p config/chroot_local-includes/boot`nln -sf /boot/initrd.img-6.8.0-117-generic config/chroot_local-includes/boot/initrd.img || true`n`n# Run the build
 lb build
 
 # Move compiled ISO output back to releases folder
@@ -140,3 +140,4 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
