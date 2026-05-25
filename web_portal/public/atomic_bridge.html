@@ -4,180 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATOMIC BRIDGE // Sovereign Financial Interface</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #050505;
-            --primary-blue: #00AAFF;
-            --primary-gold: #FFD700;
-            --text-light: #E8EDF2;
-            --text-secondary: #7F8C8D;
-            --glass-bg: rgba(20, 20, 20, 0.9);
-            --border: rgba(255, 255, 255, 0.1);
+            --primary-cyan: #00ffcc;
+            --primary-red: #ff3333;
+            --text-light: #e0e0e0;
+            --glass-bg: rgba(10, 10, 12, 0.6);
+            --border: 1px solid rgba(0, 255, 204, 0.4);
+            --shadow: 0 0 20px rgba(0, 255, 204, 0.2);
         }
-
         body {
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
             color: var(--text-light);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
         }
-
         .bridge-container {
             width: 450px;
-            padding: 50px;
+            padding: 40px;
             background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-            text-align: center;
-            border-top: 2px solid var(--primary-blue);
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: var(--primary-blue);
-            margin-bottom: 10px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(0, 170, 255, 0.1);
-            border: 1px solid var(--primary-blue);
+            backdrop-filter: blur(20px);
+            border: var(--border);
             border-radius: 20px;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--primary-blue);
-            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
         }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 35px;
-        }
-
-        input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            padding: 20px;
-            color: #fff;
-            border-radius: 15px;
-            font-family: inherit;
-            outline: none;
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        input:focus {
-            border-color: var(--primary-blue);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .mnemonic-input {
-            height: 100px;
-            resize: none;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-        }
-
-        button {
-            width: 100%;
-            padding: 20px;
-            background: var(--primary-blue);
-            color: #fff;
-            border: none;
-            border-radius: 15px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            cursor: pointer;
-            transition: 0.4s;
-            box-shadow: 0 10px 30px rgba(0, 170, 255, 0.2);
-        }
-
-        button:hover {
-            background: #0088CC;
-            transform: translateY(-2px);
-        }
-
-        .wealth-stats {
-            display: none;
-            margin-top: 30px;
-            text-align: left;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.8rem;
-        }
-
-        .stat-label { color: var(--text-secondary); text-transform: uppercase; }
-        .stat-value { color: var(--primary-gold); font-weight: 700; }
-
+        h1 { color: var(--primary-cyan); letter-spacing: 8px; text-transform: uppercase; }
     </style>
-</head>
-<body>
+<style>.bg-animated{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:url(bg.webp) no-repeat center center fixed;background-size:cover;animation:panAndZoom 20s ease-in-out infinite alternate}@keyframes panAndZoom{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.1) translate(-2%,-2%)}}</style></head>
+<body><div class="bg-animated"></div>
     <div class="bridge-container">
         <h1>ATOMIC BRIDGE</h1>
-        <div class="status-badge">Sovereign Financial Cortex</div>
-        
-        <div id="login-form">
-            <div class="input-group">
-                <input type="password" placeholder="ATOMIC_ACCESS_KEY" id="access-key">
-                <textarea class="input mnemonic-input" placeholder="ENTER 12-WORD MNEMONIC PHRASE FOR SYNC..." id="mnemonic"></textarea>
-            </div>
-            <button onclick="initiateBridge()">SYNC_SOVEREIGN_WALLET</button>
-        </div>
-
-        <div id="wealth-dashboard" class="wealth-stats">
-            <h3 style="color: var(--primary-blue); font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 15px;">FINANCIAL TELEMETRY</h3>
-            <div class="stat-item">
-                <span class="stat-label">Total Harvested</span>
-                <span class="stat-value">$1,422.84 USD</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Active Strategies</span>
-                <span class="stat-value">MEV / LND / PoS</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Wallet Matrix</span>
-                <span class="stat-value">BTC/ETH/SOL/ATOM/ADA</span>
-            </div>
-            <button onclick="window.location.href='/index.html'" style="margin-top: 20px; font-size: 0.7rem; padding: 12px;">RETURN_TO_CORE</button>
-        </div>
+        <p>Sovereign Financial Uplink</p>
     </div>
-
-    <script>
-        function initiateBridge() {
-            const key = document.getElementById('access-key').value;
-            const mn = document.getElementById('mnemonic').value;
-            
-            if (key && mn) {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('wealth-dashboard').style.display = 'block';
-                console.log("ATOMIC_BRIDGE: Handshake successful. Wallet synchronized.");
-            }
-        }
-    </script>
 </body>
 </html>
 

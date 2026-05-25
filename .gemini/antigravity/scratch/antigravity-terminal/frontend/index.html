@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Antigravity Terminal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --primary-cyan: #00ffcc;
+            --text-light: #e0e0e0;
+            --glass-bg: rgba(10, 10, 12, 0.8);
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            height: 100vh;
+        }
+        #root {
+            height: 100%;
+            padding: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
-<body style="margin: 0; background-color: #08090c;">
+<body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
-
