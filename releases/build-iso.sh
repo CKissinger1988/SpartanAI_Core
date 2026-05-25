@@ -128,7 +128,21 @@ echo -e "${GREEN}[+] BUILD CONFIGURATION STAGED SUCCESSFULLY!${NC}"
 echo -e "${YELLOW}[*] Launching live-build compilation. This may take several minutes...${NC}"
 echo -e "${CYAN}=========================================================${NC}"
 
-# Pre-fix for chroot symlinks (required for live-build stability)
+mkdir -p config/hooks/early
+mkdir -p config/hooks/late
+cat <<'EOF' > config/hooks/early/0000-hide-boot.hook.chroot
+#!/bin/sh
+echo "[!] Hiding /boot to prevent chmod errors..."
+mv /boot /boot_hidden
+EOF
+chmod +x config/hooks/early/0000-hide-boot.hook.chroot
+
+cat <<'EOF' > config/hooks/late/9999-restore-boot.hook.chroot
+#!/bin/sh
+echo "[!] Restoring /boot..."
+mv /boot_hidden /boot
+EOF
+chmod +x config/hooks/late/9999-restore-boot.hook.chroot
 mkdir -p config/hooks/early
 cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
 #!/bin/sh
@@ -188,6 +202,7 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
+
 
 
 
