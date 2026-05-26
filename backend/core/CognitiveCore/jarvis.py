@@ -10,6 +10,7 @@ import hashlib
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
+from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.sovereignty import SovereigntyCore
@@ -57,6 +58,7 @@ class Jarvis:
         self.global_recon = GlobalReconShard(self.brain)
         self.auth_vault = GlobalAuthVault()
         self.air_dev = AirDevIntegration(self.brain)
+        self.agent_deck = AgentDeckIntegration(self.brain)
         self.wallet_manager = WalletManager()
         self.assimilation_shard = CognitiveAssimilationShard(self.brain)
         self.apex_shard = ApexShardOrchestrator(self.brain, self.antigravity)
@@ -137,6 +139,14 @@ class Jarvis:
 
         if command in ["systems status", "status", "check"]:
             self.announce_status()
+            return True
+
+        if command in ["launch deck", "mission control", "deck"]:
+            if self.user_role != "Creator":
+                print(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
+                return False
+            res = self.agent_deck.launch_deck()
+            print(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
             return True
 
         if command.startswith("set key "):
