@@ -18,6 +18,7 @@ from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
 from backend.core.CognitiveCore.omni_cognitive_assembly import OmniCognitiveAssembly
+from backend.core.ApexGodShard.apex_god_shard import ApexGodShard
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 
 # Domain Imports (Harmonized)
@@ -80,6 +81,7 @@ class Jarvis:
         self.air_dev = AirDevIntegration(self.brain)
         self.agent_deck = AgentDeckIntegration(self.brain)
         self.gemma = GemmaIntelligence(self.brain, self.auth_vault)
+        self.god_shard = ApexGodShard(self)
         
         # Omni-Cognitive Assembly (Collaborative multi-model brain)
         self.assembly = OmniCognitiveAssembly(self.brain, self.gemma, self.auth_vault)
@@ -120,6 +122,7 @@ class Jarvis:
         self.finality_governance.start_evolution()
         self.deep_ingestor.start_evolution()
         self.skill_assimilator.start_evolution()
+        self.god_shard.start_evolution()
 
         # Sovereign Ingestion: Assimilate Skills & Local Credentials
         self.skill_assimilator.assimilate_all_skills()
@@ -145,10 +148,14 @@ class Jarvis:
                 "deck": self.agent_deck,
                 "gemma": self.gemma,
                 "desktop_fire": self.desktop_fire,
-                "desktop_fier": self.desktop_fier
+                "desktop_fier": self.desktop_fier,
+                "god": self.god_shard
             }
             target_shard = shard_map.get(domain)
             if target_shard:
+                # God-Mode Special Dispatch
+                if domain == "god":
+                    return target_shard.execute_god_command()
                 return self.synthesis.execute_enhanced(target_shard, task_name, *args, **kwargs)
         return None
 
@@ -244,6 +251,13 @@ class Jarvis:
         if command == "package dashboard nativefier":
             return self.execute_enhanced_task("desktop_fier", "synthesize_app", "file:///web_portal/public/index.html")
 
+        # God Command: Full Send Mission Completion
+        if command in ["god", "full send", "complete mission"]:
+            if self.user_role != "Creator":
+                print(f"{RED}Jarvis: God-Command restricted to Supreme Creator.{ENDC}")
+                return False
+            return self.execute_enhanced_task("god", "execute_god_command")
+
         print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
         match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SpartanAI handlers.")
         print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
@@ -267,7 +281,8 @@ class Jarvis:
             "gemma_shard": "ONLINE",
             "skill_assimilation": "COMPLETE",
             "deep_ingestion": "ACTIVE",
-            "desktop_synthesis": "ONLINE (NATIVEFIRE/NATIVEFIER)"
+            "desktop_synthesis": "ONLINE (NATIVEFIRE/NATIVEFIER)",
+            "god_mode": "READY"
         }
         print(json.dumps(status_report, indent=4))
         print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
