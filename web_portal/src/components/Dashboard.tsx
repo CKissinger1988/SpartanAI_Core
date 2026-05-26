@@ -143,7 +143,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLaunchDesktop, systemChe
     if (!terminalInput.trim()) return;
 
     const cmd = terminalInput.trim().toLowerCase();
-    setTerminalLogs(prev => [...prev, `operator@nexusai:~$ ${terminalInput}`]);
+    setTerminalLogs(prev => [...prev, `operator@sentinelai_security_coreai:~$ ${terminalInput}`]);
     setTerminalInput('');
 
     try {
@@ -172,7 +172,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLaunchDesktop, systemChe
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-bold tracking-tight text-white uppercase italic">SYSTEM_STATUS_REPORT</h2>
           <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase">
-            Nexus Security Suite v{systemStatus?.version || '2.5.0'} // ENVIRONMENT: PRODUCTION
+            SentinelAI Security Core Security Suite v{systemStatus?.version || '2.5.0'} // ENVIRONMENT: PRODUCTION
           </p>
         </div>
 
@@ -395,7 +395,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLaunchDesktop, systemChe
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-cyan-500 theme-text" />
-                  Nexus Command Shell
+                  SentinelAI Security Core Command Shell
                 </h3>
                 <span className="text-[7px] font-mono text-cyan-500/70">SH_INT_v1.0</span>
               </div>

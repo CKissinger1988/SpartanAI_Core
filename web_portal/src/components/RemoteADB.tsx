@@ -49,8 +49,8 @@ export const RemoteADB: React.FC = () => {
 
     const provisionVPN = async (deviceId: string) => {
         setActionLoading(deviceId + '_vpn');
-        const stealthMode = localStorage.getItem('nexus_stealth_mode') === 'true';
-        const secondaryKey = localStorage.getItem('nexus_secondary_key') || 'NEXUS-7742-X';
+        const stealthMode = localStorage.getItem('sentinelai_security_core_stealth_mode') === 'true';
+        const secondaryKey = localStorage.getItem('sentinelai_security_core_secondary_key') || 'NEXUS-7742-X';
 
         try {
             const res = await authenticatedFetch('/api/adb/setup-vpn', {

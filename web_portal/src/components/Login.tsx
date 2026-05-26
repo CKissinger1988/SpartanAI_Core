@@ -13,8 +13,8 @@ export const Login: React.FC = () => {
   const [isMasterMode, setIsMasterMode] = useState(false);
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem('nexus_operator_id');
-    const savedRemember = localStorage.getItem('nexus_remember_me') === 'true';
+    const savedEmail = localStorage.getItem('sentinelai_security_core_operator_id');
+    const savedRemember = localStorage.getItem('sentinelai_security_core_remember_me') === 'true';
     if (savedRemember && savedEmail && !isMasterMode) {
       setEmail(savedEmail); // Only set if not in master mode
       setRememberMe(true);
@@ -39,9 +39,9 @@ export const Login: React.FC = () => {
 
       const verification = await verifyRes.json();
       if (verification.success && verification.token) {
-        localStorage.setItem('nexus_jwt_token', verification.token);
+        localStorage.setItem('sentinelai_security_core_jwt_token', verification.token);
         // Also we probably need to set user to localStorage to keep context consistent
-        localStorage.setItem('nexus_user', JSON.stringify({ uid: 'master-admin-01', email: 'master@nexus-sovereign.local', role: 'root' }));
+        localStorage.setItem('sentinelai_security_core_user', JSON.stringify({ uid: 'master-admin-01', email: 'master@sentinelai_security_core-sovereign.local', role: 'root' }));
         window.location.reload();
       } else {
         throw new Error(verification.error || 'Biometric verification failed');
@@ -64,7 +64,7 @@ export const Login: React.FC = () => {
       const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'master@nexus-sovereign.local', password })
+        body: JSON.stringify({ email: 'master@sentinelai_security_core-sovereign.local', password })
       });
       const loginData = await loginRes.json();
       if (!loginData.success) throw new Error("Invalid password for registration.");
@@ -90,8 +90,8 @@ export const Login: React.FC = () => {
 
       const verification = await verifyRes.json();
       if (verification.success) {
-        localStorage.setItem('nexus_jwt_token', jwtToken);
-        localStorage.setItem('nexus_user', JSON.stringify(loginData.user));
+        localStorage.setItem('sentinelai_security_core_jwt_token', jwtToken);
+        localStorage.setItem('sentinelai_security_core_user', JSON.stringify(loginData.user));
         window.location.reload();
       } else {
         throw new Error(verification.error || 'Biometric registration failed');
@@ -107,7 +107,7 @@ export const Login: React.FC = () => {
     const newMode = !isMasterMode;
     setIsMasterMode(newMode);
     if (newMode) {
-      setEmail('master@nexus-sovereign.local');
+      setEmail('master@sentinelai_security_core-sovereign.local');
       setPassword(''); // Password is not used for WebAuthn login
     } else {
       setEmail('');
@@ -123,12 +123,12 @@ export const Login: React.FC = () => {
     try {
       await login(email, password);
       if (rememberMe) {
-        localStorage.setItem('nexus_operator_id', email);
+        localStorage.setItem('sentinelai_security_core_operator_id', email);
         // Explicitly set to 'true' or 'false'
-        localStorage.setItem('nexus_remember_me', 'true');
+        localStorage.setItem('sentinelai_security_core_remember_me', 'true');
       } else {
-        localStorage.removeItem('nexus_operator_id');
-        localStorage.setItem('nexus_remember_me', 'false');
+        localStorage.removeItem('sentinelai_security_core_operator_id');
+        localStorage.setItem('sentinelai_security_core_remember_me', 'false');
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Access denied.');

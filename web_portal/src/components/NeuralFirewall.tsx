@@ -18,7 +18,7 @@ export const NeuralFirewall: React.FC = () => {
                         const highSeverity = newPackets.find((p: any) => p.severity === 'high' || p.severity === 'critical');
 
                         if (highSeverity) {
-                            window.dispatchEvent(new CustomEvent('nexus-firewall-alert', {
+                            window.dispatchEvent(new CustomEvent('sentinelai_security_core-firewall-alert', {
                                 detail: { source: highSeverity.source, protocol: highSeverity.protocol }
                             }));
                         }

@@ -38,7 +38,7 @@ export const IDSAlerts: React.FC = () => {
       const maxLevel = alerts.reduce((max, alert) => {
         return levels.indexOf(alert.severity) > levels.indexOf(max) ? alert.severity : max;
       }, 'low');
-      window.dispatchEvent(new CustomEvent('nexus-threat-level', { detail: { level: maxLevel } }));
+      window.dispatchEvent(new CustomEvent('sentinelai_security_core-threat-level', { detail: { level: maxLevel } }));
     }
   }, [alerts]);
 

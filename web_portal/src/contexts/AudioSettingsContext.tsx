@@ -24,8 +24,8 @@ export const AudioSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     const [selectedInput, setSelectedInput] = useState<string>(localStorage.getItem('selectedInputDevice') || '');
     const [selectedOutput, setSelectedOutput] = useState<string>(localStorage.getItem('selectedOutputDevice') || '');
     const [selectedVoice, setSelectedVoice] = useState<string>(localStorage.getItem('selectedJarvisVoice') || 'Puck');
-    const [wakeWordSensitivity, setWakeWordSensitivity] = useState<number>(Number(localStorage.getItem('nexus_jarvis_sensitivity')) || 50);
-    const [allowWakeWordBypassOnCritical, setAllowWakeWordBypassOnCritical] = useState<boolean>(localStorage.getItem('nexus_jarvis_bypass_critical') === 'true');
+    const [wakeWordSensitivity, setWakeWordSensitivity] = useState<number>(Number(localStorage.getItem('sentinelai_security_core_jarvis_sensitivity')) || 50);
+    const [allowWakeWordBypassOnCritical, setAllowWakeWordBypassOnCritical] = useState<boolean>(localStorage.getItem('sentinelai_security_core_jarvis_bypass_critical') === 'true');
 
     const refreshDevices = useCallback(async () => {
         try {
@@ -72,11 +72,11 @@ export const AudioSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }, [selectedVoice]);
 
     useEffect(() => {
-        localStorage.setItem('nexus_jarvis_sensitivity', wakeWordSensitivity.toString());
+        localStorage.setItem('sentinelai_security_core_jarvis_sensitivity', wakeWordSensitivity.toString());
     }, [wakeWordSensitivity]);
 
     useEffect(() => {
-        localStorage.setItem('nexus_jarvis_bypass_critical', allowWakeWordBypassOnCritical.toString());
+        localStorage.setItem('sentinelai_security_core_jarvis_bypass_critical', allowWakeWordBypassOnCritical.toString());
     }, [allowWakeWordBypassOnCritical]);
 
     return (

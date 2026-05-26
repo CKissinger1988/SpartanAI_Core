@@ -16,5 +16,5 @@ jobs:
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
-          name: nexus-live-security
-          path: releases/nexus-live-security.iso
+          name: sentinelai_security_core-live-security
+          path: releases/sentinelai_security_core-live-security.iso

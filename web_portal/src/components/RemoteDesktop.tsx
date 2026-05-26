@@ -264,7 +264,7 @@ const DriverManager: React.FC<{ onClose: () => void, authenticatedFetch: any }> 
       { p: 20, l: '[+] Found Wireless: Realtek RTL8821CE' },
       { p: 40, l: '[*] Purging legacy drivers...' },
       { p: 60, l: '[*] Rebuilding dkms modules for 6.6.0-kali1-amd64' },
-      { p: 80, l: '[+] Injecting hardened Nexus drivers...' },
+      { p: 80, l: '[+] Injecting hardened SentinelAI Security Core drivers...' },
       { p: 100, l: '[+] Synchronization complete.' }
     ];
     for (const step of steps) {
@@ -551,7 +551,7 @@ export const RemoteDesktop: React.FC = () => {
 
   const [metasploitInput, setMetasploitInput] = useState('');
   const [metasploitHistory, setMetasploitHistory] = useState([
-    { text: '       =[ Nexus AI Metasploit operational bridge v1.0.4  ]', type: 'banner' },
+    { text: '       =[ SentinelAI Security Core Metasploit operational bridge v1.0.4  ]', type: 'banner' },
     { text: '+ -- --=[ 2294 exploits - 1201 auxiliary - 409 post       ]', type: 'banner' },
     { text: '+ -- --=[ 968 payloads - 45 encoders - 11 nops            ]', type: 'banner' },
     { text: '+ -- --=[ 9 evasion                                       ]', type: 'banner' },
@@ -888,7 +888,7 @@ export const RemoteDesktop: React.FC = () => {
     } else if (cmd === 'help' || cmd === '?') {
       setTerminalLogs(prev => [
         ...prev,
-        { text: 'Nexus Secure Shell Terminal v2.5.0\nSupported Commands:\n  help / ?               Display this menu\n  ls                     List files and directories\n  cat <file>             Print the contents of a file\n  decrypt <file>         Decrypt an encrypted file via System HSM\n  mount-hsm              Mount encrypted directory structure via HSM alias\n  clear                  Clear terminal history\n  sysinfo                Print remote system information', type: 'output' }
+        { text: 'SentinelAI Security Core Secure Shell Terminal v2.5.0\nSupported Commands:\n  help / ?               Display this menu\n  ls                     List files and directories\n  cat <file>             Print the contents of a file\n  decrypt <file>         Decrypt an encrypted file via System HSM\n  mount-hsm              Mount encrypted directory structure via HSM alias\n  clear                  Clear terminal history\n  sysinfo                Print remote system information', type: 'output' }
       ]);
     } else if (cmd === 'clear') {
       setTerminalLogs([]);
@@ -934,7 +934,7 @@ export const RemoteDesktop: React.FC = () => {
           appendTerminalLog({ text: '=========================================\nNEXUS AI SECURITY SYSTEM - TARGET DESKTOP\n=========================================\n\nIP Target Address: 192.168.12.55\nAuthorized Operator: NEXUS_OPERATOR\n\nActive Nodes detected in subnet:\n- 192.168.12.1   (Gateway Router)\n- 192.168.12.55  (Kali Pentest Node - Local)\n- 192.168.12.102 (Database Master Node)\n\nNOTICE:\nAll operations are recorded to MATRIX_CORE. Log files under recon_data/ are active.', type: 'output' });
         } else if (targetFileName === 'credentials.db.enc') {
           if (credentialsFileDecrypted) {
-            appendTerminalLog({ text: '{\n  "db_user": "nexus_admin",\n  "db_pass": "SuperSecureNexusAI2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' });
+            appendTerminalLog({ text: '{\n  "db_user": "sentinelai_security_core_admin",\n  "db_pass": "SuperSecureSentinelAI Security Core2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' });
           } else {
             appendTerminalLog({ text: '[ENCRYPTED PAYLOAD - AES-256-GCM]\nRaw: U2FsdGVkX1+Tz1Q5V2K9G6H7m8X8W9A0Q1B2C3D4E5F6==\nUse command "decrypt credentials.db.enc" to decrypt.', type: 'output' });
           }
@@ -975,7 +975,7 @@ export const RemoteDesktop: React.FC = () => {
             setTimeout(() => {
               setCredentialsFileDecrypted(true);
               appendTerminalLog({ text: '[SEC_KERNEL] HSM_DECRYPT_EVENT: Decryption of credentials.db.enc successful.', type: 'security' });
-              appendTerminalLog({ text: 'Decrypted content:\n{\n  "db_user": "nexus_admin",\n  "db_pass": "SuperSecureNexusAI2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' });
+              appendTerminalLog({ text: 'Decrypted content:\n{\n  "db_user": "sentinelai_security_core_admin",\n  "db_pass": "SuperSecureSentinelAI Security Core2026!",\n  "ssh_root_key_alias": "NEXUS_MAIN_GATEWAY_KEY",\n  "neural_model_salt": "0xDEADBEEF42"\n}', type: 'output' });
             }, 1000);
           }
         } else {

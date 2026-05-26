@@ -22,7 +22,7 @@ from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 
 # Domain Imports (Harmonized)
 from backend.core.FinancialSingularity.atomic_profiteer import AtomicProfiteer
-from backend.core.DefensiveMesh.security_shield import SecurityShield
+from backend.core.SecurityCore.security_shield import SecurityShield
 from backend.core.RealityEngineering.causal_reality_engine import CausalRealityEngine
 from backend.core.GovernanceLayer.sovereign_governance import SovereignGovernance
 

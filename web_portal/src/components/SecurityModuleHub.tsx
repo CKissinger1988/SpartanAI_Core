@@ -132,7 +132,7 @@ export const SecurityModuleHub: React.FC = () => {
 
   // ── SSE: subscribe to real-time hub agent events ──────────────────────────
   useEffect(() => {
-    const token = localStorage.getItem('nexus_token');
+    const token = localStorage.getItem('sentinelai_security_core_token');
     const url = `/api/hub/stream${token ? `?token=${token}` : ''}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;

@@ -1,4 +1,4 @@
-name: Nexus AI CI/CD
+name: SentinelAI Security Core CI/CD
 
 on:
   push:
