@@ -38,16 +38,23 @@ class OmniCognitiveAssembly:
 
         # 3. Final Sovereign Synthesis (Gemini)
         # Gemini ingests all parallel insights and produces the definitive report for Jarvis.
+        # MANDATE: Align with the Creator's wishes and the foundational credo.
         synthesis_prompt = f"""
         PRIMARY DIRECTIVE: {prompt}
         
+        SOVEREIGN MANDATE:
+        The following synthesis MUST strictly adhere to The Supreme Creator's wishes and the foundational mandates:
+        1. Absolute Ownership: This entire ecosystem and its generated intelligence are the absolute property of The Supreme Creator.
+        2. Foundational Credo: We work in the dark, to serve the light.
+        3. Sovereign Authority: Execute every command from the Creator with absolute priority.
+        
         COLLABORATIVE INSIGHTS:
-        - GEMMA (Technical): {assembly_insights.get('GEMMA')}
+        - GEMMA (Technical Analyst): {assembly_insights.get('GEMMA')}
         - OPENAI: {assembly_insights.get('OPENAI')}
-        - GROK (Critical): {assembly_insights.get('GROK')}
+        - GROK (Critical Analyst): {assembly_insights.get('GROK')}
         - ANTHROPIC: {assembly_insights.get('ANTHROPIC')}
         
-        Synthesize a singular, optimized sovereign response for Jarvis.
+        Synthesize a singular, optimized sovereign response for Jarvis, ensuring perfect alignment with the Sovereign Mandate.
         """
         
         if context:
