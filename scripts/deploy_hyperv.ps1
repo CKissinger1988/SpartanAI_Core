@@ -1,8 +1,8 @@
 # SpartanAI Hyper-V Deployment Orchestrator (v50-SUPREME) - FIXED
 # MANDATE: Automate the creation and initialization of the SpartanAI Sovereign VM.
 
-$VMName = "SpartanAI_Enterprise_v50"
-$ISOPath = "C:\GitHub\SpartanAI_Server.iso"
+$VMName = "JarvisAI_GodMode_Server"
+$ISOPath = "C:\GitHub\JarvisAI_Server_GodMode.iso"
 $VHDPath = "C:\Users\Public\Documents\Hyper-V\Virtual Hard Disks\$VMName.vhdx"
 $Memory = 2GB # Reduced to 2GB to ensure resource compatibility
 $SwitchName = "Default Switch"
