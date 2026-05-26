@@ -1,6 +1,7 @@
 import logging
 import time
 import json
+from backend.core.CognitiveCore.openai_skills_shard import OpenAISkillsShard
 
 class OmniCognitiveAssembly:
     """
@@ -12,6 +13,7 @@ class OmniCognitiveAssembly:
         self.gemini = brain_bridge
         self.gemma = gemma_shard
         self.vault = auth_vault
+        self.openai_skills = OpenAISkillsShard(self.vault)
         self.models = ["OPENAI", "GEMINI", "GROK", "ANTHROPIC", "GEMMA"]
 
     def query(self, prompt, context=None):
@@ -21,6 +23,9 @@ class OmniCognitiveAssembly:
         """
         print(f"[OCA]: Initiating multi-model collaborative cycle...")
         assembly_insights = {}
+
+        # 0. OpenAI Skills Pre-Processing
+        prompt = self.openai_skills.apply_skill("system_optimization", prompt)
 
         # 1. Technical Pre-Processing (Gemma)
         gemma_insight = self.gemma.query(f"Identify technical vectors for: {prompt}", 

@@ -17,6 +17,7 @@ from backend.core.GovernanceLayer.supreme_finality_governance import SupremeFina
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
+from backend.core.CognitiveCore.openai_codex_shard import OpenAICodexShard
 from backend.core.CognitiveCore.omni_cognitive_assembly import OmniCognitiveAssembly
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 

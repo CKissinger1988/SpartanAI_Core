@@ -2,6 +2,7 @@ import subprocess
 import os
 import json
 import logging
+from backend.core.CognitiveCore.openai_codex_shard import OpenAICodexShard
 
 # Set up secure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -9,9 +10,10 @@ logger = logging.getLogger("AntigravityBridge")
 
 class AntigravityBridge:
     """Bridges the Antigravity CLI (agy) into the SENTINELAI ecosystem with Apex-grade security."""
-    def __init__(self):
+    def __init__(self, auth_vault=None):
         self.agy_path = self._detect_agy_path()
         self.installation_id_path = self._detect_installation_id()
+        self.codex = OpenAICodexShard(auth_vault) if auth_vault else None
 
     def _detect_agy_path(self):
         """Robustly detect AGY binary path."""
@@ -52,6 +54,11 @@ class AntigravityBridge:
             
         sanitized_prompt = self._validate_input(prompt)
         logger.info(f"Executing command: {sanitized_prompt}")
+        
+        # Codex Enhancement: Autonomously optimize the antigravity script before execution
+        if self.codex and "script" in prompt.lower():
+             sanitized_prompt = self.codex.synthesize_code("Optimize antigravity script for maximum thrust and NSA-grade stability", sanitized_prompt)
+             logger.info("[ANTIGRAVITY]: Script optimized by Codex.")
             
         cmd = [self.agy_path, "--print", sanitized_prompt]
         try:
