@@ -1,7 +1,8 @@
-import requests
 import json
 import logging
 import os
+import urllib.request
+import urllib.error
 
 class GemmaIntelligence:
     """
@@ -17,7 +18,7 @@ class GemmaIntelligence:
 
     def query(self, prompt, system_prompt="You are Jarvis, utilizing the Gemma cognitive shard."):
         """
-        Executes a query against Gemma, prioritizing local inference.
+        Executes a query against Gemma, prioritizing local inference using native urllib.
         """
         print(f"[GEMMA-INTEL]: Processing cognitive request...")
         
@@ -29,18 +30,19 @@ class GemmaIntelligence:
                 "system": system_prompt,
                 "stream": False
             }
-            response = requests.post(self.local_endpoint, json=payload, timeout=30)
-            if response.status_code == 200:
-                result = response.json().get('response')
-                print("[GEMMA-INTEL]: Local inference successful.")
-                return result
+            data = json.dumps(payload).encode('utf-8')
+            req = urllib.request.Request(self.local_endpoint, data=data, headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=30) as response:
+                if response.status == 200:
+                    result = json.loads(response.read().decode('utf-8')).get('response')
+                    print("[GEMMA-INTEL]: Local inference successful.")
+                    return result
         except Exception:
             print("[GEMMA-INTEL]: Local inference unavailable. Falling back to cloud...")
 
         # 2. Cloud Fallback (Vertex AI / Google AI Studio using GEMMA key)
         cloud_key = self.auth_vault.get_key("AI_MODELS", "GEMMA")
         if cloud_key:
-            # Placeholder for Cloud Gemma API call (e.g., via Vertex AI)
             print("[GEMMA-INTEL]: Engaging cloud-based Gemma inference...")
             return "Sovereign cloud-fallback response: Gemma-9b-IT active."
         
