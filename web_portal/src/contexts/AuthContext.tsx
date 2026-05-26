@@ -13,16 +13,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('sentinelai_security_core_jwt_token'));
+  const [token, setToken] = useState<string | null>(localStorage.getItem('spartanai_security_core_jwt_token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('sentinelai_security_core_user');
+    const savedUser = localStorage.getItem('spartanai_security_core_user');
     if (savedUser && token) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (e) {
-        localStorage.removeItem('sentinelai_security_core_user');
+        localStorage.removeItem('spartanai_security_core_user');
       }
     }
     setLoading(false);
@@ -39,8 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data.success) {
       setToken(data.token);
       setUser(data.user);
-      localStorage.setItem('sentinelai_security_core_jwt_token', data.token);
-      localStorage.setItem('sentinelai_security_core_user', JSON.stringify(data.user));
+      localStorage.setItem('spartanai_security_core_jwt_token', data.token);
+      localStorage.setItem('spartanai_security_core_user', JSON.stringify(data.user));
     } else {
       throw new Error(data.error || 'Authentication failed');
     }
@@ -49,8 +49,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('sentinelai_security_core_jwt_token');
-    localStorage.removeItem('sentinelai_security_core_user');
+    localStorage.removeItem('spartanai_security_core_jwt_token');
+    localStorage.removeItem('spartanai_security_core_user');
   };
 
   const authenticatedFetch = useCallback(async (url: string, options: RequestInit = {}) => {

@@ -4,16 +4,16 @@ import threading
 import time
 import logging
 
-class SentinelLivePatch:
+class SpartanLivePatch:
     """
-    Sentinel Live-Patch Engine v2.0.
+    Spartan Live-Patch Engine v2.0.
     MANDATE: Pull real-time updates from all integrated repositories and patch Jarvis core.
     """
     def __init__(self, jarvis_root):
         self.jarvis_root = jarvis_root
         self.integrated_repos = [
-            {"name": "Security_Core", "path": "C:\\GitHub\\SentinelAI_Security_Core", "remote": "origin"},
-            {"name": "SentinelAI_Hub", "path": "C:\\GitHub\\SentinelAI_Hub_Master", "remote": "origin"},
+            {"name": "Security_Core", "path": "C:\\GitHub\\SpartanAI_Security_Core", "remote": "origin"},
+            {"name": "SpartanAI_Hub", "path": "C:\\GitHub\\SpartanAI_Hub_Master", "remote": "origin"},
             # ShardSpawnController can autonomously add more here
         ]
         self.is_running = False

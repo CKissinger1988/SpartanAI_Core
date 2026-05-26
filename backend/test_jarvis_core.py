@@ -4,7 +4,7 @@ import time
 import threading
 from backend.core.jarvis import Jarvis
 from backend.switcher import ModelSwitcher
-from backend.core.sentinel import SentinelRedundancy
+from backend.core.spartan import SpartanRedundancy
 
 def test_jarvis_heartbeat():
     # Jarvis should create a heartbeat file on init
@@ -42,15 +42,15 @@ def test_model_switcher():
     assert result is False
     assert switcher.get_current() == 'hexstrike'
 
-def test_sentinel_monitoring():
-    sentinel = SentinelRedundancy()
+def test_spartan_monitoring():
+    spartan = SpartanRedundancy()
     hb_file = ".jarvis_heartbeat"
     
     # Create a fresh heartbeat
     with open(hb_file, 'w') as f:
         f.write(str(time.time()))
     
-    # Sentinel should consider it nominal
+    # Spartan should consider it nominal
     # We can't easily test the print output, but we can verify the logic
     # doesn't trigger failover if heartbeat is fresh
     
@@ -59,15 +59,15 @@ def test_sentinel_monitoring():
     def mock_spawn_failover():
         failover_called.append(True)
     
-    sentinel.spawn_failover = mock_spawn_failover
+    spartan.spawn_failover = mock_spawn_failover
     
     # Fresh heartbeat
-    sentinel.health_check_interval = 0.1
+    spartan.health_check_interval = 0.1
     # Run one check manually if possible, or start thread and wait
     # For unit test, we'll just call the check logic if it were exposed, 
     # but it's in a while loop. We'll just test spawn_failover directly.
     
-    sentinel.spawn_failover()
+    spartan.spawn_failover()
     assert failover_called == [True]
     
     # Test stale heartbeat check logic
@@ -76,13 +76,13 @@ def test_sentinel_monitoring():
         f.write(str(time.time() - 20)) # 20 seconds ago
     
     # We'll just verify the failover log creation in the real spawn_failover
-    from backend.core.sentinel import SentinelRedundancy as RealSentinel
-    real_sentinel = RealSentinel()
-    log_file = "data/sentinel_recovery.log"
+    from backend.core.spartan import SpartanRedundancy as RealSpartan
+    real_spartan = RealSpartan()
+    log_file = "data/spartan_recovery.log"
     if os.path.exists(log_file):
         os.remove(log_file)
     
-    real_sentinel.spawn_failover()
+    real_spartan.spawn_failover()
     assert os.path.exists(log_file)
     
     # Cleanup

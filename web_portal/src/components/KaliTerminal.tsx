@@ -8,22 +8,22 @@ export const KaliTerminal: React.FC = () => {
   const [history, setHistory] = useState<TerminalMessage[]>([
     {
       id: '1',
-      user: 'root@sentinelai_security_coreai',
-      content: 'SentinelAI Security Core OS Terminal v2.5.0 [PRODUCTION]',
+      user: 'root@spartanai_security_coreai',
+      content: 'SpartanAI Security Core OS Terminal v2.5.0 [PRODUCTION]',
       type: 'system',
       timestamp: new Date().toLocaleTimeString()
     },
     {
       id: '2',
-      user: 'root@sentinelai_security_coreai',
+      user: 'root@spartanai_security_coreai',
       content: 'Authorized personnel only. Binary integrity check passed.',
       type: 'system',
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
   const [input, setInput] = useState('');
-  const [stealthMode, setStealthMode] = useState(localStorage.getItem('sentinelai_security_core_stealth_mode') === 'true');
-  const [secondaryKey, setSecondaryKey] = useState(localStorage.getItem('sentinelai_security_core_secondary_key') || 'NEXUS-7742-X');
+  const [stealthMode, setStealthMode] = useState(localStorage.getItem('spartanai_security_core_stealth_mode') === 'true');
+  const [secondaryKey, setSecondaryKey] = useState(localStorage.getItem('spartanai_security_core_secondary_key') || 'NEXUS-7742-X');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,13 +51,13 @@ export const KaliTerminal: React.FC = () => {
       const encryptedCmd = btoa(cmd + secondaryKey).slice(0, 16);
       setHistory(prev => [...prev, {
         id: `stealth-${Date.now()}`,
-        user: 'root@sentinelai_security_coreai',
+        user: 'root@spartanai_security_coreai',
         content: `[STEALTH_MODE] Encrypting traffic with key: ${secondaryKey.slice(0, 3)}***`,
         type: 'system',
         timestamp
       }, {
         id: `cipher-${Date.now()}`,
-        user: 'root@sentinelai_security_coreai',
+        user: 'root@spartanai_security_coreai',
         content: `TX_CIPHER: ${encryptedCmd}...`,
         type: 'system',
         timestamp
@@ -81,7 +81,7 @@ export const KaliTerminal: React.FC = () => {
     } else if (c === 'date') {
       output = new Date().toString();
     } else if (c === 'uname -a') {
-      output = 'Linux sentinelai_security_coreai 5.15.0-kali7-amd64 #1 SMP PREEMPT_DYNAMIC Debian 5.15.35-1kali1 (2022-05-04) x86_64 GNU/Linux';
+      output = 'Linux spartanai_security_coreai 5.15.0-kali7-amd64 #1 SMP PREEMPT_DYNAMIC Debian 5.15.35-1kali1 (2022-05-04) x86_64 GNU/Linux';
     } else if (c === 'apt update' || c === 'sudo apt update') {
       output = 'Hit:1 http://http.kali.org/kali kali-rolling InRelease\nReading package lists... Done\nBuilding dependency tree... Done\nReading state information... Done\nAll packages are up to date.';
     } else if (c.startsWith('apt install') || c.startsWith('sudo apt install')) {
@@ -89,7 +89,7 @@ export const KaliTerminal: React.FC = () => {
     } else if (c === 'nmap') {
       output = 'Nmap 7.92 ( https://nmap.org )\nUsage: nmap [Scan Type(s)] [Options] {target specification}';
     } else if (c.startsWith('cat')) {
-      output = 'sentinelai_security_coreai_v2.4.1_stable_build_unlocked';
+      output = 'spartanai_security_coreai_v2.4.1_stable_build_unlocked';
     } else if (c === 'clear') {
       setHistory([]);
       return;
@@ -112,14 +112,14 @@ export const KaliTerminal: React.FC = () => {
       ...prev,
       {
         id: Date.now().toString(),
-        user: 'root@sentinelai_security_coreai',
+        user: 'root@spartanai_security_coreai',
         content: cmd,
         type: 'input',
         timestamp: new Date().toLocaleTimeString()
       },
       {
         id: (Date.now() + 1).toString(), // Ensure unique ID for output
-        user: 'root@sentinelai_security_coreai', // Output is from the system, not user
+        user: 'root@spartanai_security_coreai', // Output is from the system, not user
         content: output,
         type: type,
         timestamp: new Date().toLocaleTimeString()
@@ -145,7 +145,7 @@ export const KaliTerminal: React.FC = () => {
           </div>
           <span className="text-[10px] text-slate-500 uppercase tracking-widest flex items-center gap-2">
             <TerminalIcon className="w-3 h-3" />
-            root@sentinelai_security_coreai: ~
+            root@spartanai_security_coreai: ~
           </span>
         </div>
         <div className="flex items-center gap-4 text-slate-600">
@@ -170,7 +170,7 @@ export const KaliTerminal: React.FC = () => {
               {msg.type === 'input' ? (
                 <div className="flex items-start gap-2">
                   <span className="text-emerald-500 font-bold shrink-0">┌──(</span>
-                  <span className="text-cyan-400 font-bold shrink-0">root㉿sentinelai_security_coreai</span>
+                  <span className="text-cyan-400 font-bold shrink-0">root㉿spartanai_security_coreai</span>
                   <span className="text-emerald-500 font-bold shrink-0">)-[</span>
                   <span className="text-white shrink-0">~</span>
                   <span className="text-emerald-500 font-bold shrink-0">]</span>
@@ -195,7 +195,7 @@ export const KaliTerminal: React.FC = () => {
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="p-4 bg-black/40 border-t border-slate-800 flex items-center gap-2 group shrink-0">
-        <span className="text-emerald-500 font-bold text-xs shrink-0 tracking-tighter">root@sentinelai_security_coreai#</span>
+        <span className="text-emerald-500 font-bold text-xs shrink-0 tracking-tighter">root@spartanai_security_coreai#</span>
         <input
           autoFocus
           className="bg-transparent border-none outline-none flex-1 text-cyan-400 text-xs font-mono placeholder:text-slate-700"

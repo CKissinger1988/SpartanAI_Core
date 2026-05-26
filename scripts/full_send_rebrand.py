@@ -3,9 +3,9 @@ import re
 
 # Mapping for rebranding
 replacements = {
-    r'\bSentinelAI\b': 'SentinelAI',
+    r'\bSpartanAI\b': 'SpartanAI',
     r'\bJarvis\b': 'Jarvis',
-    r'\bSentinelAI\b': 'sentinelai',
+    r'\bSpartanAI\b': 'spartanai',
     r'\bJarvis\b': 'jarvis'
 }
 

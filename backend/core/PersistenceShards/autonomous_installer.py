@@ -22,7 +22,7 @@ class AutonomousInstaller:
             logging.info(f"[INSTALLER]: Creating {self.fs_type} filesystem...")
             
             # 3. Payload Extraction
-            logging.info("[INSTALLER]: Extracting SentinelAI core to target...")
+            logging.info("[INSTALLER]: Extracting SpartanAI core to target...")
             
             # 4. Bootloader Deployment
             logging.info("[INSTALLER]: Hardening persistent boot sector...")

@@ -1,5 +1,5 @@
 #!/bin/bash
-# SentinelAI Auto-Commit Monitor
+# SpartanAI Auto-Commit Monitor
 # Runs every 60 minutes to capture workspace state.
 
 while true; do

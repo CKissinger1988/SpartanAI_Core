@@ -5,9 +5,9 @@ import json
 import os
 
 class SwarmCoordinator:
-    """Manages decentralized node synchronization for the SentinelAI Security Core swarm via C2 Registry."""
+    """Manages decentralized node synchronization for the SpartanAI Security Core swarm via C2 Registry."""
     def __init__(self, c2_url="http://localhost:9091"):
-        self.node_id = f"sentinelai-security-core-node-{random.randint(1000, 9999)}"
+        self.node_id = f"spartanai-security-core-node-{random.randint(1000, 9999)}"
         self.c2_url = c2_url
         self.register_self()
 

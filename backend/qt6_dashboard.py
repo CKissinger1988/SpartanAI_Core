@@ -10,12 +10,12 @@ from PySide6.QtGui import QMouseEvent, QFont, QIcon, QAction, QColor
 
 class GhostWidget(QMainWindow):
     """
-    SentinelAI Ghost Widget (RESTORED AESTHETICS).
+    SpartanAI Ghost Widget (RESTORED AESTHETICS).
     Original Streamlabs-style high-transparency chatbox with Sovereign enhancements.
     """
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SentinelAI - Ghost")
+        self.setWindowTitle("SpartanAI - Ghost")
         
         # Transparent, Frameless, Tool Window (Always on Top)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
@@ -132,7 +132,7 @@ class GhostWidget(QMainWindow):
             self.toggle_btn.setText("??")
         self.snap_to_bottom_right()
 
-class SentinelTrayIcon(QSystemTrayIcon):
+class SpartanTrayIcon(QSystemTrayIcon):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Using a default system icon if none found
@@ -153,7 +153,7 @@ class SentinelTrayIcon(QSystemTrayIcon):
         self.menu.addAction(self.exit_action)
         
         self.setContextMenu(self.menu)
-        self.setToolTip("SentinelAI Sovereign Core")
+        self.setToolTip("SpartanAI Sovereign Core")
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
     
     ghost = GhostWidget()
-    tray = SentinelTrayIcon(ghost)
+    tray = SpartanTrayIcon(ghost)
     tray.show()
     
     ghost.show()

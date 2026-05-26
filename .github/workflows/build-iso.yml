@@ -16,5 +16,5 @@ jobs:
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
-          name: sentinelai_security_core-live-security
-          path: releases/sentinelai_security_core-live-security.iso
+          name: spartanai_security_core-live-security
+          path: releases/spartanai_security_core-live-security.iso

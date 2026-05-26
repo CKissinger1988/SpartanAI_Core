@@ -4,7 +4,7 @@
 # =========================================================================
 # Monitors the local repository and pulls updates to the WSL environment.
 
-REPO_PATH="/mnt/c/GitHub/SentinelAI_Hub_Master"
+REPO_PATH="/mnt/c/GitHub/SpartanAI_Hub_Master"
 SYNC_INTERVAL=30 # seconds
 
 echo "[+] Uplink active. Monitoring $REPO_PATH..."

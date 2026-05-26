@@ -2,7 +2,7 @@ from backend.core.local_ai import LocalIntelligence
 from backend.core.hexstrike_client import HexstrikeEngine
 
 class ModelSwitcher:
-    """Manages the active intelligence engine for SentinelAI/Jarvis."""
+    """Manages the active intelligence engine for SpartanAI/Jarvis."""
     def __init__(self):
         self.available_engines = ['gemini', 'Jarvis', 'hexstrike', 'auto']
         self.current_engine = 'auto'

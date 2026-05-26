@@ -75,8 +75,8 @@ function AppContent() {
         setThreatLevel(customEvent.detail.level);
       }
     };
-    window.addEventListener('sentinelai_security_core-threat-level', handleThreatUpdate);
-    return () => window.removeEventListener('sentinelai_security_core-threat-level', handleThreatUpdate);
+    window.addEventListener('spartanai_security_core-threat-level', handleThreatUpdate);
+    return () => window.removeEventListener('spartanai_security_core-threat-level', handleThreatUpdate);
   }, []);
 
   // System diagnostics and Jarvis announcements on startup
@@ -109,7 +109,7 @@ function AppContent() {
           const res = await authenticatedFetch('/api/system/status', { method: 'GET' });
           const data = await res.json();
           if (res.ok) {
-            speak(`Core systems online. SentinelAI Security Core version ${data.version} operational.`);
+            speak(`Core systems online. SpartanAI Security Core version ${data.version} operational.`);
             setSystemCheck(prev => ({ ...prev, results: [...prev.results, { name: 'Core API', status: 'online' }] }));
           }
         } catch {
@@ -204,7 +204,7 @@ function AppContent() {
 
         if (failures.length > 0) {
           speak(`Diagnostics complete. I have identified ${failures.length} subsystem irregularities in: ${failures.join(", ")}. Please initiate neural link for automated repair.`);
-          window.dispatchEvent(new CustomEvent('sentinelai_security_core-system-failure', { detail: { failedComponents: failures } }));
+          window.dispatchEvent(new CustomEvent('spartanai_security_core-system-failure', { detail: { failedComponents: failures } }));
         } else {
           speak("All systems nominal. Ready for command.");
           // Automatically initiate always-on learning protocols
@@ -300,10 +300,10 @@ function AppContent() {
         window.dispatchEvent(new CustomEvent('msf-execute-exploit'));
         break;
       case 'toggle_master_stealth':
-        localStorage.setItem('sentinelai_security_core_stealth_mode', String(args.enabled));
+        localStorage.setItem('spartanai_security_core_stealth_mode', String(args.enabled));
         // Auto-generate a clandestine secondary key if none exists or if stealth is enabled.
         const stealthKey = args.enabled ? 'CLANDESTINE-SIG-' + Math.random().toString(36).substring(2, 7).toUpperCase() : 'NEXUS-7742-X';
-        localStorage.setItem('sentinelai_security_core_secondary_key', stealthKey);
+        localStorage.setItem('spartanai_security_core_secondary_key', stealthKey);
         window.dispatchEvent(new CustomEvent('stealth-mode-update', {
           detail: { enabled: args.enabled, key: stealthKey }
         }));
@@ -455,7 +455,7 @@ function AppContent() {
                 <span className="text-cyan-500/70">SECURE_SYNC: AUTHENTICATED</span>
               </div>
               <div className="flex items-center gap-4 text-[9px] font-mono">
-                <span className="text-slate-600 uppercase tracking-tighter">SentinelAI Security Core Intelligence v2.5.0-Production</span>
+                <span className="text-slate-600 uppercase tracking-tighter">SpartanAI Security Core Intelligence v2.5.0-Production</span>
               </div>
             </footer>
           </motion.div>

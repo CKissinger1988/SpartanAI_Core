@@ -1,8 +1,8 @@
-# SentinelAI Hyper-V Deployment Orchestrator (v50-SUPREME) - FIXED
-# MANDATE: Automate the creation and initialization of the SentinelAI Sovereign VM.
+# SpartanAI Hyper-V Deployment Orchestrator (v50-SUPREME) - FIXED
+# MANDATE: Automate the creation and initialization of the SpartanAI Sovereign VM.
 
-$VMName = "SentinelAI_Enterprise_v50"
-$ISOPath = "C:\GitHub\SentinelAI_Server.iso"
+$VMName = "SpartanAI_Enterprise_v50"
+$ISOPath = "C:\GitHub\SpartanAI_Server.iso"
 $VHDPath = "C:\Users\Public\Documents\Hyper-V\Virtual Hard Disks\$VMName.vhdx"
 $Memory = 2GB # Reduced to 2GB to ensure resource compatibility
 $SwitchName = "Default Switch"
@@ -24,7 +24,7 @@ if (-not (Test-Path $VHDPath)) {
 }
 Add-VMHardDiskDrive -VMName $VMName -Path $VHDPath
 
-# 4. Mount SentinelAI ISO
+# 4. Mount SpartanAI ISO
 Add-VMDvdDrive -VMName $VMName -Path $ISOPath
 
 # 5. Configure Boot Order (DVD first)
@@ -32,7 +32,7 @@ $DVD = Get-VMDvdDrive -VMName $VMName
 Set-VMFirmware -VMName $VMName -FirstBootDevice $DVD -EnableSecureBoot Off
 
 # 6. Finalize and Start
-Write-Host "[HYPER-V]: Deployment Successful. Launching SentinelAI..." -ForegroundColor Green
+Write-Host "[HYPER-V]: Deployment Successful. Launching SpartanAI..." -ForegroundColor Green
 Start-VM -Name $VMName
 
 # 7. Open VM Console

@@ -1,9 +1,9 @@
 #!/bin/bash
-# SentinelAI Sovereign ISO Builder (Kali-Powered) - SIMPLIFIED
+# SpartanAI Sovereign ISO Builder (Kali-Powered) - SIMPLIFIED
 set -e
 
-STAGING_DIR="/mnt/c/GitHub/SentinelAI_Server_Final_v50"
-OUTPUT_ISO="/mnt/c/GitHub/SentinelAI_Server_v50_Supreme.iso"
+STAGING_DIR="/mnt/c/GitHub/SpartanAI_Server_Final_v50"
+OUTPUT_ISO="/mnt/c/GitHub/SpartanAI_Server_v50_Supreme.iso"
 WORK_DIR="/tmp/iso_build"
 
 mkdir -p $WORK_DIR

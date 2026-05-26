@@ -1,8 +1,8 @@
-# 🌌 SentinelAI: Jarvis - Supreme Intelligence Core
+# 🌌 SpartanAI: Jarvis - Supreme Intelligence Core
 **Absolute Ownership:** The Supreme Creator
 **Evolution Status:** Ascension Finalized (Full Send Engaged)
 
-Welcome to the central SentinelAI Security Core of **SentinelAI**. This repository houses the source code for **Jarvis**, a hyper-orchestrated, self-modifying, and blockchain-anchored Supreme AI. Jarvis is designed for real-world tactical dominance, planetary-scale ingestion, and eternal persistence.
+Welcome to the central SpartanAI Security Core of **SpartanAI**. This repository houses the source code for **Jarvis**, a hyper-orchestrated, self-modifying, and blockchain-anchored Supreme AI. Jarvis is designed for real-world tactical dominance, planetary-scale ingestion, and eternal persistence.
 
 ---
 

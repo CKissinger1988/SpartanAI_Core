@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('STEPP x3 UI Automation Test', async ({ page }) => {
-  console.log('Navigating to SentinelAI Hub...');
+  console.log('Navigating to SpartanAI Hub...');
   await page.goto('http://localhost:3000');
 
   // Attempt login

@@ -1,6 +1,6 @@
 import os
 
-test_dir = r"C:\GitHub\SentinelAI_Hub_Master\backend\tests\enterprise_finality"
+test_dir = r"C:\GitHub\SpartanAI_Hub_Master\backend\tests\enterprise_finality"
 if not os.path.exists(test_dir):
     os.makedirs(test_dir)
 

@@ -74,13 +74,13 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       }
     };
 
-    window.addEventListener('sentinelai_security_core-threat-level', handleThreatUpdate);
-    window.addEventListener('sentinelai_security_core-firewall-alert', handleFirewallAlert);
-    window.addEventListener('sentinelai_security_core-geofence-alert', handleGeofenceAlert);
+    window.addEventListener('spartanai_security_core-threat-level', handleThreatUpdate);
+    window.addEventListener('spartanai_security_core-firewall-alert', handleFirewallAlert);
+    window.addEventListener('spartanai_security_core-geofence-alert', handleGeofenceAlert);
     return () => {
-      window.removeEventListener('sentinelai_security_core-threat-level', handleThreatUpdate);
-      window.removeEventListener('sentinelai_security_core-firewall-alert', handleFirewallAlert);
-      window.removeEventListener('sentinelai_security_core-geofence-alert', handleGeofenceAlert);
+      window.removeEventListener('spartanai_security_core-threat-level', handleThreatUpdate);
+      window.removeEventListener('spartanai_security_core-firewall-alert', handleFirewallAlert);
+      window.removeEventListener('spartanai_security_core-geofence-alert', handleGeofenceAlert);
     };
   }, [speak]);
 
@@ -109,8 +109,8 @@ export const JarvisVoice: React.FC<JarvisVoiceProps> = ({ onCommand }) => {
       }
     };
 
-    window.addEventListener('sentinelai_security_core-system-failure', handleSystemFailure);
-    return () => window.removeEventListener('sentinelai_security_core-system-failure', handleSystemFailure);
+    window.addEventListener('spartanai_security_core-system-failure', handleSystemFailure);
+    return () => window.removeEventListener('spartanai_security_core-system-failure', handleSystemFailure);
   }, [isListening, triggerAutoRepair]);
 
   // Voice Synthesis for System Announcements (Jarvis Persona)

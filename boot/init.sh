@@ -1,8 +1,8 @@
 #!/bin/bash
-# SentinelAI v50-Supreme Init Script
+# SpartanAI v50-Supreme Init Script
 MODE="server"
 if [ -f /proc/cmdline ]; then
-    MODE=$(cat /proc/cmdline | sed 's/.*sentinel_mode=\([^ ]*\).*/\1/')
+    MODE=$(cat /proc/cmdline | sed 's/.*spartan_mode=\([^ ]*\).*/\1/')
 fi
 
 if [ "$MODE" == "install" ]; then

@@ -18,7 +18,7 @@ def get_or_create_secret():
     setup_info = {
         "secret": new_secret,
         "provisioning_uri": pyotp.totp.TOTP(new_secret).provisioning_uri(
-            name="SentinelAI", 
+            name="SpartanAI", 
             issuer_name="Jarvis-HUB"
         )
     }

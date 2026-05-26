@@ -3,7 +3,7 @@
 #  NEXUS AI SECURITY SUITE - CUSTOM LIVE ISO GENERATOR
 # =========================================================================
 # This script uses 'live-build' to compile a custom, bootable Debian-based
-# Live OS ISO that includes the SentinelAI Security Core Security Suite pre-installed and
+# Live OS ISO that includes the SpartanAI Security Core Security Suite pre-installed and
 # configured to run on startup with persistence enabled.
 #
 # RUNTIME REQUIREMENTS:
@@ -54,7 +54,7 @@ if grep -qis "microsoft" /proc/version || grep -qis "wsl" /proc/version; then
 fi
 
 # 4. Set up clean build workspace
-BUILD_WORKSPACE="/opt/sentinelai_security_core-iso-build"
+BUILD_WORKSPACE="/opt/spartanai_security_core-iso-build"
 echo -e "${YELLOW}[*] Creating clean workspace: ${BUILD_WORKSPACE}${NC}"
 rm -rf "$BUILD_WORKSPACE"
 mkdir -p "$BUILD_WORKSPACE"
@@ -70,7 +70,7 @@ lb config \
     --linux-flavours generic
 
 # 6. Add Custom Files & Binary Overlay
-echo -e "${YELLOW}[*] Overlaying SentinelAI Security Core Security Suite into Live filesystem...${NC}"
+echo -e "${YELLOW}[*] Overlaying SpartanAI Security Core Security Suite into Live filesystem...${NC}"
 CHROOT_OVERLAY="config/includes.chroot"
 mkdir -p "${CHROOT_OVERLAY}/usr/local/bin"
 mkdir -p "${CHROOT_OVERLAY}/etc/systemd/system"
@@ -80,32 +80,32 @@ BINARY_SOURCE="${SCRIPT_DIR}/react-example-linux"
 
 if [ -f "$BINARY_SOURCE" ]; then
     echo -e "${GREEN}[*] Found packaged standalone binary. Adding to overlay...${NC}"
-    cp "$BINARY_SOURCE" "${CHROOT_OVERLAY}/usr/local/bin/sentinelai_security_core-suite"
-    chmod +x "${CHROOT_OVERLAY}/usr/local/bin/sentinelai_security_core-suite"
+    cp "$BINARY_SOURCE" "${CHROOT_OVERLAY}/usr/local/bin/spartanai_security_core-suite"
+    chmod +x "${CHROOT_OVERLAY}/usr/local/bin/spartanai_security_core-suite"
 else
     echo -e "${YELLOW}[!] Standalone binary not found in releases folder.${NC}"
     echo -e "${YELLOW}[*] Downloading pre-compiled helper script as fallback...${NC}"
     # Fallback boot wrapper script inside the chroot
-    cat <<'EOF' > "${CHROOT_OVERLAY}/usr/local/bin/sentinelai_security_core-suite"
+    cat <<'EOF' > "${CHROOT_OVERLAY}/usr/local/bin/spartanai_security_core-suite"
 #!/bin/bash
-echo "[*] Launching SentinelAI Security Core Security Suite in Live OS..."
+echo "[*] Launching SpartanAI Security Core Security Suite in Live OS..."
 export NODE_ENV=production
 export PORT=3000
 # Run standard startup sequence
-exec node /usr/local/share/sentinelai_security_core/server.cjs
+exec node /usr/local/share/spartanai_security_core/server.cjs
 EOF
-    chmod +x "${CHROOT_OVERLAY}/usr/local/bin/sentinelai_security_core-suite"
+    chmod +x "${CHROOT_OVERLAY}/usr/local/bin/spartanai_security_core-suite"
 fi
 
 # 7. Configure systemd service inside chroot to launch console on boot
-cat <<EOF > "${CHROOT_OVERLAY}/etc/systemd/system/sentinelai_security_core-suite.service"
+cat <<EOF > "${CHROOT_OVERLAY}/etc/systemd/system/spartanai_security_core-suite.service"
 [Unit]
-Description=SentinelAI Security Core Security Suite Live Daemon
+Description=SpartanAI Security Core Security Suite Live Daemon
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/sentinelai_security_core-suite
+ExecStart=/usr/local/bin/spartanai_security_core-suite
 Restart=always
 Environment=PORT=3000
 Environment=NODE_ENV=production
@@ -116,11 +116,11 @@ EOF
 
 # 8. Hook systemd service activation in chroot boot stages
 mkdir -p config/hooks/normal
-cat <<'EOF' > config/hooks/normal/0990-enable-sentinelai_security_core-service.hook.chroot
+cat <<'EOF' > config/hooks/normal/0990-enable-spartanai_security_core-service.hook.chroot
 #!/bin/sh
-systemctl enable sentinelai_security_core-suite.service || true
+systemctl enable spartanai_security_core-suite.service || true
 EOF
-chmod +x config/hooks/normal/0990-enable-sentinelai_security_core-service.hook.chroot
+chmod +x config/hooks/normal/0990-enable-spartanai_security_core-service.hook.chroot
 
 # 9. Trigger Live OS ISO Build Compilation
 echo -e "${GREEN}=========================================================${NC}"
@@ -195,9 +195,9 @@ lb build
 
 # Move compiled ISO output back to releases folder
 if [ -f "live-image-amd64.hybrid.iso" ]; then
-    cp "live-image-amd64.hybrid.iso" "${SCRIPT_DIR}/sentinelai_security_core-live-security.iso"
+    cp "live-image-amd64.hybrid.iso" "${SCRIPT_DIR}/spartanai_security_core-live-security.iso"
     echo -e "${GREEN}[+] ISO COMPILATION SUCCESSFUL!${NC}"
-    echo -e "${GREEN}    -> Output: ${SCRIPT_DIR}/sentinelai_security_core-live-security.iso${NC}"
+    echo -e "${GREEN}    -> Output: ${SCRIPT_DIR}/spartanai_security_core-live-security.iso${NC}"
 else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1

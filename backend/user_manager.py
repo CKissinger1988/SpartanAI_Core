@@ -89,7 +89,7 @@ def ensure_operator_exists():
     if cursor.fetchone()[0] == 0:
         logger.info("Creating default \"Operator\" ELITE admin account...")
         # Status upgrade: Operator is now Elite role, sitting right below the Creator.
-        add_user("Operator", "sentinelai", "elite", must_change=1)
+        add_user("Operator", "spartanai", "elite", must_change=1)
     conn.close()
 
 MASTER_ADMIN_USER = "ToxicSavage"

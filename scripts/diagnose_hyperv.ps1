@@ -1,4 +1,4 @@
-# SentinelAI Hyper-V Diagnostic Script
+# SpartanAI Hyper-V Diagnostic Script
 # MANDATE: Identify why the sovereign VM deployment is failing.
 
 Write-Host "--- SENTINELAI HYPER-V DIAGNOSTICS ---" -ForegroundColor Cyan
@@ -30,7 +30,7 @@ if ($cpu.VirtualizationFirmwareEnabled -eq $false) {
 
 # 4. Check Disk Space and Paths
 Write-Host "[3/4] Checking Paths and Resources..." -ForegroundColor White
-$isoPath = "C:\GitHub\SentinelAI_Server.iso"
+$isoPath = "C:\GitHub\SpartanAI_Server.iso"
 if (Test-Path $isoPath) {
     Write-Host "[PASS]: ISO found at $isoPath" -ForegroundColor Green
 } else {

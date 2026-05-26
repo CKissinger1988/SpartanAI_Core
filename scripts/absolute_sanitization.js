@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
  * absolute_sanitization.js
- * Direct Node.js port of absolute_sanitization.py from SentinelAI_Hub_Master.
+ * Direct Node.js port of absolute_sanitization.py from SpartanAI_Hub_Master.
  * Executes the same Zero Simulation Policy enforcement logic.
  */
 const fs = require('fs');
 const path = require('path');
 const { execSync, spawnSync } = require('child_process');
 
-const BASE = 'C:\\GitHub\\SentinelAI_Hub_Master';
+const BASE = 'C:\\GitHub\\SpartanAI_Hub_Master';
 
 // Files to delete entirely (simulation/sandboxing dedicated)
 const TRASH_FILES = [
@@ -32,7 +32,7 @@ const SURGICAL_PATTERNS = [
 // Files for surgical pattern removal
 const TARGET_FILES = [
   'backend/core/jarvis.py',
-  'backend/core/sentinel.py',
+  'backend/core/spartan.py',
   'backend/core/sovereignty.py',
   'scripts/Jarvis_ssh.py',
   'scripts/test_jarvis_evolution.py',
@@ -111,11 +111,11 @@ function absolutePurge(runNum) {
   // Step 4: WSL Kali cleanup (best effort)
   console.log('\x1b[96m[*] Synchronizing sanitization to WSL Kali...\x1b[0m');
   const wslCmds = [
-    'rm -rf ~/SentinelAI/scripts/purge_simulations.sh',
-    'rm -rf ~/SentinelAI/scripts/remove_simulations.py',
-    'rm -rf ~/SentinelAI/scripts/field_prep_secure.sh',
-    'rm -rf ~/SentinelAI/backend/core/sovereignty_upgrades.py',
-    "find ~/SentinelAI -name '*mock_system*' -type d -exec rm -rf {} +",
+    'rm -rf ~/SpartanAI/scripts/purge_simulations.sh',
+    'rm -rf ~/SpartanAI/scripts/remove_simulations.py',
+    'rm -rf ~/SpartanAI/scripts/field_prep_secure.sh',
+    'rm -rf ~/SpartanAI/backend/core/sovereignty_upgrades.py',
+    "find ~/SpartanAI -name '*mock_system*' -type d -exec rm -rf {} +",
   ];
   for (const cmd of wslCmds) {
     try {

@@ -32,13 +32,13 @@ interface AgentEvent {
   module?: string;
 }
 
-// ─── Module Registry (catalogued from SentinelAI_Hub_Master) ──────────────
+// ─── Module Registry (catalogued from SpartanAI_Hub_Master) ──────────────
 const MODULE_REGISTRY: HubModule[] = [
   // ── Defensive Mesh ──
-  { id: 'sentinel-core', name: 'Sentinel Redundancy Core', file: 'sentinel.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Monitors AI operational health, heartbeat validation, and instant failover with evasion protocols.', tags: ['monitor', 'failover', 'evasion'], size: 4181, risk: 'low', status: 'available', sourcePath: 'backend/core/sentinel.py', version: '3.1.0' },
+  { id: 'spartan-core', name: 'Spartan Redundancy Core', file: 'spartan.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Monitors AI operational health, heartbeat validation, and instant failover with evasion protocols.', tags: ['monitor', 'failover', 'evasion'], size: 4181, risk: 'low', status: 'available', sourcePath: 'backend/core/spartan.py', version: '3.1.0' },
   { id: 'sovereign-defense', name: 'Sovereign Defense Matrix', file: 'sovereign_defense.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Cascaded cryptography (AES-256-GCM + ChaCha20) with polymorphic guardrails.', tags: ['crypto', 'AES-256', 'defense'], size: 5740, risk: 'low', status: 'available', sourcePath: 'backend/core/services/sovereign_defense.py', version: '2.4.1' },
   { id: 'self-healing-mesh', name: 'Self-Healing Mesh', file: 'self_healing_mesh.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Auto-repairs compromised nodes and re-establishes secure mesh topology.', tags: ['mesh', 'self-heal', 'resilience'], size: 6200, risk: 'low', status: 'available', sourcePath: 'backend/core/services/self_healing_mesh.py', version: '1.8.2' },
-  { id: 'self-healing-sentinel', name: 'Self-Healing Sentinel', file: 'self_healing_sentinel.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Dual-mode sentinel that heals itself during active intrusion attempts.', tags: ['sentinel', 'IDS', 'self-heal'], size: 6320, risk: 'low', status: 'available', sourcePath: 'backend/core/services/self_healing_sentinel.py', version: '1.9.0' },
+  { id: 'self-healing-spartan', name: 'Self-Healing Spartan', file: 'self_healing_spartan.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Dual-mode spartan that heals itself during active intrusion attempts.', tags: ['spartan', 'IDS', 'self-heal'], size: 6320, risk: 'low', status: 'available', sourcePath: 'backend/core/services/self_healing_spartan.py', version: '1.9.0' },
   { id: 'threat-hunter', name: 'Threat Hunter', file: 'threat_hunter.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Proactive threat hunting with behavioral analysis across all connected nodes.', tags: ['threat-hunt', 'IOC', 'behavioral'], size: 6200, risk: 'medium', status: 'available', sourcePath: 'backend/core/services/threat_hunter.py', version: '2.0.1' },
   { id: 'flash-loan-guard', name: 'Flash Loan Guard', file: 'flash_loan_guard.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Real-time transaction monitoring to detect and block flash loan exploits.', tags: ['DeFi', 'monitor', 'anti-exploit'], size: 156, risk: 'low', status: 'available', sourcePath: 'backend/core/CognitiveCore/flash_loan_guard.py', version: '1.0.0' },
   { id: 'security-shield', name: 'Security Shield', file: 'security_shield.py', category: 'Defensive Mesh', categoryKey: 'defensive', description: 'Active perimeter shield with dynamic rule injection and signature updates.', tags: ['shield', 'perimeter', 'WAF'], size: 141, risk: 'low', status: 'available', sourcePath: 'backend/core/CognitiveCore/security_shield.py', version: '1.0.0' },
@@ -132,7 +132,7 @@ export const SecurityModuleHub: React.FC = () => {
 
   // ── SSE: subscribe to real-time hub agent events ──────────────────────────
   useEffect(() => {
-    const token = localStorage.getItem('sentinelai_security_core_token');
+    const token = localStorage.getItem('spartanai_security_core_token');
     const url = `/api/hub/stream${token ? `?token=${token}` : ''}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
@@ -163,7 +163,7 @@ export const SecurityModuleHub: React.FC = () => {
     // Initial boot log
     addLocalLog('system', 'NEXUS_HUB_AGENT v4.2 — online');
     addLocalLog('info', `Registry loaded: ${MODULE_REGISTRY.length} modules across 6 categories`);
-    addLocalLog('info', 'Source: C:\\GitHub\\SentinelAI_Hub_Master');
+    addLocalLog('info', 'Source: C:\\GitHub\\SpartanAI_Hub_Master');
 
     return () => es.close();
   }, []);
@@ -219,7 +219,7 @@ export const SecurityModuleHub: React.FC = () => {
     setIsPullingAll(true);
     setPullAllProgress(0);
     addLocalLog('system', `[HUB_AGENT] BULK PULL INITIATED — ${available.length} modules queued`);
-    addLocalLog('info', '[HUB_AGENT] Establishing secure channel to SentinelAI_Hub_Master...');
+    addLocalLog('info', '[HUB_AGENT] Establishing secure channel to SpartanAI_Hub_Master...');
 
     for (let i = 0; i < available.length; i++) {
       const mod = available[i];
@@ -263,7 +263,7 @@ export const SecurityModuleHub: React.FC = () => {
             SENTINELAI_HUB_MASTER
           </h2>
           <p className="text-[10px] text-slate-500 font-mono tracking-widest mt-1">
-            C:\GitHub\SentinelAI_Hub_Master — {MODULE_REGISTRY.length} modules available — {totalInstalled} installed
+            C:\GitHub\SpartanAI_Hub_Master — {MODULE_REGISTRY.length} modules available — {totalInstalled} installed
           </p>
         </div>
 

@@ -1,7 +1,7 @@
 # SENTINEL-OS: Public Distribution Guide
 
 ## 1. Download and Burn
-The Sentinel-OS ISO is designed for public distribution. Anyone is authorized to download and burn this ISO to a USB flash drive using tools like **Rufus**, **BalenaEtcher**, or `dd`.
+The Spartan-OS ISO is designed for public distribution. Anyone is authorized to download and burn this ISO to a USB flash drive using tools like **Rufus**, **BalenaEtcher**, or `dd`.
 
 ## 2. Encrypted Core Protection
 While the bootable environment is public, the **Supreme Intelligence Core** (neural weights and tactical logic) is protected by **AES-256-GCM encryption**. 
@@ -13,7 +13,7 @@ While the bootable environment is public, the **Supreme Intelligence Core** (neu
 Upon booting the OS, use the following credentials to initialize the operator session:
 
 - **Username:** `Operator`
-- **Password:** `sentinelai`
+- **Password:** `spartanai`
 
 *Note: You will be required to change this password immediately upon first login.*
 

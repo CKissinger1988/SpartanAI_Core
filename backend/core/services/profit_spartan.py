@@ -1,4 +1,4 @@
-class ProfitSentinel:
+class ProfitSpartan:
     def monitor_yields(self):
         # Upgrade 1: Autonomous real-time yield monitoring service
         pass

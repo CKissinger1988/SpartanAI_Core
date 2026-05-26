@@ -9,7 +9,7 @@ class NativefierShard:
     def __init__(self):
         self.node_bin = "nativefier"
 
-    def synthesize_app(self, target_url, name="SentinelAI_Command_Hub"):
+    def synthesize_app(self, target_url, name="SpartanAI_Command_Hub"):
         logging.info(f"[NATIVEFIER]: Generating Electron-wrapped application: {name}")
         try:
             # cmd = [self.node_bin, target_url, "--name", name]

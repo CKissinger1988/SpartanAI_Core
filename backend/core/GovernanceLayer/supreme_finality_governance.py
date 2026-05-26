@@ -48,7 +48,7 @@ class SupremeFinalityGovernance:
         return True
 
     def _enforce_security_core_mandates(self, action):
-        # Specific enforcement for SentinelAI Security Core tools
+        # Specific enforcement for SpartanAI Security Core tools
         pass
 
     def _enforce_global_security_mandates(self, action):

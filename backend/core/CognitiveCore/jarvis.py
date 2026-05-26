@@ -11,7 +11,7 @@ from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
 from backend.core.services.local_credential_ingestor import LocalCredentialIngestor
 from backend.core.CognitiveCore.skill_assimilation_shard import SkillAssimilationShard
-from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
+from backend.core.PersistenceShards.spartan_live_patch import SpartanLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.GovernanceLayer.supreme_finality_governance import SupremeFinalityGovernance
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
@@ -31,7 +31,7 @@ from backend.core.DesktopSynthesis.nativefier_shard import NativefierShard
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.swarm import SwarmCoordinator
-from backend.core.sentinel import SentinelRedundancy
+from backend.core.spartan import SpartanRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
 from backend.core.monetization import MonetizationService
@@ -53,7 +53,7 @@ BOLD = '\033[1m'
 ENDC = '\033[0m'
 
 class Jarvis:
-    """The Supreme AI Orchestrator of the SentinelAI Security Core ecosystem (Alien-Grade)."""
+    """The Supreme AI Orchestrator of the SpartanAI Security Core ecosystem (Alien-Grade)."""
     def __init__(self):
         self.status = "Online"
         self.authenticated = False
@@ -90,7 +90,7 @@ class Jarvis:
         # Legacy/Support Shards
         self.adb = RemoteADBManager()
         self.swarm = SwarmCoordinator()
-        self.sentinel = SentinelRedundancy()
+        self.spartan = SpartanRedundancy()
         self.efficiency = EfficiencyEngine()
         self.audio = AudioManager()
         self.audio.verify_audio()
@@ -103,7 +103,7 @@ class Jarvis:
         self.assimilation_shard = CognitiveAssimilationShard(self.brain)
         self.apex_shard = ApexShardOrchestrator(self.brain, self.antigravity)
         self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="BTC_1A2B3C4D5E6F7G8H9I0J")
-        self.live_patch = SentinelLivePatch(os.path.dirname(__file__))
+        self.live_patch = SpartanLivePatch(os.path.dirname(__file__))
 
         # Initialize Sovereign Wealth Loop
         self.financial.exodus = self.exodus
@@ -153,7 +153,7 @@ class Jarvis:
         return None
 
     def _start_sovereign_heartbeat(self):
-        """Starts an HMAC-signed heartbeat for high-integrity Sentinel monitoring."""
+        """Starts an HMAC-signed heartbeat for high-integrity Spartan monitoring."""
         def heartbeat_loop():
             while True:
                 try:
@@ -245,7 +245,7 @@ class Jarvis:
             return self.execute_enhanced_task("desktop_fier", "synthesize_app", "file:///web_portal/public/index.html")
 
         print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
-        match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
+        match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SpartanAI handlers.")
         print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 

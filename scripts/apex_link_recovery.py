@@ -44,8 +44,8 @@ class ApexLink:
             current_ip = requests.get("https://checkip.amazonaws.com", timeout=5).text.strip()
             print(f"[*] Self-Healing: Whitelisting current IP {current_ip} in GCP Firewall...")
             
-            # Rule name follows SentinelAI naming convention
-            rule_name = "sentinel-sovereign-recovery"
+            # Rule name follows SpartanAI naming convention
+            rule_name = "spartan-sovereign-recovery"
             
             # Check if rule exists or create/update
             wsl_cmd_update = [
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Parameters to be filled dynamically or via environment
     # Defaults updated based on gcp_deploy_jarvis_backend.sh
     INSTANCE = os.environ.get("JARVIS_INSTANCE", "jarvis-central-core")
-    PROJECT = os.environ.get("GCP_PROJECT", "SentinelAI-core-2026")
+    PROJECT = os.environ.get("GCP_PROJECT", "SpartanAI-core-2026")
     ZONE = os.environ.get("GCP_ZONE", "us-central1-a")
     
     link = ApexLink(INSTANCE, PROJECT, ZONE)

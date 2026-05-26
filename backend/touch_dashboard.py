@@ -31,7 +31,7 @@ class WaveformViz(QWidget):
 class TouchDashboard(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SentinelAI - Apex Touch")
+        self.setWindowTitle("SpartanAI - Apex Touch")
         self.setStyleSheet("background-color: #050505; color: #00ffcc;")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         

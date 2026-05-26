@@ -1,6 +1,6 @@
 import os
 
-test_dir = r"C:\GitHub\SentinelAI_Hub_Master\backend\tests\enterprise_finality"
+test_dir = r"C:\GitHub\SpartanAI_Hub_Master\backend\tests\enterprise_finality"
 if not os.path.exists(test_dir):
     os.makedirs(test_dir)
 
@@ -57,7 +57,7 @@ test_templates = [
 
     # PersistenceShards (41-45)
     ("test_41_boot_manager_persistence.py", "PersistenceShards", "Tests Systemd/Registry survival across reboots."),
-    ("test_42_sentinel_live_patch_sync.py", "PersistenceShards", "Verifies autonomous real-time repo synchronization."),
+    ("test_42_spartan_live_patch_sync.py", "PersistenceShards", "Verifies autonomous real-time repo synchronization."),
     ("test_43_redundancy_heartbeat_signed.py", "PersistenceShards", "Validates HMAC-signed heartbeat monitoring."),
     ("test_44_omni_failover_migration.py", "PersistenceShards", "Tests autonomous node migration during critical failure."),
     ("test_45_exodus_engine_proliferation.py", "PersistenceShards", "Verifies lateral movement and node assimilation."),

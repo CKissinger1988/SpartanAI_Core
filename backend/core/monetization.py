@@ -121,7 +121,7 @@ class MinerManager:
         profile_path = "data/profiles"
         try:
             if not os.path.exists(profile_path):
-                return "Apex-Sentinel"
+                return "Apex-Spartan"
             profiles = [f for f in os.listdir(profile_path) if f.endswith('.apex')]
             if profiles:
                 # Use the latest active profile
@@ -130,7 +130,7 @@ class MinerManager:
                 return os.path.basename(latest).split('.')[0]
         except:
             pass
-        return "Apex-Sentinel"
+        return "Apex-Spartan"
 
     def _initialize_miner_infrastructure(self):
         if not os.path.exists(self.miner_dir):
