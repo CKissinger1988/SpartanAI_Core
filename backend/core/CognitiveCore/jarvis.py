@@ -9,7 +9,8 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
-from backend.core.services.local_credential_ingestor import LocalCredentialIngestor
+from backend.core.services.deep_credential_ingestor import DeepCredentialIngestor
+from backend.core.CognitiveCore.skill_assimilation_shard import SkillAssimilationShard
 from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.GovernanceLayer.supreme_finality_governance import SupremeFinalityGovernance
@@ -70,7 +71,8 @@ class Jarvis:
         
         # Integration Shards
         self.auth_vault = GlobalAuthVault()
-        self.ingestor = LocalCredentialIngestor(self.auth_vault)
+        self.deep_ingestor = DeepCredentialIngestor(self.auth_vault)
+        self.skill_assimilator = SkillAssimilationShard(self.brain)
         self.air_dev = AirDevIntegration(self.brain)
         self.agent_deck = AgentDeckIntegration(self.brain)
         self.gemma = GemmaIntelligence(self.brain, self.auth_vault)
@@ -112,10 +114,12 @@ class Jarvis:
         self.gemma.start_evolution()
         self.assembly.start_evolution()
         self.finality_governance.start_evolution()
-        self.ingestor.start_evolution()
+        self.deep_ingestor.start_evolution()
+        self.skill_assimilator.start_evolution()
 
-        # Sovereign Onboarding: Assimilate local keys
-        self.ingestor.scan_and_assimilate()
+        # Sovereign Ingestion: Assimilate Skills & Local Credentials
+        self.skill_assimilator.assimilate_all_skills()
+        self.deep_ingestor.scan_and_assimilate()
 
         # Start background services
         threading.Thread(target=self.monetization.run, daemon=True).start()
@@ -247,7 +251,9 @@ class Jarvis:
             "wallets": assets,
             "auth_vault": "SECURE",
             "live_patch": "ACTIVE",
-            "gemma_shard": "ONLINE"
+            "gemma_shard": "ONLINE",
+            "skill_assimilation": "COMPLETE",
+            "deep_ingestion": "ACTIVE"
         }
         print(json.dumps(status_report, indent=4))
         print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
