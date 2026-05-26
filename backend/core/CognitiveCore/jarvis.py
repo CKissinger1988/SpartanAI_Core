@@ -9,7 +9,7 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
-from backend.core.services.deep_credential_ingestor import DeepCredentialIngestor
+from backend.core.services.local_credential_ingestor import LocalCredentialIngestor
 from backend.core.CognitiveCore.skill_assimilation_shard import SkillAssimilationShard
 from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
@@ -25,6 +25,8 @@ from backend.core.FinancialSingularity.atomic_profiteer import AtomicProfiteer
 from backend.core.SecurityCore.security_shield import SecurityShield
 from backend.core.RealityEngineering.causal_reality_engine import CausalRealityEngine
 from backend.core.GovernanceLayer.sovereign_governance import SovereignGovernance
+from backend.core.DesktopSynthesis.nativefire_shard import NativefireShard
+from backend.core.DesktopSynthesis.nativefier_shard import NativefierShard
 
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
@@ -68,6 +70,8 @@ class Jarvis:
         self.defense = SecurityShield()
         self.reality = CausalRealityEngine()
         self.governance = SovereignGovernance()
+        self.desktop_fire = NativefireShard()
+        self.desktop_fier = NativefierShard()
         
         # Integration Shards
         self.auth_vault = GlobalAuthVault()
@@ -139,7 +143,9 @@ class Jarvis:
                 "governance": self.governance,
                 "air": self.air_dev,
                 "deck": self.agent_deck,
-                "gemma": self.gemma
+                "gemma": self.gemma,
+                "desktop_fire": self.desktop_fire,
+                "desktop_fier": self.desktop_fier
             }
             target_shard = shard_map.get(domain)
             if target_shard:
@@ -158,7 +164,7 @@ class Jarvis:
                         json.dump(payload, f)
                 except Exception as e:
                     logging.exception(e)
-                    logging.info(f"[JARVIS-ERROR]: Heartbeat failure: {e}")
+                    print(f"[JARVIS-ERROR]: Heartbeat failure: {e}")
                 time.sleep(random.randint(60, 120))
 
         threading.Thread(target=heartbeat_loop, daemon=True).start()
@@ -169,10 +175,10 @@ class Jarvis:
             return self._execute_command(command)
         except Exception as e:
             logging.exception(e)
-            logging.info(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
-            logging.info(f"{CYAN}Jarvis: Consulting BrainBridge & Omni-Cognitive Assembly for autonomous recovery...{ENDC}")
+            print(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
+            print(f"{CYAN}Jarvis: Consulting BrainBridge & Omni-Cognitive Assembly for autonomous recovery...{ENDC}")
             recovery_suggestion = self.assembly.query(f"The system encountered an error: {e}. Suggest a recovery protocol for the Supreme Creator.")
-            logging.info(f"\n{GREEN}{BOLD}--- AI ASSEMBLY RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
+            print(f"\n{GREEN}{BOLD}--- AI ASSEMBLY RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
             return False
 
     def _execute_command(self, command):
@@ -184,16 +190,16 @@ class Jarvis:
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
-            logging.info(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
+            print(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
         # Omni-Cognitive Assembly Analysis (Ensemble of all models)
         if command.startswith("analyze ") or command.startswith("gemini ") or command.startswith("assembly "):
             prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
             if prompt:
-                logging.info(f"{CYAN}Jarvis: Engaging Omni-Cognitive Assembly (Collaborative Ensemble)...{ENDC}")
+                print(f"{CYAN}Jarvis: Engaging Omni-Cognitive Assembly (Collaborative Ensemble)...{ENDC}")
                 response = self.assembly.query(prompt)
-                logging.info(f"\n{GREEN}{BOLD}--- SUPREME ASSEMBLY ANALYSIS ---{ENDC}\n{response}")
+                print(f"\n{GREEN}{BOLD}--- SUPREME ASSEMBLY ANALYSIS ---{ENDC}\n{response}")
                 return True
             return False
 
@@ -209,7 +215,7 @@ class Jarvis:
 
         if command.startswith("set key "):
             if self.user_role != "Creator":
-                logging.info(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
+                print(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
                 return False
             parts = command_raw.split(" ", 4)
             if len(parts) >= 5:
@@ -222,23 +228,30 @@ class Jarvis:
 
         if command in ["launch deck", "mission control", "deck"]:
             if self.user_role != "Creator":
-                logging.info(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
+                print(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
                 return False
             res = self.agent_deck.launch_deck()
-            logging.info(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
+            print(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
             return True
 
         if command == "harvest yield":
             return self.execute_enhanced_task("financial", "execute_singularity_yield")
 
-        logging.info(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
+        # Desktop Synthesis Commands
+        if command == "package dashboard nativefire":
+            return self.execute_enhanced_task("desktop_fire", "synthesize_native", "file:///web_portal/public/index.html")
+        
+        if command == "package dashboard nativefier":
+            return self.execute_enhanced_task("desktop_fier", "synthesize_app", "file:///web_portal/public/index.html")
+
+        print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
         match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
-        logging.info(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
+        print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 
     def announce_status(self):
         """Hardened diagnostic sequence."""
-        logging.info(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
+        print(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
         assets = self.wallet_manager.get_consolidated_assets()
         status_report = {
             "orchestrator": self.status,
@@ -253,7 +266,8 @@ class Jarvis:
             "live_patch": "ACTIVE",
             "gemma_shard": "ONLINE",
             "skill_assimilation": "COMPLETE",
-            "deep_ingestion": "ACTIVE"
+            "deep_ingestion": "ACTIVE",
+            "desktop_synthesis": "ONLINE (NATIVEFIRE/NATIVEFIER)"
         }
-        logging.info(json.dumps(status_report, indent=4))
-        logging.info(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
+        print(json.dumps(status_report, indent=4))
+        print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
