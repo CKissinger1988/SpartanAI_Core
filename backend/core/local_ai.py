@@ -14,7 +14,7 @@ class LocalIntelligence:
         self.brain = BrainBridge()
         self.hexstrike = HexstrikeEngine()
 
-    def generate_response(self, prompt, system_prompt="You are Jarvis, a sovereign AI for the NexusAI ecosystem."):
+    def generate_response(self, prompt, system_prompt="You are Jarvis, a sovereign AI for the SentinelAI Security Core ecosystem."):
         # Feed directly from brain context
         context = self.brain.get_tactical_context(prompt)
         
@@ -47,7 +47,7 @@ class LocalIntelligence:
                 if s.connect_ex(('localhost', 11434)) == 0:
                     return True
             
-            print("[NEXUS-AI] Starting local intelligence engine (Ollama)...")
+            print("[SENTINELAI-SECURITY-CORE] Starting local intelligence engine (Ollama)...")
             # In WSL Kali, we'd start the service
             subprocess.Popen(["wsl", "-d", "kali-linux", "bash", "-c", "ollama serve"], 
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

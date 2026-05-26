@@ -5,6 +5,7 @@ class SupremeFinalityGovernance:
     """
     Supreme Finality Governance Shard.
     MANDATE: Enforce all Jarvis sovereign mandates across all offensive and defensive tools.
+    SENTINELAI SECURITY CORE: The absolute center of all security operations.
     """
     def __init__(self):
         self.mandates = {

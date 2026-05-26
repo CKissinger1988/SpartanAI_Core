@@ -51,7 +51,7 @@ BOLD = '\033[1m'
 ENDC = '\033[0m'
 
 class Jarvis:
-    """The Supreme AI Orchestrator of the NexusAI ecosystem (Alien-Grade)."""
+    """The Supreme AI Orchestrator of the SentinelAI Security Core ecosystem (Alien-Grade)."""
     def __init__(self):
         self.status = "Online"
         self.authenticated = False

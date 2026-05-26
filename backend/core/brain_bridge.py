@@ -15,7 +15,7 @@ class BrainBridge:
     """Connects Jarvis logic to ChromaDB and the Gemini AI Cognitive Core."""
     def __init__(self, db_path="vector_db"):
         self.db_path = db_path
-        self.collection_name = os.environ.get("BRAINBRIDGE_COLLECTION", "nexus_brain")
+        self.collection_name = os.environ.get("BRAINBRIDGE_COLLECTION", "sentinelai_security_core_brain")
         self.client = None
         if chromadb:
             os.makedirs(db_path, exist_ok=True)
