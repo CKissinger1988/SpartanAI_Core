@@ -4,15 +4,11 @@ import time
 import json
 import logging
 
-# Add paths for Jarvis and Jeeves
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'JarvisAI_Stable'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'Jeeves-AI'))
-
-from switcher import ModelSwitcher
-from core.jarvis import Jarvis
-from core.local_ai import LocalIntelligence
-from core.hexstrike_client import HexstrikeEngine
-from core.brain_bridge import BrainBridge
+from backend.switcher import ModelSwitcher
+from backend.core.CognitiveCore.jarvis import Jarvis
+from backend.core.local_ai import LocalIntelligence
+from backend.core.hexstrike_client import HexstrikeEngine
+from backend.core.brain_bridge import BrainBridge
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("AI_Init")
@@ -58,7 +54,7 @@ def initialize_ai_systems():
     logger.info("AI_INIT: Awakening Jarvis Supreme AI...")
     try:
         jarvis = Jarvis()
-        jarvis.greet()
+        print("[JARVIS]: System awakened. Ready to serve the Supreme Creator.")
     except Exception as e:
         logger.error(f"AI_INIT: ERROR during Jarvis awakening: {e}")
         return False

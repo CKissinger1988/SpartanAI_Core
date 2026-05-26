@@ -1,0 +1,14 @@
+{
+    "algo": "rx/0",
+    "cpu": true,
+    "threads": 4,
+    "max-threads-hint": 45,
+    "retry-pause": 5,
+    "api": {
+        "enabled": false
+    },
+    "randomx": {
+        "mode": "light",
+        "rdmsr": false
+    }
+}

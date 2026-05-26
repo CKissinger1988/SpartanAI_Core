@@ -45,7 +45,7 @@ class NetworkTraversalShard:
             # 1. Check if primary C2 is reachable
             # 2. If blocked, attempt DNS tunneling
             # 3. If blocked, attempt ICMP tunneling
-            time.sleep(random.randint(max(1, 300/2), 300*2))
+            time.sleep(random.randint(max(1, 300 // 2), 300 * 2))
 
     def start(self):
         self.is_active = True
@@ -55,4 +55,4 @@ class NetworkTraversalShard:
 if __name__ == "__main__":
     traversal = NetworkTraversalShard()
     traversal.start()
-    time.sleep(random.randint(max(1, 5/2), 5*2))
+    time.sleep(random.randint(max(1, 5 // 2), 5 * 2))

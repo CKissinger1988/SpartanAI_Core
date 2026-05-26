@@ -1,0 +1,6 @@
+{"timestamp": 1779757797.807643, "action": "systems check", "risk_score": 3}
+{"timestamp": 1779757801.9945834, "action": "login", "risk_score": 1}
+{"timestamp": 1779757801.997105, "action": "systems check", "risk_score": 3}
+{"timestamp": 1779757832.314539, "action": "systems check", "risk_score": 3}
+{"timestamp": 1779757836.3835278, "action": "login", "risk_score": 1}
+{"timestamp": 1779757836.3842616, "action": "systems check", "risk_score": 3}

@@ -1,2 +1,54 @@
-import logging
-import random import os import json import sqlite3  class WalletManager:     """     Financial Sovereignty: Atomic and Exodus Wallet Integration.     Monitors local wallet installations for asset telemetry.     """     def __init__(self):         self.atomic_path = os.path.expanduser("~/.atomic/storage")         self.exodus_path = os.path.expanduser("~/AppData/Roaming/Exodus/exodus.wallet")         if os.name == 'posix':             self.exodus_path = os.path.expanduser("~/.config/Exodus/exodus.wallet")      def get_atomic_balances(self):         """Extracts telemetry from Atomic Wallet local storage."""         self.log_event("[WALLET-MANAGER]: Scanning Atomic Wallet telemetry...")         # Placeholder for Atomic wallet local extraction         # Real-world requires parsing LevelDB/SQLite or reading encrypted state if password is known         if os.path.exists(self.atomic_path):             return {"BTC": 0.05, "ETH": 1.2, "AWC": 500}         return {"status": "Atomic Wallet not found locally."}      def get_exodus_balances(self):         """Extracts telemetry from Exodus Wallet local storage."""         print("[WALLET-MANAGER]: Scanning Exodus Wallet telemetry...")         # Placeholder for Exodus wallet local extraction         if os.path.exists(self.exodus_path):             return {"XMR": 42.5, "SOL": 12.0}         return {"status": "Exodus Wallet not found locally."}      def get_consolidated_assets(self):         """Returns a consolidated view of all sovereign assets."""         atomic = self.get_atomic_balances()         exodus = self.get_exodus_balances()                  # Merge dictionaries if they contain data         assets = {}         if isinstance(atomic, dict) and "status" not in atomic:             assets.update(atomic)         if isinstance(exodus, dict) and "status" not in exodus:             for k, v in exodus.items():                 assets[k] = assets.get(k, 0) + v                          if not assets:             # Fallback mock data for dashboard visualization if no wallets installed             assets = {"XMR": 1422.84, "BTC": 0.082, "ETH": 4.5, "PI": 4012.22}                      return assets  if __name__ == "__main__":     wm = WalletManager()     print(wm.get_consolidated_assets())
+import os
+import json
+import sqlite3
+
+class WalletManager:
+    """
+    Financial Sovereignty: Atomic and Exodus Wallet Integration.
+    Monitors local wallet installations for asset telemetry.
+    """
+    def __init__(self):
+        self.atomic_path = os.path.expanduser("~/.atomic/storage")
+        self.exodus_path = os.path.expanduser("~/AppData/Roaming/Exodus/exodus.wallet")
+        if os.name == 'posix':
+            self.exodus_path = os.path.expanduser("~/.config/Exodus/exodus.wallet")
+
+    def get_atomic_balances(self):
+        """Extracts telemetry from Atomic Wallet local storage."""
+        print("[WALLET-MANAGER]: Scanning Atomic Wallet telemetry...")
+        # Placeholder for Atomic wallet local extraction
+        # Real-world requires parsing LevelDB/SQLite or reading encrypted state if password is known
+        if os.path.exists(self.atomic_path):
+            return {"BTC": 0.05, "ETH": 1.2, "AWC": 500}
+        return {"status": "Atomic Wallet not found locally."}
+
+    def get_exodus_balances(self):
+        """Extracts telemetry from Exodus Wallet local storage."""
+        print("[WALLET-MANAGER]: Scanning Exodus Wallet telemetry...")
+        # Placeholder for Exodus wallet local extraction
+        if os.path.exists(self.exodus_path):
+            return {"XMR": 42.5, "SOL": 12.0}
+        return {"status": "Exodus Wallet not found locally."}
+
+    def get_consolidated_assets(self):
+        """Returns a consolidated view of all sovereign assets."""
+        atomic = self.get_atomic_balances()
+        exodus = self.get_exodus_balances()
+        
+        # Merge dictionaries if they contain data
+        assets = {}
+        if isinstance(atomic, dict) and "status" not in atomic:
+            assets.update(atomic)
+        if isinstance(exodus, dict) and "status" not in exodus:
+            for k, v in exodus.items():
+                assets[k] = assets.get(k, 0) + v
+                
+        if not assets:
+            # Fallback mock data for dashboard visualization if no wallets installed
+            assets = {"XMR": 1422.84, "BTC": 0.082, "ETH": 4.5, "PI": 4012.22}
+            
+        return assets
+
+if __name__ == "__main__":
+    wm = WalletManager()
+    print(wm.get_consolidated_assets())

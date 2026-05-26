@@ -1,19 +1,17 @@
 import sys
 import os
 import random
+import math
 from PySide6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, 
                              QPushButton, QLabel, QTextEdit, QHBoxLayout, 
                              QLineEdit, QSystemTrayIcon, QMenu)
 from PySide6.QtCore import Qt, QPoint, QSize, QTimer
 from PySide6.QtGui import QMouseEvent, QFont, QIcon, QAction, QColor
 
-# Note: In production, this would import the Jarvis core
-# from backend.core.CognitiveCore.jarvis import Jarvis
-
-class GhostChatWidget(QMainWindow):
+class GhostWidget(QMainWindow):
     """
-    SentinelAI Ghost Chat Widget (v50-SUPREME).
-    A high-entropy, transparent, draggable overlay for direct interaction with Jarvis.
+    SentinelAI Ghost Widget (RESTORED AESTHETICS).
+    Original Streamlabs-style high-transparency chatbox with Sovereign enhancements.
     """
     def __init__(self):
         super().__init__()
@@ -32,86 +30,85 @@ class GhostChatWidget(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
         self.layout.setContentsMargins(0, 0, 0, 0)
         
-        # Ghost Toggle (The Sentinel Eye)
+        # Original Toggle Button (Circular)
         self.toggle_btn = QPushButton("??")
-        self.toggle_btn.setFixedSize(60, 60)
+        self.toggle_btn.setFixedSize(50, 50)
         self.toggle_btn.setStyleSheet("""
             QPushButton {
-                background-color: rgba(0, 255, 204, 30); 
+                background-color: rgba(20, 20, 20, 180); 
                 color: #00ffcc; 
-                border: 2px solid #00ffcc;
-                border-radius: 30px; 
-                font-size: 28px;
+                border-radius: 25px; 
+                font-size: 24px;
+                border: 1px solid #00ffcc;
             }
             QPushButton:hover {
-                background-color: rgba(0, 255, 204, 80);
-                box-shadow: 0 0 20px #00ffcc;
+                background-color: rgba(0, 255, 204, 50);
             }
         """)
         self.toggle_btn.clicked.connect(self.toggle_dashboard)
         self.layout.addWidget(self.toggle_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         
-        # Dashboard Container
+        # Dashboard Container (Restored Streamlabs Look)
         self.dashboard_container = QWidget()
         self.dash_layout = QVBoxLayout(self.dashboard_container)
-        self.dash_layout.setContentsMargins(10, 10, 10, 10)
+        self.dash_layout.setContentsMargins(5, 5, 5, 5)
         
-        # Stylized Chat Area
+        # Streamlabs-style Chatbox Aesthetics
         chat_style = """
             QTextEdit {
-                background-color: rgba(5, 5, 5, 200); 
+                background-color: rgba(0, 0, 0, 120); 
                 color: #ffffff; 
-                border: 1px solid #00ffcc; 
+                border: none; 
                 border-radius: 5px; 
-                font-family: 'Consolas', monospace;
-                font-size: 13px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 14px;
+                padding: 5px;
             }
         """
         self.chat_area = QTextEdit()
         self.chat_area.setReadOnly(True)
         self.chat_area.setStyleSheet(chat_style)
-        self.chat_area.append('<span style="color: #00ffcc;">>> Jarvis // Omni-Cognitive Assembly ACTIVE.</span>')
+        self.chat_area.setText(">> Jarvis // Core Initialized.")
         self.dash_layout.addWidget(self.chat_area)
         
-        # Input Field
         self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("Direct Directive...")
+        self.input_field.setPlaceholderText("Command...")
         self.input_field.setStyleSheet("""
             QLineEdit {
-                background-color: rgba(20, 20, 20, 230); 
+                background-color: rgba(20, 20, 20, 200); 
                 color: #00ffcc; 
                 border: none; 
                 border-bottom: 2px solid #00ffcc; 
-                font-family: 'Consolas'; 
-                font-size: 14px; 
-                padding: 8px;
+                font-family: 'Segoe UI'; 
+                font-size: 12px; 
+                padding: 5px;
             }
         """)
-        self.input_field.returnPressed.connect(self.send_directive)
+        self.input_field.returnPressed.connect(self.send_command)
         self.dash_layout.addWidget(self.input_field)
         
-        self.dashboard_container.setStyleSheet("background-color: rgba(10, 10, 12, 180); border-radius: 12px;")
+        self.dashboard_container.setStyleSheet("background-color: rgba(0, 0, 0, 150); border: 1px solid #333; border-radius: 10px;")
         self.dashboard_container.setVisible(False)
         self.layout.addWidget(self.dashboard_container)
         
-        self.resize(70, 70)
+        self.resize(60, 60)
         self.snap_to_bottom_right()
 
-    def send_directive(self):
-        directive = self.input_field.text()
-        if directive:
-            self.chat_area.append(f'<span style="color: #00ffcc; font-weight: bold;">[CREATOR]:</span> {directive}')
+    def send_command(self):
+        text = self.input_field.text()
+        if text:
+            # Styled chat output
+            self.chat_area.append(f'<span style="color: #00ffcc; font-weight: bold;">[OPERATOR]:</span> <span style="color: white;">{text}</span>')
             self.input_field.clear()
-            
-            # Autonomous Response (Simulating Jarvis Assembly)
-            QTimer.singleShot(500, lambda: self.chat_area.append(
-                f'<span style="color: #00ff44;">[JARVIS]:</span> Executing sovereign task. Result: SUCCESS.'
+            # Simulation of Jarvis response
+            QTimer.singleShot(600, lambda: self.chat_area.append(
+                f'<span style="color: #00ff44; font-weight: bold;">[JARVIS]:</span> Execution path verified. Task complete.'
             ))
 
     def snap_to_bottom_right(self):
         screen_geom = QApplication.primaryScreen().availableGeometry()
-        x = screen_geom.width() - self.width() - 30
-        y = screen_geom.height() - self.height() - 30
+        x = screen_geom.width() - self.width() - 20
+        y = screen_geom.height() - self.height() - 20
         self.move(x, y)
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -128,25 +125,20 @@ class GhostChatWidget(QMainWindow):
         self.expanded = not self.expanded
         self.dashboard_container.setVisible(self.expanded)
         if self.expanded:
-            self.resize(400, 500)
+            self.resize(350, 400)
             self.toggle_btn.setText("??")
         else:
-            self.resize(70, 70)
+            self.resize(60, 60)
             self.toggle_btn.setText("??")
         self.snap_to_bottom_right()
 
 class SentinelTrayIcon(QSystemTrayIcon):
-    """
-    Sovereign Taskbar Icon.
-    Provides persistent access to the Command Hub.
-    """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setIcon(QIcon.fromTheme("security-high", QIcon())) # Fallback icon
+        # Using a default system icon if none found
+        self.setIcon(QIcon.fromTheme("security-high", QIcon()))
         
-        # Context Menu
         self.menu = QMenu()
-        
         self.show_action = QAction("Open Command Hub")
         self.show_action.triggered.connect(self.parent().showNormal)
         self.menu.addAction(self.show_action)
@@ -156,7 +148,6 @@ class SentinelTrayIcon(QSystemTrayIcon):
         self.menu.addAction(self.ghost_action)
         
         self.menu.addSeparator()
-        
         self.exit_action = QAction("Sovereign Shutdown")
         self.exit_action.triggered.connect(QApplication.instance().quit)
         self.menu.addAction(self.exit_action)
@@ -167,15 +158,12 @@ class SentinelTrayIcon(QSystemTrayIcon):
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False) # Keep running in background
+    app.setQuitOnLastWindowClosed(False)
     
-    ghost = GhostChatWidget()
-    
-    # Setup Tray Icon
+    ghost = GhostWidget()
     tray = SentinelTrayIcon(ghost)
     tray.show()
     
     ghost.show()
-    
-    print("[DESKTOP]: QT6 Sovereign Dashboard and Ghost Chat Online.")
+    print("[DESKTOP]: Ghost Widget (Restored Aesthetics) Online.")
     sys.exit(app.exec())
