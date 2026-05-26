@@ -1,13 +1,25 @@
-# import chromadb
 import os
-import google.generativeai as genai
-from backend.core.neural_access import NeuralAccessShard
+import uuid
+
+try:
+    import chromadb
+except ImportError:
+    chromadb = None
+
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 
 class BrainBridge:
     """Connects Jarvis logic to ChromaDB and the Gemini AI Cognitive Core."""
     def __init__(self, db_path="vector_db"):
         self.db_path = db_path
-        self.client = chromadb.PersistentClient(path=db_path) if os.path.exists(db_path) else None
+        self.collection_name = os.environ.get("BRAINBRIDGE_COLLECTION", "nexus_brain")
+        self.client = None
+        if chromadb:
+            os.makedirs(db_path, exist_ok=True)
+            self.client = chromadb.PersistentClient(path=db_path)
         self.status = "OFFLINE"
         self.light_status = "INACTIVE" # Primary knowledge
         self.shadow_status = "INACTIVE" # Fallback/harvested knowledge
@@ -16,17 +28,16 @@ class BrainBridge:
         self._init_generative_core()
 
     def _init_generative_core(self):
+        if genai is None:
+            self.status = "LOCAL_KNOWLEDGE_ONLY"
+            self.light_status = "VECTOR_DB_ACTIVE" if self.client else "DEPENDENCY_MISSING"
+            return
+
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key or "DUMMY" in api_key:
-            access_shard = NeuralAccessShard(self)
-            api_key = access_shard.acquire_api_key()
-            if api_key:
-                self.shadow_status = "ACTIVE" # Using harvested key
-                os.environ["GEMINI_API_KEY"] = api_key
-            else:
-                self.status = "SOVEREIGN_FALLBACK"
-                self.shadow_status = "ENGAGED" # Using local model
-                return
+            self.status = "LOCAL_KNOWLEDGE_ONLY"
+            self.light_status = "VECTOR_DB_ACTIVE" if self.client else "DEPENDENCY_MISSING"
+            return
         
         try:
             genai.configure(api_key=api_key)
@@ -48,8 +59,7 @@ class BrainBridge:
             if not collections:
                 return "Brain is empty."
             
-            # Using the first collection for tactical context
-            collection = self.client.get_collection(collections[0].name)
+            collection = self.client.get_collection(self.collection_name)
             results = collection.query(
                 query_texts=[query],
                 n_results=n_results
@@ -84,11 +94,10 @@ class BrainBridge:
         try:
             collections = self.client.list_collections()
             if not collections:
-                collection = self.client.create_collection("nexus_brain")
+                collection = self.client.get_or_create_collection(self.collection_name)
             else:
-                collection = self.client.get_collection(collections[0].name)
+                collection = self.client.get_or_create_collection(self.collection_name)
                 
-            import uuid
             collection.add(
                 documents=[content],
                 metadatas=[metadata or {"source": "jarvis_deep_learning"}],
