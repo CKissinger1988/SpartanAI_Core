@@ -12,7 +12,7 @@ class SentinelLivePatch:
     def __init__(self, jarvis_root):
         self.jarvis_root = jarvis_root
         self.integrated_repos = [
-            {"name": "Security_Suite", "path": "C:\\GitHub\\SentinelAI_Security_Suite", "remote": "origin"},
+            {"name": "Security_Core", "path": "C:\\GitHub\\SentinelAI_Security_Core", "remote": "origin"},
             {"name": "SentinelAI_Hub", "path": "C:\\GitHub\\SentinelAI_Hub_Master", "remote": "origin"},
             # ShardSpawnController can autonomously add more here
         ]
