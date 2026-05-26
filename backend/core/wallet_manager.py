@@ -1,4 +1,3 @@
-import logging
 import os
 import json
 import sqlite3
@@ -16,7 +15,7 @@ class WalletManager:
 
     def get_atomic_balances(self):
         """Extracts telemetry from Atomic Wallet local storage."""
-        logging.info("[WALLET-MANAGER]: Scanning Atomic Wallet telemetry...")
+        print("[WALLET-MANAGER]: Scanning Atomic Wallet telemetry...")
         # Placeholder for Atomic wallet local extraction
         # Real-world requires parsing LevelDB/SQLite or reading encrypted state if password is known
         if os.path.exists(self.atomic_path):
@@ -25,7 +24,7 @@ class WalletManager:
 
     def get_exodus_balances(self):
         """Extracts telemetry from Exodus Wallet local storage."""
-        logging.info("[WALLET-MANAGER]: Scanning Exodus Wallet telemetry...")
+        print("[WALLET-MANAGER]: Scanning Exodus Wallet telemetry...")
         # Placeholder for Exodus wallet local extraction
         if os.path.exists(self.exodus_path):
             return {"XMR": 42.5, "SOL": 12.0}
@@ -52,4 +51,4 @@ class WalletManager:
 
 if __name__ == "__main__":
     wm = WalletManager()
-    logging.info(wm.get_consolidated_assets())
+    print(wm.get_consolidated_assets())

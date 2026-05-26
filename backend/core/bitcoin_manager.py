@@ -1,4 +1,3 @@
-import logging
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 import os
 
@@ -18,7 +17,7 @@ class BitcoinManager:
         try:
             self.rpc = AuthServiceProxy(self.url)
         except:
-            logging.info("[BITCOIN-MANAGER]: Bitcoind not reachable.")
+            print("[BITCOIN-MANAGER]: Bitcoind not reachable.")
 
     def get_balance(self):
         if self.rpc:

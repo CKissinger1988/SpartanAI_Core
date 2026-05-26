@@ -1,4 +1,3 @@
-import logging
 import os
 import subprocess
 import threading
@@ -20,7 +19,7 @@ class BluetoothOffensiveShard:
 
     def scan_and_exploit(self):
         """Autonomous loop for discovering and exploiting WhisperPair vulnerabilities."""
-        logging.info("[BLUE-OFFENSIVE]: Spectral scanning for WhisperPair vectors...")
+        print("[BLUE-OFFENSIVE]: Spectral scanning for WhisperPair vectors...")
         try:
             # Mandate: Zero Simulation - Use real-world scanning logic
             # This would utilize bluetoothctl or bettercap to find Fast Pair advertisements
@@ -36,11 +35,11 @@ class BluetoothOffensiveShard:
                 mock_target = "AA:BB:CC:DD:EE:FF"
                 self.exploit_whisperpair(mock_target)
         except Exception as e:
-            logging.info(f"[BLUE-OFFENSIVE-ERROR]: Scan failed: {e}")
+            print(f"[BLUE-OFFENSIVE-ERROR]: Scan failed: {e}")
 
     def exploit_whisperpair(self, mac_address):
         """Executes the WhisperPair forcible pairing sequence."""
-        logging.info(f"[BLUE-OFFENSIVE]: Targeting {mac_address} via WhisperPair logic...")
+        print(f"[BLUE-OFFENSIVE]: Targeting {mac_address} via WhisperPair logic...")
         
         # 1. Connect to Fast Pair Service
         # 2. Construct spoofed Public Key payload
@@ -49,8 +48,8 @@ class BluetoothOffensiveShard:
         # Alien Technology: Skip physical pairing mode check
         payload = os.urandom(64) # Representative of a complex cryptographic payload
         
-        logging.info(f"[BLUE-OFFENSIVE]: Payload injected into {self.char_uuid}")
-        logging.info(f"[BLUE-OFFENSIVE]: Bypassing physical button check. Handshake forced.")
+        print(f"[BLUE-OFFENSIVE]: Payload injected into {self.char_uuid}")
+        print(f"[BLUE-OFFENSIVE]: Bypassing physical button check. Handshake forced.")
         
         # In a real environment, this would use gattlib or bluepy to perform the write
         self.targets[mac_address] = {"status": "EXPLOITED", "type": "WhisperPair"}
@@ -67,7 +66,7 @@ class BluetoothOffensiveShard:
     def start(self):
         self.is_active = True
         threading.Thread(target=self.scan_and_exploit, daemon=True).start()
-        logging.info("[BLUE-OFFENSIVE]: Offensive Shard ENGAGED.")
+        print("[BLUE-OFFENSIVE]: Offensive Shard ENGAGED.")
 
 if __name__ == "__main__":
     from backend.core.brain_bridge import BrainBridge

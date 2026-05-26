@@ -30,7 +30,7 @@ WantedBy=multi-user.target
         service_path = "/etc/systemd/system/jarvis.service"
         try:
             # Requires sudo
-            logging.info("[BOOT-MANAGER]: Deploying Systemd persistence...")
+            print("[BOOT-MANAGER]: Deploying Systemd persistence...")
             # Note: In a real-world scenario, this would write the file using sudo
             return True
         except Exception as e:
@@ -39,7 +39,7 @@ WantedBy=multi-user.target
 
     def deploy_windows_persistence(self):
         """Deploys a Windows Registry startup key or Service."""
-        logging.info("[BOOT-MANAGER]: Deploying Windows Registry persistence...")
+        print("[BOOT-MANAGER]: Deploying Windows Registry persistence...")
         try:
             import winreg
             key = winreg.HKEY_CURRENT_USER
@@ -49,12 +49,12 @@ WantedBy=multi-user.target
             return True
         except Exception as e:
             logging.exception(e)
-            logging.info(f"[BOOT-MANAGER]: Windows persistence failed: {e}")
+            print(f"[BOOT-MANAGER]: Windows persistence failed: {e}")
             return False
 
     def ensure_sovereignty(self):
         """Checks and repairs boot triggers."""
-        logging.info("[BOOT-MANAGER]: Verifying autonomous boot triggers...")
+        print("[BOOT-MANAGER]: Verifying autonomous boot triggers...")
         if self.is_linux:
             self.deploy_linux_persistence()
         elif self.is_windows:

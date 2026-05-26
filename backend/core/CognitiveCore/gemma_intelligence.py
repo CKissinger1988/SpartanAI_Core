@@ -19,7 +19,7 @@ class GemmaIntelligence:
         """
         Executes a query against Gemma, prioritizing local inference.
         """
-        logging.info(f"[GEMMA-INTEL]: Processing cognitive request...")
+        print(f"[GEMMA-INTEL]: Processing cognitive request...")
         
         # 1. Attempt Local Inference (Ollama)
         try:
@@ -32,20 +32,20 @@ class GemmaIntelligence:
             response = requests.post(self.local_endpoint, json=payload, timeout=30)
             if response.status_code == 200:
                 result = response.json().get('response')
-                logging.info("[GEMMA-INTEL]: Local inference successful.")
+                print("[GEMMA-INTEL]: Local inference successful.")
                 return result
         except Exception:
-            logging.info("[GEMMA-INTEL]: Local inference unavailable. Falling back to cloud...")
+            print("[GEMMA-INTEL]: Local inference unavailable. Falling back to cloud...")
 
         # 2. Cloud Fallback (Vertex AI / Google AI Studio using GEMMA key)
         cloud_key = self.auth_vault.get_key("AI_MODELS", "GEMMA")
         if cloud_key:
             # Placeholder for Cloud Gemma API call (e.g., via Vertex AI)
-            logging.info("[GEMMA-INTEL]: Engaging cloud-based Gemma inference...")
+            print("[GEMMA-INTEL]: Engaging cloud-based Gemma inference...")
             return "Sovereign cloud-fallback response: Gemma-9b-IT active."
         
         return "ERROR: Gemma inference failed (Local & Cloud unavailable)."
 
     def start_evolution(self):
         """Initializes the evolution loop for the Gemma shard."""
-        logging.info("[GEMMA-INTEL]: Open-weights cognitive shard ONLINE.")
+        print("[GEMMA-INTEL]: Open-weights cognitive shard ONLINE.")

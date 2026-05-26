@@ -1,4 +1,3 @@
-import logging
 import sqlite3
 import os
 import json
@@ -45,11 +44,11 @@ class SovereigntyCore:
         log_file = "data/behavioral_observations.jsonl"
         if os.path.exists(log_file) and os.path.getsize(log_file) > 50 * 1024 * 1024:
             os.rename(log_file, f"{log_file}.{int(time.time())}.bak")
-            logging.info("[SOVEREIGNTY]: Log rotation triggered by autonomous maintenance.")
+            print("[SOVEREIGNTY]: Log rotation triggered by autonomous maintenance.")
 
     def create_profile(self, username, raw_data, voice_sample):
         """Encrypted KYC registration with Voiceprint integration."""
-        logging.info(f"Jarvis: Initiating Apex-Grade KYC for user: {username}...")
+        print(f"Jarvis: Initiating Apex-Grade KYC for user: {username}...")
         
         voiceprint_hash = hashlib.sha3_256(voice_sample.encode()).hexdigest()
         vac = str(random.randint(100000, 999999))
@@ -82,7 +81,7 @@ class SovereigntyCore:
         with open(user_file, 'w') as f:
             json.dump(encrypted_bundle, f)
             
-        logging.info(f"Jarvis: Profile encrypted and locked. YOUR VAC IS: {vac}")
+        print(f"Jarvis: Profile encrypted and locked. YOUR VAC IS: {vac}")
         return profile_data
 
     def _get_profile(self, username):
@@ -101,7 +100,7 @@ class SovereigntyCore:
             plaintext = self.vault_key.decrypt(nonce, ciphertext, None)
             return json.loads(plaintext)
         except Exception:
-            logging.info(f"[SOVEREIGNTY]: CRITICAL - Decryption failure for user {username}.")
+            print(f"[SOVEREIGNTY]: CRITICAL - Decryption failure for user {username}.")
             return None
 
     def verify_vac(self, username, vac_code):
@@ -109,7 +108,7 @@ class SovereigntyCore:
         if not profile: return False
         return hashlib.sha3_256(vac_code.encode()).hexdigest() == profile["vac"]
 
-    def verify_voicelogging.info(self, username, voice_sample):
+    def verify_voiceprint(self, username, voice_sample):
         profile = self._get_profile(username)
         if not profile: return False
         return hashlib.sha3_256(voice_sample.encode()).hexdigest() == profile["voiceprint"]

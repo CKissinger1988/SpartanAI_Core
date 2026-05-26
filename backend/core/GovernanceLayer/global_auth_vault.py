@@ -1,4 +1,3 @@
-import logging
 import os
 import json
 from backend.core.lib.encryption import derive_ephemeral_key
@@ -9,7 +8,7 @@ class GlobalAuthVault:
     MANDATE: Secure storage and management of all API keys (AI Models, Social Networks).
     """
     def __init__(self):
-        self.vault_path = os.getenv('GLOBAL_VAULT_PATH', 'C:\\GitHub\\SpartanAI_Hub_Master\\backend\\core\\GovernanceLayer\\vault.json')
+        self.vault_path = os.getenv('GLOBAL_VAULT_PATH', 'C:\\GitHub\\SentinelAI_Hub_Master\\backend\\core\\GovernanceLayer\\vault.json')
         self.keys = {
             "AI_MODELS": {
                 "OPENAI": None,
@@ -35,7 +34,7 @@ class GlobalAuthVault:
                 with open(self.vault_path, 'r') as f:
                     self.keys = json.load(f)
             except Exception as e:
-                logging.info(f"[VAULT-ERROR]: Failed to load keys: {e}")
+                print(f"[VAULT-ERROR]: Failed to load keys: {e}")
 
     def save_key(self, category, provider, key):
         """Securely saves a new API key into the vault."""
@@ -43,9 +42,9 @@ class GlobalAuthVault:
             self.keys[category][provider] = key # In production: Encrypt before saving
             with open(self.vault_path, 'w') as f:
                 json.dump(self.keys, f, indent=4)
-            logging.info(f"[VAULT]: Key for {provider} in {category} saved successfully.")
+            print(f"[VAULT]: Key for {provider} in {category} saved successfully.")
         else:
-            logging.info(f"[VAULT-ERROR]: Invalid category or provider: {category}/{provider}")
+            print(f"[VAULT-ERROR]: Invalid category or provider: {category}/{provider}")
 
     def get_key(self, category, provider):
         """Retrieves and decrypts an API key."""

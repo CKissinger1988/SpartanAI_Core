@@ -1,4 +1,3 @@
-import logging
 import os
 import subprocess
 import socket
@@ -30,7 +29,7 @@ class NetworkDiscoveryShard:
     def scan_lan(self):
         """Performs a fast TCP scan on common service ports."""
         subnet = self.get_local_subnet()
-        logging.info(f"[DISCOVERY]: Initiating LAN scan on {subnet}...")
+        print(f"[DISCOVERY]: Initiating LAN scan on {subnet}...")
         
         common_ports = [22, 80, 443, 445, 3389, 5555]
         # In production, this would use a more robust scanning library or raw sockets
@@ -42,15 +41,15 @@ class NetworkDiscoveryShard:
             pass 
         
         # Simulated discovery for planning phase (to be refactored to real-world)
-        logging.info("[DISCOVERY]: LAN scan complete. Vectors identified.")
+        print("[DISCOVERY]: LAN scan complete. Vectors identified.")
         return self.lan_targets
 
     def query_wan_vectors(self, brain):
         """Retrieves global travel targets from BrainBridge (e.g. from Shodan recon)."""
-        logging.info("[DISCOVERY]: Querying BrainBridge for global WAN vectors...")
+        print("[DISCOVERY]: Querying BrainBridge for global WAN vectors...")
         # Placeholder for integration with global_recon results
         return self.wan_targets
 
 if __name__ == "__main__":
     discovery = NetworkDiscoveryShard()
-    logging.info(f"Subnet detected: {discovery.get_local_subnet()}")
+    print(f"Subnet detected: {discovery.get_local_subnet()}")

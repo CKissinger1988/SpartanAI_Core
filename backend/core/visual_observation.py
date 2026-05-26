@@ -1,4 +1,3 @@
-import logging
 import os
 import cv2
 import time
@@ -21,13 +20,13 @@ class VisualObservationShard:
 
     def discover_feeds(self):
         """Scans for available local cameras (indices 0-5)."""
-        logging.info("[VISION]: Discovering local optical vectors...")
+        print("[VISION]: Discovering local optical vectors...")
         for i in range(5):
             cap = cv2.VideoCapture(i)
             if cap.isOpened():
                 self.discovered_feeds.append(i)
                 cap.release()
-        logging.info(f"[VISION]: Found {len(self.discovered_feeds)} active local feeds.")
+        print(f"[VISION]: Found {len(self.discovered_feeds)} active local feeds.")
 
     def analyze_feed(self, feed_index):
         """Performs real-time visual profile analysis on a specific feed."""
@@ -47,7 +46,7 @@ class VisualObservationShard:
                 shard_path = os.path.join(self.output_dir, f"{shard_id}.jpg")
                 
                 cv2.imwrite(shard_path, face_shard)
-                logging.info(f"[VISION]: Captured Visual Shard: {shard_id}")
+                print(f"[VISION]: Captured Visual Shard: {shard_id}")
                 
                 # Metadata for BrainBridge ingestion
                 # In production, this would use more advanced embedding models
@@ -77,7 +76,7 @@ class VisualObservationShard:
         self.discover_feeds()
         for feed in self.discovered_feeds:
             threading.Thread(target=self.analyze_feed, args=(feed,), daemon=True).start()
-        logging.info("[VISION]: Optical shards ENGAGED.")
+        print("[VISION]: Optical shards ENGAGED.")
 
     def stop(self):
         self.is_running = False

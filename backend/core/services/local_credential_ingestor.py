@@ -19,14 +19,14 @@ class LocalCredentialIngestor:
         }
 
     def scan_and_assimilate(self):
-        logging.info("[INGESTOR]: Initiating local credential scan...")
+        print("[INGESTOR]: Initiating local credential scan...")
         
         # 1. Scan Environment Variables
         for key, value in os.environ.items():
             for provider, pattern in self.patterns.items():
                 if re.match(pattern, value):
                     self.vault.save_key("AI_MODELS", provider, value)
-                    logging.info(f"[INGESTOR]: Recovered {provider} key from environment.")
+                    print(f"[INGESTOR]: Recovered {provider} key from environment.")
 
         # 2. Scan Local Configuration Files (.env, config.json)
         # Search recursively in the project and common user paths
@@ -40,11 +40,11 @@ class LocalCredentialIngestor:
                             match = re.search(pattern, content)
                             if match:
                                 self.vault.save_key("AI_MODELS", provider, match.group(0))
-                                logging.info(f"[INGESTOR]: Recovered {provider} key from {filepath}.")
+                                print(f"[INGESTOR]: Recovered {provider} key from {filepath}.")
                 except Exception:
                     pass
 
-        logging.info("[INGESTOR]: Sovereign onboarding complete. Mission-critical keys assimilated.")
+        print("[INGESTOR]: Sovereign onboarding complete. Mission-critical keys assimilated.")
 
     def start_evolution(self):
-        logging.info("[INGESTOR]: Local Discovery Shard ONLINE.")
+        print("[INGESTOR]: Local Discovery Shard ONLINE.")

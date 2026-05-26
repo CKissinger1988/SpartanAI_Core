@@ -9,30 +9,27 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
-from backend.core.services.local_credential_ingestor import LocalCredentialIngestor
+from backend.core.services.deep_credential_ingestor import DeepCredentialIngestor
 from backend.core.CognitiveCore.skill_assimilation_shard import SkillAssimilationShard
-from backend.core.PersistenceShards.spartan_live_patch import SpartanLivePatch
+from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.GovernanceLayer.supreme_finality_governance import SupremeFinalityGovernance
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
 from backend.core.CognitiveCore.omni_cognitive_assembly import OmniCognitiveAssembly
-from backend.core.ApexGodShard.apex_god_shard import ApexGodShard
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 
 # Domain Imports (Harmonized)
 from backend.core.FinancialSingularity.atomic_profiteer import AtomicProfiteer
-from backend.core.SecurityCore.security_shield import SecurityShield
+from backend.core.DefensiveMesh.security_shield import SecurityShield
 from backend.core.RealityEngineering.causal_reality_engine import CausalRealityEngine
 from backend.core.GovernanceLayer.sovereign_governance import SovereignGovernance
-from backend.core.DesktopSynthesis.nativefire_shard import NativefireShard
-from backend.core.DesktopSynthesis.nativefier_shard import NativefierShard
 
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.swarm import SwarmCoordinator
-from backend.core.spartan import SpartanRedundancy
+from backend.core.sentinel import SentinelRedundancy
 from backend.core.efficiency_engine import EfficiencyEngine
 from backend.core.audio_manager import AudioManager
 from backend.core.monetization import MonetizationService
@@ -54,7 +51,7 @@ BOLD = '\033[1m'
 ENDC = '\033[0m'
 
 class Jarvis:
-    """The Supreme AI Orchestrator of the SpartanAI Security Core ecosystem (Alien-Grade)."""
+    """The Supreme AI Orchestrator of the SentinelAI Security Core ecosystem (Alien-Grade)."""
     def __init__(self):
         self.status = "Online"
         self.authenticated = False
@@ -71,8 +68,6 @@ class Jarvis:
         self.defense = SecurityShield()
         self.reality = CausalRealityEngine()
         self.governance = SovereignGovernance()
-        self.desktop_fire = NativefireShard()
-        self.desktop_fier = NativefierShard()
         
         # Integration Shards
         self.auth_vault = GlobalAuthVault()
@@ -81,7 +76,6 @@ class Jarvis:
         self.air_dev = AirDevIntegration(self.brain)
         self.agent_deck = AgentDeckIntegration(self.brain)
         self.gemma = GemmaIntelligence(self.brain, self.auth_vault)
-        self.god_shard = ApexGodShard(self)
         
         # Omni-Cognitive Assembly (Collaborative multi-model brain)
         self.assembly = OmniCognitiveAssembly(self.brain, self.gemma, self.auth_vault)
@@ -92,7 +86,7 @@ class Jarvis:
         # Legacy/Support Shards
         self.adb = RemoteADBManager()
         self.swarm = SwarmCoordinator()
-        self.spartan = SpartanRedundancy()
+        self.sentinel = SentinelRedundancy()
         self.efficiency = EfficiencyEngine()
         self.audio = AudioManager()
         self.audio.verify_audio()
@@ -105,7 +99,7 @@ class Jarvis:
         self.assimilation_shard = CognitiveAssimilationShard(self.brain)
         self.apex_shard = ApexShardOrchestrator(self.brain, self.antigravity)
         self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="BTC_1A2B3C4D5E6F7G8H9I0J")
-        self.live_patch = SpartanLivePatch(os.path.dirname(__file__))
+        self.live_patch = SentinelLivePatch(os.path.dirname(__file__))
 
         # Initialize Sovereign Wealth Loop
         self.financial.exodus = self.exodus
@@ -122,7 +116,6 @@ class Jarvis:
         self.finality_governance.start_evolution()
         self.deep_ingestor.start_evolution()
         self.skill_assimilator.start_evolution()
-        self.god_shard.start_evolution()
 
         # Sovereign Ingestion: Assimilate Skills & Local Credentials
         self.skill_assimilator.assimilate_all_skills()
@@ -146,21 +139,15 @@ class Jarvis:
                 "governance": self.governance,
                 "air": self.air_dev,
                 "deck": self.agent_deck,
-                "gemma": self.gemma,
-                "desktop_fire": self.desktop_fire,
-                "desktop_fier": self.desktop_fier,
-                "god": self.god_shard
+                "gemma": self.gemma
             }
             target_shard = shard_map.get(domain)
             if target_shard:
-                # God-Mode Special Dispatch
-                if domain == "god":
-                    return target_shard.execute_god_command()
                 return self.synthesis.execute_enhanced(target_shard, task_name, *args, **kwargs)
         return None
 
     def _start_sovereign_heartbeat(self):
-        """Starts an HMAC-signed heartbeat for high-integrity Spartan monitoring."""
+        """Starts an HMAC-signed heartbeat for high-integrity Sentinel monitoring."""
         def heartbeat_loop():
             while True:
                 try:
@@ -244,22 +231,8 @@ class Jarvis:
         if command == "harvest yield":
             return self.execute_enhanced_task("financial", "execute_singularity_yield")
 
-        # Desktop Synthesis Commands
-        if command == "package dashboard nativefire":
-            return self.execute_enhanced_task("desktop_fire", "synthesize_native", "file:///web_portal/public/index.html")
-        
-        if command == "package dashboard nativefier":
-            return self.execute_enhanced_task("desktop_fier", "synthesize_app", "file:///web_portal/public/index.html")
-
-        # God Command: Full Send Mission Completion
-        if command in ["god", "full send", "complete mission"]:
-            if self.user_role != "Creator":
-                print(f"{RED}Jarvis: God-Command restricted to Supreme Creator.{ENDC}")
-                return False
-            return self.execute_enhanced_task("god", "execute_god_command")
-
         print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
-        match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SpartanAI handlers.")
+        match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
         print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 
@@ -280,9 +253,7 @@ class Jarvis:
             "live_patch": "ACTIVE",
             "gemma_shard": "ONLINE",
             "skill_assimilation": "COMPLETE",
-            "deep_ingestion": "ACTIVE",
-            "desktop_synthesis": "ONLINE (NATIVEFIRE/NATIVEFIER)",
-            "god_mode": "READY"
+            "deep_ingestion": "ACTIVE"
         }
         print(json.dumps(status_report, indent=4))
         print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")

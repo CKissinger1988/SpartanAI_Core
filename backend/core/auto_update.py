@@ -1,4 +1,3 @@
-import logging
 import subprocess
 import threading
 import time
@@ -8,7 +7,7 @@ import json
 class AutoUpdateService:
     """
     Sovereign Real-Time Auto-Update Engine.
-    Ensures all Jarvis/SpartanAI projects are perfectly synchronized with Git.
+    Ensures all Jarvis/SentinelAI projects are perfectly synchronized with Git.
     MANDATE: Full Send Protocol - Zero Delta maintained.
     """
     def __init__(self, projects_root=None):
@@ -51,11 +50,11 @@ class AutoUpdateService:
 
     def sync_all(self):
         """Orchestrates global synchronization."""
-        logging.info("[AUTO-UPDATE]: Initiating system-wide synchronization sequence...")
+        print("[AUTO-UPDATE]: Initiating system-wide synchronization sequence...")
         projects = self.get_projects()
         for p in projects:
             self._sync_repo(p)
-        logging.info(f"[AUTO-UPDATE]: Sync complete. Nodes online: {json.dumps(self.status, indent=2)}")
+        print(f"[AUTO-UPDATE]: Sync complete. Nodes online: {json.dumps(self.status, indent=2)}")
 
     def run(self):
         """Background thread loop."""

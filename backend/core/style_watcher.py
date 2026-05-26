@@ -13,5 +13,5 @@ class StyleWatcher(FileSystemEventHandler):
             # Trigger immediate re-ingestion of patterns
 
 observer = Observer()
-observer.schedule(StyleWatcher(), "C:/GitHub/SpartanAI_Hub_Master", recursive=True)
+observer.schedule(StyleWatcher(), "C:/GitHub/SentinelAI_Hub_Master", recursive=True)
 observer.start()

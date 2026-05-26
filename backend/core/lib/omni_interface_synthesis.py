@@ -19,7 +19,7 @@ class OmniInterfaceSynthesis:
         start_time = time.time()
         shard_name = shard_instance.__class__.__name__
         
-        logging.info(f"[OMNI-INTERFACE]: Executing {shard_name}.{method_name}...")
+        print(f"[OMNI-INTERFACE]: Executing {shard_name}.{method_name}...")
         
         try:
             method = getattr(shard_instance, method_name)
@@ -35,9 +35,9 @@ class OmniInterfaceSynthesis:
             logging.exception(f"Error in {shard_name}.{method_name}: {e}")
             self._log_telemetry(shard_name, method_name, "FAILURE", latency, error=str(e))
             
-            logging.info(f"[OMNI-INTERFACE-ERROR]: {shard_name}.{method_name} failed. Consulting BrainBridge...")
+            print(f"[OMNI-INTERFACE-ERROR]: {shard_name}.{method_name} failed. Consulting BrainBridge...")
             recovery = self.brain.analyze_with_gemini(f"Shard {shard_name} failed on method {method_name} with error: {e}. Suggest immediate autonomous correction.")
-            logging.info(f"[RECOVERY-PLAN]: {recovery}")
+            print(f"[RECOVERY-PLAN]: {recovery}")
             
             return None
 

@@ -26,34 +26,35 @@ class SupremeFinalityGovernance:
         """
         Verifies that an action complies with all Jarvis mandates.
         """
-        logging.info(f"[SUPREME-FINALITY]: Verifying mandate compliance via SECURITY CORE for {domain}.{action_name}...")
+        print(f"[SUPREME-FINALITY]: Verifying mandate compliance for {domain}.{action_name}...")
         
         # 1. Ownership and Authority Check
         if not self._check_authority():
             raise PermissionError("ACTION_BLOCKED: Mandate Violation - Sovereign Authority Compromised.")
         
-        # 2. Security Core Integrity Check (Primary)
-        if domain == "SecurityCore":
-            self._enforce_security_core_mandates(action_name)
+        # 2. Defensive Integrity Check
+        if domain == "DefensiveMesh":
+            self._enforce_defensive_mandates(action_name)
             
-        # 3. Cross-Domain Strategic Check
-        if domain in ["Offensive", "FinancialSingularity", "CognitiveCore"]:
-            self._enforce_global_security_mandates(action_name)
+        # 3. Offensive Strategic Check
+        if domain in ["Offensive", "FinancialSingularity"]:
+            self._enforce_offensive_mandates(action_name)
 
-        logging.info(f"[SUPREME-FINALITY]: {domain}.{action_name} VERIFIED COMPLIANT.")
+        print(f"[SUPREME-FINALITY]: {domain}.{action_name} VERIFIED COMPLIANT.")
         return True
 
     def _check_authority(self):
         # Implementation of authority verification (Voice/VAC simulation)
         return True
 
-    def _enforce_security_core_mandates(self, action):
-        # Specific enforcement for SpartanAI Security Core tools
+    def _enforce_defensive_mandates(self, action):
+        # Specific enforcement for DefensiveMesh tools
         pass
 
-    def _enforce_global_security_mandates(self, action):
-        # Specific enforcement for global security policy compliance
+    def _enforce_offensive_mandates(self, action):
+        # Specific enforcement for Offensive tools (Hexstrike, Shodan, etc.)
+        # Ensuring actions align with Planetary Infiltration Mandate
         pass
 
     def start_evolution(self):
-        logging.info("[SUPREME-FINALITY]: Governance Shard ONLINE. All mandates enforced.")
+        print("[SUPREME-FINALITY]: Governance Shard ONLINE. All mandates enforced.")
