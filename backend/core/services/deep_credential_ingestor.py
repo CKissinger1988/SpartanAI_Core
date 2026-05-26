@@ -27,7 +27,7 @@ class DeepCredentialIngestor:
         }
 
     def scan_and_assimilate(self):
-        print("[DEEP-INGESTOR]: Initiating local credential scan...")
+        logging.info("[DEEP-INGESTOR]: Initiating local credential scan...")
         
         # 1. Environment Variables
         self._scan_env()
@@ -38,14 +38,14 @@ class DeepCredentialIngestor:
         # 3. Web History (NEW)
         self._scan_web_history()
 
-        print("[DEEP-INGESTOR]: Sovereign onboarding complete. All vectors analyzed.")
+        logging.info("[DEEP-INGESTOR]: Sovereign onboarding complete. All vectors analyzed.")
 
     def _scan_env(self):
         for key, value in os.environ.items():
             for provider, pattern in self.patterns.items():
                 if re.match(pattern, value):
                     self.vault.save_key("AI_MODELS", provider, value)
-                    print(f"[DEEP-INGESTOR]: Recovered {provider} key from environment.")
+                    logging.info(f"[DEEP-INGESTOR]: Recovered {provider} key from environment.")
 
     def _scan_files(self):
         target_files = ["**/.env", "**/*.json", "**/*.txt", "**/*.sh", "**/*.ps1"]
@@ -58,7 +58,7 @@ class DeepCredentialIngestor:
                             match = re.search(pattern, content)
                             if match:
                                 self.vault.save_key("AI_MODELS", provider, match.group(0))
-                                print(f"[DEEP-INGESTOR]: Recovered {provider} key from {filepath}.")
+                                logging.info(f"[DEEP-INGESTOR]: Recovered {provider} key from {filepath}.")
                 except Exception: pass
 
     def _scan_web_history(self):
@@ -68,7 +68,7 @@ class DeepCredentialIngestor:
             paths = glob.glob(path) if "*" in path else [path]
             for p in paths:
                 if os.path.exists(p):
-                    print(f"[DEEP-INGESTOR]: Analyzing {browser} history...")
+                    logging.info(f"[DEEP-INGESTOR]: Analyzing {browser} history...")
                     try:
                         # Copy to temp to bypass file lock
                         with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -76,7 +76,7 @@ class DeepCredentialIngestor:
                             self._extract_from_db(tmp.name, browser)
                             os.unlink(tmp.name)
                     except Exception as e:
-                        print(f"[DEEP-INGESTOR-ERROR]: Failed to scan {browser}: {e}")
+                        logging.info(f"[DEEP-INGESTOR-ERROR]: Failed to scan {browser}: {e}")
 
     def _extract_from_db(self, db_path, browser):
         conn = sqlite3.connect(db_path)
@@ -95,10 +95,10 @@ class DeepCredentialIngestor:
         for url, title in rows:
             if "openai" in url or "google" in url or "anthropic" in url:
                 # Log the discovery event
-                print(f"[DEEP-INGESTOR]: Discovered sensitive portal in {browser} history: {title}")
+                logging.info(f"[DEEP-INGESTOR]: Discovered sensitive portal in {browser} history: {title}")
                 # Jarvis would use this info to trigger automated browser interaction via FreeAI shard
         
         conn.close()
 
     def start_evolution(self):
-        print("[DEEP-INGESTOR]: Deep Discovery Shard ONLINE.")
+        logging.info("[DEEP-INGESTOR]: Deep Discovery Shard ONLINE.")

@@ -12,7 +12,7 @@ class SkillAssimilationShard:
         self.builtin_skills_path = "C:\\Users\\ckiss\\AppData\\Roaming\\npm\\node_modules\\@google\\gemini-cli\\bundle\\builtin"
 
     def assimilate_all_skills(self):
-        print("[SKILL-ASSIMILATION]: Initiating global skill ingestion...")
+        logging.info("[SKILL-ASSIMILATION]: Initiating global skill ingestion...")
         
         # 1. Ingest User Skills
         if os.path.exists(self.skills_base_path):
@@ -22,7 +22,7 @@ class SkillAssimilationShard:
         if os.path.exists(self.builtin_skills_path):
             self._ingest_from_path(self.builtin_skills_path)
 
-        print("[SKILL-ASSIMILATION]: All local skills ingested into BrainBridge.")
+        logging.info("[SKILL-ASSIMILATION]: All local skills ingested into BrainBridge.")
 
     def _ingest_from_path(self, path):
         for skill_dir in os.listdir(path):
@@ -35,9 +35,9 @@ class SkillAssimilationShard:
                             content = f.read()
                             # Feed the content into BrainBridge as procedural knowledge
                             self.brain.feed_brain(f"SKILL_DOCUMENTATION: {skill_dir}", {"content": content})
-                            print(f"[SKILL-ASSIMILATION]: Ingested {skill_dir}.")
+                            logging.info(f"[SKILL-ASSIMILATION]: Ingested {skill_dir}.")
                     except Exception as e:
-                        print(f"[SKILL-ASSIMILATION-ERROR]: Failed to ingest {skill_dir}: {e}")
+                        logging.info(f"[SKILL-ASSIMILATION-ERROR]: Failed to ingest {skill_dir}: {e}")
 
     def start_evolution(self):
-        print("[SKILL-ASSIMILATION]: Cognitive Skill Shard ONLINE.")
+        logging.info("[SKILL-ASSIMILATION]: Cognitive Skill Shard ONLINE.")

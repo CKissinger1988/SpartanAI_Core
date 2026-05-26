@@ -1,3 +1,4 @@
+import logging
 import os
 import tarfile
 import threading
@@ -45,18 +46,18 @@ class SovereignBackupManager:
     def sync_to_cloud(self, encrypted_file):
         """Syncs encrypted backups to GitLab/Google Drive."""
         # Integration logic for API clients (GitLab/GDrive)
-        print(f"[BACKUP]: Syncing {encrypted_file} to sovereign cloud vaults...")
+        logging.info(f"[BACKUP]: Syncing {encrypted_file} to sovereign cloud vaults...")
         # Placeholder for actual API transport
         return True
 
     def run_backup_loop(self):
         """Periodic, autonomous backup loop."""
         while True:
-            print("[BACKUP]: Initiating sovereign data snapshot...")
+            logging.info("[BACKUP]: Initiating sovereign data snapshot...")
             enc_file = self._encrypt_and_archive("vector_db")
             self.sync_to_cloud(enc_file)
             time.sleep(3600) # Sync hourly
 
     def start(self):
         threading.Thread(target=self.run_backup_loop, daemon=True).start()
-        print("[BACKUP]: Sovereign Backup Service ONLINE.")
+        logging.info("[BACKUP]: Sovereign Backup Service ONLINE.")

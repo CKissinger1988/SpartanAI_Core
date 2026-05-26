@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import threading
@@ -17,11 +18,11 @@ class ApexShardOrchestrator:
 
     def run_triple_validation(self):
         """Executes the exhaustive triple-test suite."""
-        print("[APEX-SHARD]: Initiating Triple-Validation Sequence...")
+        logging.info("[APEX-SHARD]: Initiating Triple-Validation Sequence...")
         results = {"structural": False, "integration": False, "visual": False}
         
         # 1. Structural/Unit (PyTest)
-        print("[APEX-SHARD]: 1/3 - Structural Backend Validation (WSL PyTest)...")
+        logging.info("[APEX-SHARD]: 1/3 - Structural Backend Validation (WSL PyTest)...")
         # Ensure we run tests in WSL environment
         # Already running in Linux/WSL if this script was launched appropriately
         project_root = self.project_root.replace('\\', '/')
@@ -39,46 +40,46 @@ class ApexShardOrchestrator:
         res1 = subprocess.run(pytest_cmd, capture_output=True, text=True, env=env)
         results["structural"] = (res1.returncode == 0)
         if res1.returncode != 0:
-            print(f"[APEX-SHARD-ERROR]: Structural validation failed:\n{res1.stdout}\n{res1.stderr}")
+            logging.info(f"[APEX-SHARD-ERROR]: Structural validation failed:\n{res1.stdout}\n{res1.stderr}")
         
         # 2. Integration/IPC
-        print("[APEX-SHARD]: 2/3 - IPC/Integration Validation...")
+        logging.info("[APEX-SHARD]: 2/3 - IPC/Integration Validation...")
         # Placeholder for running Jest/integration scripts if they existed
         results["integration"] = True # Assume true for this phase until Jest is fully configured
 
         # 3. Visual/UI (Playwright)
-        print("[APEX-SHARD]: 3/3 - Visual UI Validation (Playwright)...")
+        logging.info("[APEX-SHARD]: 3/3 - Visual UI Validation (Playwright)...")
         # Run playwright tests
         res3 = subprocess.run(["npx", "playwright", "test", f"{self.project_root}/tests/visual/preview_capture.spec.js"], capture_output=True, text=True, cwd=self.project_root)
         results["visual"] = (res3.returncode == 0)
         if res3.returncode != 0:
-            print(f"[APEX-SHARD-ERROR]: Visual validation failed:\n{res3.stdout}\n{res3.stderr}")
+            logging.info(f"[APEX-SHARD-ERROR]: Visual validation failed:\n{res3.stdout}\n{res3.stderr}")
         
         return results
 
     def _evolution_loop(self):
         self.is_running = True
         while self.is_running:
-            print(f"\n[APEX-SHARD]: === GLOBAL EVOLUTION CYCLE INITIATED ===")
+            logging.info(f"\n[APEX-SHARD]: === GLOBAL EVOLUTION CYCLE INITIATED ===")
             
             # Step 1: Autonomous Code Audit via Gemini/BrainBridge
-            print("[APEX-SHARD]: Auditing codebase for 'Alien Technology Grade' optimizations...")
+            logging.info("[APEX-SHARD]: Auditing codebase for 'Alien Technology Grade' optimizations...")
             # We would scan files here. Let's do a simulated pass on a single file for demonstration.
             # In a full run, this iterates over all .py and .js files.
             
             # Step 2: Mandate Validation via Antigravity CLI
-            print("[APEX-SHARD]: Requesting Sovereign Mandate Audit from Antigravity CLI...")
+            logging.info("[APEX-SHARD]: Requesting Sovereign Mandate Audit from Antigravity CLI...")
             agy_res = self.agy.run_command("Audit the current workspace state against the Supreme Creator's GEMINI.md mandates.")
             if agy_res["status"] == "success":
-                print(f"[APEX-SHARD]: Antigravity Audit Complete.")
+                logging.info(f"[APEX-SHARD]: Antigravity Audit Complete.")
             
             # Step 3: Triple Validation Execution
             val_results = self.run_triple_validation()
             
             if all(val_results.values()):
-                print("[APEX-SHARD]: Evolution Cycle Successful. System is at Astronomical Readiness.")
+                logging.info("[APEX-SHARD]: Evolution Cycle Successful. System is at Astronomical Readiness.")
             else:
-                print(f"[APEX-SHARD-WARNING]: Validation failed. Initiating self-healing... {val_results}")
+                logging.info(f"[APEX-SHARD-WARNING]: Validation failed. Initiating self-healing... {val_results}")
                 # AI-driven healing logic would go here
             
             # Sleep before next cycle
@@ -87,7 +88,7 @@ class ApexShardOrchestrator:
     def start_evolution(self):
         if not self.is_running:
             threading.Thread(target=self._evolution_loop, daemon=True).start()
-            print("[APEX-SHARD]: Autonomous Global Evolution Engine ONLINE.")
+            logging.info("[APEX-SHARD]: Autonomous Global Evolution Engine ONLINE.")
 
 if __name__ == "__main__":
     from backend.core.brain_bridge import BrainBridge
@@ -95,4 +96,4 @@ if __name__ == "__main__":
     brain = BrainBridge()
     agy = AntigravityBridge()
     shard = ApexShardOrchestrator(brain, agy)
-    print(shard.run_triple_validation())
+    logging.info(shard.run_triple_validation())

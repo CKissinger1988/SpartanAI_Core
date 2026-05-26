@@ -50,7 +50,7 @@ class NetworkTraversalShard:
     def start(self):
         self.is_active = True
         threading.Thread(target=self.run_traversal_logic, daemon=True).start()
-        print("[TRAVERSAL]: Omni-Network Traversal engine ONLINE.")
+        logging.info("[TRAVERSAL]: Omni-Network Traversal engine ONLINE.")
 
 if __name__ == "__main__":
     traversal = NetworkTraversalShard()

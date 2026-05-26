@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -15,7 +16,7 @@ class FreeAIWebShard:
             import playwright
             self.is_ready = True
         except ImportError:
-            print("[FREE-AI-SHARD]: Playwright not installed. Web chat automation unavailable.")
+            logging.info("[FREE-AI-SHARD]: Playwright not installed. Web chat automation unavailable.")
 
     def query(self, prompt, provider="chatgpt"):
         """
@@ -24,7 +25,7 @@ class FreeAIWebShard:
         if not self.is_ready:
             return "ERROR: Playwright required for Free AI Web Shard."
             
-        print(f"[FREE-AI-SHARD]: Engaging {provider} via browser automation...")
+        logging.info(f"[FREE-AI-SHARD]: Engaging {provider} via browser automation...")
         
         try:
             from playwright.sync_api import sync_playwright
@@ -51,4 +52,4 @@ class FreeAIWebShard:
 
 if __name__ == "__main__":
     shard = FreeAIWebShard()
-    print(shard.query("What is the status of the network?"))
+    logging.info(shard.query("What is the status of the network?"))

@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import threading
 import time
@@ -50,11 +51,11 @@ class AutoUpdateService:
 
     def sync_all(self):
         """Orchestrates global synchronization."""
-        print("[AUTO-UPDATE]: Initiating system-wide synchronization sequence...")
+        logging.info("[AUTO-UPDATE]: Initiating system-wide synchronization sequence...")
         projects = self.get_projects()
         for p in projects:
             self._sync_repo(p)
-        print(f"[AUTO-UPDATE]: Sync complete. Nodes online: {json.dumps(self.status, indent=2)}")
+        logging.info(f"[AUTO-UPDATE]: Sync complete. Nodes online: {json.dumps(self.status, indent=2)}")
 
     def run(self):
         """Background thread loop."""

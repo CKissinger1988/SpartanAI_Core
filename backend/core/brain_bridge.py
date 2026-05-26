@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 
@@ -105,5 +106,5 @@ class BrainBridge:
             )
             return True
         except Exception as e:
-            print(f"Brain feed error: {e}")
+            logging.info(f"Brain feed error: {e}")
             return False

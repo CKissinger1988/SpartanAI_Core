@@ -26,7 +26,7 @@ class SwarmCoordinator:
 
     def sync_nodes(self):
         """Synchronizes tactical state across all active swarm nodes."""
-        print(f"Jarvis: Synchronizing tactical state across swarm nodes (Local ID: {self.node_id})...")
+        logging.info(f"Jarvis: Synchronizing tactical state across swarm nodes (Local ID: {self.node_id})...")
         try:
             response = requests.get(f"{self.c2_url}/list", timeout=2)
             if response.status_code == 200:

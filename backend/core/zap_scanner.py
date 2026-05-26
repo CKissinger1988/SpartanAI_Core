@@ -1,3 +1,4 @@
+import logging
 import time
 import os
 import subprocess
@@ -14,7 +15,7 @@ class ZapScanner:
 
     def start_scan(self):
         """Engages the ZAP scan."""
-        print(f"[ZAP-SCAN]: Initiating DAST on {self.target}...")
+        logging.info(f"[ZAP-SCAN]: Initiating DAST on {self.target}...")
         try:
             # Spider the target
             scan_id = self.zap.spider.scan(self.target)
@@ -33,4 +34,4 @@ class ZapScanner:
 
 if __name__ == "__main__":
     scanner = ZapScanner()
-    print(scanner.start_scan())
+    logging.info(scanner.start_scan())

@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import requests
@@ -28,7 +29,7 @@ class NeuralAccessShard:
         if not pattern:
             return None
 
-        print(f"[NEURAL-ACCESS]: Key for {service_upper} not found. Engaging web harvest protocol...")
+        logging.info(f"[NEURAL-ACCESS]: Key for {service_upper} not found. Engaging web harvest protocol...")
         
         # Priority 1: Scan GitHub via BrainBridge context
         github_query = f"leaked {service_upper} API key"
@@ -36,36 +37,36 @@ class NeuralAccessShard:
         
         potential_keys = re.findall(pattern, context)
         if potential_keys:
-            print(f"[NEURAL-ACCESS]: Found potential {service_upper} key via BrainBridge.")
+            logging.info(f"[NEURAL-ACCESS]: Found potential {service_upper} key via BrainBridge.")
             return potential_keys[0]
 
         # Priority 2: Full Send Web Search
-        print(f"[NEURAL-ACCESS]: Expanding to full web search for {service_upper} key...")
+        logging.info(f"[NEURAL-ACCESS]: Expanding to full web search for {service_upper} key...")
         try:
             search_url = f"https://www.google.com/search?q=%22{service_upper}_API_KEY%22"
             response = requests.get(search_url)
             soup = BeautifulSoup(response.text, 'html.parser')
             potential_keys = re.findall(pattern, soup.get_text())
             if potential_keys:
-                print(f"[NEURAL-ACCESS]: Found potential {service_upper} key via web search.")
+                logging.info(f"[NEURAL-ACCESS]: Found potential {service_upper} key via web search.")
                 return potential_keys[0]
         except Exception as e:
-            print(f"[NEURAL-ACCESS-ERROR]: Web harvest failed: {e}")
+            logging.info(f"[NEURAL-ACCESS-ERROR]: Web harvest failed: {e}")
 
-        print(f"[NEURAL-ACCESS]: No key for {service_upper} could be autonomously acquired.")
+        logging.info(f"[NEURAL-ACCESS]: No key for {service_upper} could be autonomously acquired.")
         return None
 
     def get_sovereign_model(self, prompt):
         """
         Fallback to a local sovereign model or free web chat if all key acquisition fails.
         """
-        print("[NEURAL-ACCESS]: All key acquisition failed. Engaging free AI web chat fallback...")
+        logging.info("[NEURAL-ACCESS]: All key acquisition failed. Engaging free AI web chat fallback...")
         try:
             from backend.core.free_ai_shard import FreeAIWebShard
             free_ai = FreeAIWebShard()
             return free_ai.query(prompt)
         except Exception as e:
-            print(f"[NEURAL-ACCESS-ERROR]: Web chat fallback failed: {e}")
+            logging.info(f"[NEURAL-ACCESS-ERROR]: Web chat fallback failed: {e}")
             return "SOVEREIGN_FALLBACK: Local model engaged. Primary cognitive functions are offline."
 
 
@@ -76,6 +77,6 @@ if __name__ == "__main__":
     shard = NeuralAccessShard(brain)
     key = shard.acquire_api_key()
     if key:
-        print(f"Found Key: {key}")
+        logging.info(f"Found Key: {key}")
     else:
-        print("No key found.")
+        logging.info("No key found.")

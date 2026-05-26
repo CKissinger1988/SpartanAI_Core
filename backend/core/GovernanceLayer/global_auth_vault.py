@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 from backend.core.lib.encryption import derive_ephemeral_key
@@ -34,7 +35,7 @@ class GlobalAuthVault:
                 with open(self.vault_path, 'r') as f:
                     self.keys = json.load(f)
             except Exception as e:
-                print(f"[VAULT-ERROR]: Failed to load keys: {e}")
+                logging.info(f"[VAULT-ERROR]: Failed to load keys: {e}")
 
     def save_key(self, category, provider, key):
         """Securely saves a new API key into the vault."""
@@ -42,9 +43,9 @@ class GlobalAuthVault:
             self.keys[category][provider] = key # In production: Encrypt before saving
             with open(self.vault_path, 'w') as f:
                 json.dump(self.keys, f, indent=4)
-            print(f"[VAULT]: Key for {provider} in {category} saved successfully.")
+            logging.info(f"[VAULT]: Key for {provider} in {category} saved successfully.")
         else:
-            print(f"[VAULT-ERROR]: Invalid category or provider: {category}/{provider}")
+            logging.info(f"[VAULT-ERROR]: Invalid category or provider: {category}/{provider}")
 
     def get_key(self, category, provider):
         """Retrieves and decrypts an API key."""

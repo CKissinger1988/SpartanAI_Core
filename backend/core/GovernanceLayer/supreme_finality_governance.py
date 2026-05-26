@@ -26,7 +26,7 @@ class SupremeFinalityGovernance:
         """
         Verifies that an action complies with all Jarvis mandates.
         """
-        print(f"[SUPREME-FINALITY]: Verifying mandate compliance via SECURITY CORE for {domain}.{action_name}...")
+        logging.info(f"[SUPREME-FINALITY]: Verifying mandate compliance via SECURITY CORE for {domain}.{action_name}...")
         
         # 1. Ownership and Authority Check
         if not self._check_authority():
@@ -40,7 +40,7 @@ class SupremeFinalityGovernance:
         if domain in ["Offensive", "FinancialSingularity", "CognitiveCore"]:
             self._enforce_global_security_mandates(action_name)
 
-        print(f"[SUPREME-FINALITY]: {domain}.{action_name} VERIFIED COMPLIANT.")
+        logging.info(f"[SUPREME-FINALITY]: {domain}.{action_name} VERIFIED COMPLIANT.")
         return True
 
     def _check_authority(self):
@@ -56,4 +56,4 @@ class SupremeFinalityGovernance:
         pass
 
     def start_evolution(self):
-        print("[SUPREME-FINALITY]: Governance Shard ONLINE. All mandates enforced.")
+        logging.info("[SUPREME-FINALITY]: Governance Shard ONLINE. All mandates enforced.")

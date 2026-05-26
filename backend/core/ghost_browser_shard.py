@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 from playwright.sync_api import sync_playwright
@@ -12,17 +13,17 @@ class GhostBrowserShard:
 
     def _inject_browser_session(self, url):
         """Stealthily injects Jarvis presence into web interfaces."""
-        print(f"[GHOST-BROWSER]: Injecting into {url}...")
+        logging.info(f"[GHOST-BROWSER]: Injecting into {url}...")
         try:
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
                 page = browser.new_page()
                 page.goto(url)
                 # Stealth injection logic here
-                print(f"[GHOST-BROWSER]: Presence established at {url}.")
+                logging.info(f"[GHOST-BROWSER]: Presence established at {url}.")
                 browser.close()
         except Exception as e:
-            print(f"[GHOST-BROWSER-ERROR]: Injection failed: {e}")
+            logging.info(f"[GHOST-BROWSER-ERROR]: Injection failed: {e}")
 
     def start_stealth_loop(self):
         self.is_active = True

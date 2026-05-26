@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 
@@ -14,7 +15,7 @@ class PlatformIntegrator:
         # Ensure credentials are encrypted or handled according to security mandate
         with open(config_path, 'w') as f:
             json.dump({"api_key": api_key, "secret": secret, "status": "configured"}, f)
-        print(f"Platform {platform} configured.")
+        logging.info(f"Platform {platform} configured.")
 
 class LiveServerSessionManager:
     """Handles Creator auto-login on Live Server."""
@@ -24,7 +25,7 @@ class LiveServerSessionManager:
     def auto_login(self, username, token):
         if self.is_live_server:
             # Secure login logic restricted to Live Server
-            print(f"Creator auto-login successful for {username} on Live Server.")
+            logging.info(f"Creator auto-login successful for {username} on Live Server.")
             return True
-        print("Auto-login restricted to Live Server environment.")
+        logging.info("Auto-login restricted to Live Server environment.")
         return False

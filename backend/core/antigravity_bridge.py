@@ -73,4 +73,4 @@ class AntigravityBridge:
 
 if __name__ == "__main__":
     bridge = AntigravityBridge()
-    print(bridge.get_history_summary())
+    logging.info(bridge.get_history_summary())

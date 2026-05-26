@@ -1,3 +1,4 @@
+import logging
 import sounddevice as sd
 import json
 import os
@@ -17,14 +18,14 @@ class AudioManager:
 
     def verify_audio(self):
         """Verifies if audio devices are responsive."""
-        print(f"[AUDIO]: Verifying I/O channels...")
+        logging.info(f"[AUDIO]: Verifying I/O channels...")
         try:
             # Querying device list as a verification step
             devices = sd.query_devices()
-            print(f"[AUDIO]: System I/O check passed. Devices online.")
+            logging.info(f"[AUDIO]: System I/O check passed. Devices online.")
             return True
         except Exception as e:
-            print(f"[AUDIO]: I/O ERROR - {e}")
+            logging.info(f"[AUDIO]: I/O ERROR - {e}")
             return False
 
     def update_device_settings(self, in_idx, out_idx):
@@ -32,7 +33,7 @@ class AudioManager:
         self.settings["output_device"] = out_idx
         with open(self.settings_path, 'w') as f:
             json.dump(self.settings, f)
-        print(f"[AUDIO]: Preferences updated.")
+        logging.info(f"[AUDIO]: Preferences updated.")
 
 # Audio manager instance
 audio = AudioManager()

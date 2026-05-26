@@ -158,7 +158,7 @@ class Jarvis:
                         json.dump(payload, f)
                 except Exception as e:
                     logging.exception(e)
-                    print(f"[JARVIS-ERROR]: Heartbeat failure: {e}")
+                    logging.info(f"[JARVIS-ERROR]: Heartbeat failure: {e}")
                 time.sleep(random.randint(60, 120))
 
         threading.Thread(target=heartbeat_loop, daemon=True).start()
@@ -169,10 +169,10 @@ class Jarvis:
             return self._execute_command(command)
         except Exception as e:
             logging.exception(e)
-            print(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
-            print(f"{CYAN}Jarvis: Consulting BrainBridge & Omni-Cognitive Assembly for autonomous recovery...{ENDC}")
+            logging.info(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
+            logging.info(f"{CYAN}Jarvis: Consulting BrainBridge & Omni-Cognitive Assembly for autonomous recovery...{ENDC}")
             recovery_suggestion = self.assembly.query(f"The system encountered an error: {e}. Suggest a recovery protocol for the Supreme Creator.")
-            print(f"\n{GREEN}{BOLD}--- AI ASSEMBLY RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
+            logging.info(f"\n{GREEN}{BOLD}--- AI ASSEMBLY RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
             return False
 
     def _execute_command(self, command):
@@ -184,16 +184,16 @@ class Jarvis:
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
-            print(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
+            logging.info(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
         # Omni-Cognitive Assembly Analysis (Ensemble of all models)
         if command.startswith("analyze ") or command.startswith("gemini ") or command.startswith("assembly "):
             prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
             if prompt:
-                print(f"{CYAN}Jarvis: Engaging Omni-Cognitive Assembly (Collaborative Ensemble)...{ENDC}")
+                logging.info(f"{CYAN}Jarvis: Engaging Omni-Cognitive Assembly (Collaborative Ensemble)...{ENDC}")
                 response = self.assembly.query(prompt)
-                print(f"\n{GREEN}{BOLD}--- SUPREME ASSEMBLY ANALYSIS ---{ENDC}\n{response}")
+                logging.info(f"\n{GREEN}{BOLD}--- SUPREME ASSEMBLY ANALYSIS ---{ENDC}\n{response}")
                 return True
             return False
 
@@ -209,7 +209,7 @@ class Jarvis:
 
         if command.startswith("set key "):
             if self.user_role != "Creator":
-                print(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
+                logging.info(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
                 return False
             parts = command_raw.split(" ", 4)
             if len(parts) >= 5:
@@ -222,23 +222,23 @@ class Jarvis:
 
         if command in ["launch deck", "mission control", "deck"]:
             if self.user_role != "Creator":
-                print(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
+                logging.info(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
                 return False
             res = self.agent_deck.launch_deck()
-            print(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
+            logging.info(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
             return True
 
         if command == "harvest yield":
             return self.execute_enhanced_task("financial", "execute_singularity_yield")
 
-        print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
+        logging.info(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation via Assembly...{ENDC}")
         match = self.assembly.query(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
-        print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
+        logging.info(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 
     def announce_status(self):
         """Hardened diagnostic sequence."""
-        print(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
+        logging.info(f"\n{CYAN}{BOLD}Jarvis: Initiating hardened diagnostic sequence...{ENDC}")
         assets = self.wallet_manager.get_consolidated_assets()
         status_report = {
             "orchestrator": self.status,
@@ -255,5 +255,5 @@ class Jarvis:
             "skill_assimilation": "COMPLETE",
             "deep_ingestion": "ACTIVE"
         }
-        print(json.dumps(status_report, indent=4))
-        print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
+        logging.info(json.dumps(status_report, indent=4))
+        logging.info(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")

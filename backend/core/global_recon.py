@@ -1,3 +1,4 @@
+import logging
 import os
 import shodan
 import concurrent.futures
@@ -29,7 +30,7 @@ class GlobalReconShard:
         """Scans for open RTSP and webcam streams using 3+ parallel recon agents."""
         if not self.api: return "Global Recon offline."
         
-        print(f"[RECON]: Orchestrating {self.agent_count} agents...")
+        logging.info(f"[RECON]: Orchestrating {self.agent_count} agents...")
         queries = [
             'webcamxp "Server: Netcam"',
             'port:554 "RTSP"',

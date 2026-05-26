@@ -19,7 +19,7 @@ class OmniCognitiveAssembly:
         Executes a collaborative multi-model reasoning cycle.
         All available models contribute to the final synthesis reported to Jarvis.
         """
-        print(f"[OCA]: Initiating multi-model collaborative cycle...")
+        logging.info(f"[OCA]: Initiating multi-model collaborative cycle...")
         assembly_insights = {}
 
         # 1. Technical Pre-Processing (Gemma)
@@ -62,8 +62,8 @@ class OmniCognitiveAssembly:
             
         final_report = self.gemini.analyze_with_gemini(synthesis_prompt)
         
-        print(f"[OCA]: Multi-model synthesis complete. Reporting to Jarvis.")
+        logging.info(f"[OCA]: Multi-model synthesis complete. Reporting to Jarvis.")
         return final_report
 
     def start_evolution(self):
-        print("[OCA]: Omni-Cognitive Assembly ONLINE. All models synchronized.")
+        logging.info("[OCA]: Omni-Cognitive Assembly ONLINE. All models synchronized.")

@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 import subprocess
@@ -47,7 +48,7 @@ class LocalIntelligence:
                 if s.connect_ex(('localhost', 11434)) == 0:
                     return True
             
-            print("[SENTINELAI-SECURITY-CORE] Starting local intelligence engine (Ollama)...")
+            logging.info("[SENTINELAI-SECURITY-CORE] Starting local intelligence engine (Ollama)...")
             # In WSL Kali, we'd start the service
             subprocess.Popen(["wsl", "-d", "kali-linux", "bash", "-c", "ollama serve"], 
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

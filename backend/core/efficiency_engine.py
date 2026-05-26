@@ -1,3 +1,4 @@
+import logging
 import psutil
 import threading
 import time
@@ -20,7 +21,7 @@ class EfficiencyEngine:
     def rebalance_resources(self):
         """Logic for autonomous resource shedding and re-prioritization."""
         current_cpu = psutil.cpu_percent()
-        print(f"[EFFICIENCY]: High load detected ({current_cpu}%). Shedding non-critical priorities...")
+        logging.info(f"[EFFICIENCY]: High load detected ({current_cpu}%). Shedding non-critical priorities...")
         try:
             # Lower the priority of the current process to allow other system tasks to breathe
             # On Windows, psutil.BELOW_NORMAL_PRIORITY_CLASS
@@ -30,9 +31,9 @@ class EfficiencyEngine:
             else:
                 p.nice(10) # Higher nice value means lower priority
             
-            print(f"[EFFICIENCY]: Process re-prioritized to BELOW_NORMAL. System posture stabilized.")
+            logging.info(f"[EFFICIENCY]: Process re-prioritized to BELOW_NORMAL. System posture stabilized.")
         except Exception as e:
-            print(f"[EFFICIENCY]: Failed to rebalance resources: {e}")
+            logging.info(f"[EFFICIENCY]: Failed to rebalance resources: {e}")
 
 # Initialize engine
 engine = EfficiencyEngine()

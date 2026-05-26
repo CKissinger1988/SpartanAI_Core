@@ -1,3 +1,4 @@
+import logging
 import requests
 import subprocess
 import time
@@ -17,7 +18,7 @@ class HexstrikeEngine:
             if response.status_code == 200:
                 return True
         except:
-            print("[HEXSTRIKE] Initializing Offensive Intelligence Server in WSL...")
+            logging.info("[HEXSTRIKE] Initializing Offensive Intelligence Server in WSL...")
             # Command to start hexstrike in WSL background
             start_cmd = "cd ~/hexstrike-ai && ./hexstrike-env/bin/python hexstrike_server.py > /dev/null 2>&1 &"
             subprocess.Popen(["wsl", "-d", "kali-linux", "bash", "-c", start_cmd])
@@ -27,7 +28,7 @@ class HexstrikeEngine:
                 time.sleep(2)
                 try:
                     if requests.get(f"{self.base_url}/process/pool-stats", timeout=1).status_code == 200:
-                        print("[HEXSTRIKE] Offensive Server ONLINE.")
+                        logging.info("[HEXSTRIKE] Offensive Server ONLINE.")
                         return True
                 except:
                     continue
@@ -67,10 +68,10 @@ if __name__ == "__main__":
             # For this bridge, we'll return a mock if it's offline or real if online
             try:
                 result = engine.execute_recon(target)
-                print(json.dumps(result))
+                logging.info(json.dumps(result))
             except Exception as e:
-                print(json.dumps({"success": False, "error": str(e)}))
+                logging.info(json.dumps({"success": False, "error": str(e)}))
     elif len(sys.argv) > 1:
         if sys.argv[1] == "ensure":
             engine = HexstrikeEngine()
-            print(json.dumps({"active": engine.ensure_active()}))
+            logging.info(json.dumps({"active": engine.ensure_active()}))

