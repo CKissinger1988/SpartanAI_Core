@@ -14,7 +14,8 @@ class GlobalAuthVault:
                 "OPENAI": None,
                 "GEMINI": None,
                 "GROK": None,
-                "ANTHROPIC": None
+                "ANTHROPIC": None,
+                "GEMMA": None
             },
             "SOCIAL_NETWORKS": {
                 "X": None,

@@ -9,10 +9,11 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
-from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
-from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
+from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
+from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
+from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 
 # Domain Imports (Harmonized)
@@ -67,6 +68,7 @@ class Jarvis:
         self.auth_vault = GlobalAuthVault()
         self.air_dev = AirDevIntegration(self.brain)
         self.agent_deck = AgentDeckIntegration(self.brain)
+        self.gemma = GemmaIntelligence(self.brain, self.auth_vault)
         self.coinbase = CoinbaseService()
         self.exodus = ExodusWalletService()
         
@@ -98,6 +100,7 @@ class Jarvis:
         self.assimilation_shard.start_autonomous_loop()
         self.apex_shard.start_evolution()
         self.live_patch.start()
+        self.gemma.start_evolution()
 
         # Start background services
         threading.Thread(target=self.monetization.run, daemon=True).start()
@@ -114,7 +117,8 @@ class Jarvis:
             "reality": self.reality,
             "governance": self.governance,
             "air": self.air_dev,
-            "deck": self.agent_deck
+            "deck": self.agent_deck,
+            "gemma": self.gemma
         }
         target_shard = shard_map.get(domain)
         if target_shard:
@@ -171,6 +175,12 @@ class Jarvis:
                 return True
             return False
 
+        if command.startswith("gemma "):
+            prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
+            if prompt:
+                return self.execute_enhanced_task("gemma", "query", prompt)
+            return False
+
         if command in ["systems status", "status", "check"]:
             self.announce_status()
             return True
@@ -217,7 +227,8 @@ class Jarvis:
             "monetization": "STEALTH_ENGAGED",
             "wallets": assets,
             "auth_vault": "SECURE",
-            "live_patch": "ACTIVE"
+            "live_patch": "ACTIVE",
+            "gemma_shard": "ONLINE"
         }
         print(json.dumps(status_report, indent=4))
         print(f"\n{GREEN}{BOLD}Jarvis: Diagnostics complete. Apex sovereignty maintained.{ENDC}")
