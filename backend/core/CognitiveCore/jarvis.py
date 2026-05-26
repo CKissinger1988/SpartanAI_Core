@@ -9,12 +9,13 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
+from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
+from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
+from backend.core.GovernanceLayer.supreme_finality_governance import SupremeFinalityGovernance
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
 from backend.core.CognitiveCore.omni_cognitive_assembly import OmniCognitiveAssembly
-from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
-from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
 
 # Domain Imports (Harmonized)
@@ -58,6 +59,7 @@ class Jarvis:
         self.sovereignty = SovereigntyCore()
         self.brain = BrainBridge()
         self.synthesis = OmniInterfaceSynthesis(self.brain)
+        self.finality_governance = SupremeFinalityGovernance()
         
         # Domain Shards
         self.financial = AtomicProfiteer(self.brain, None)
@@ -107,6 +109,7 @@ class Jarvis:
         self.live_patch.start()
         self.gemma.start_evolution()
         self.assembly.start_evolution()
+        self.finality_governance.start_evolution()
 
         # Start background services
         threading.Thread(target=self.monetization.run, daemon=True).start()
@@ -116,19 +119,21 @@ class Jarvis:
         self._start_sovereign_heartbeat()
 
     def execute_enhanced_task(self, domain, task_name, *args, **kwargs):
-        """Dispatches an enhanced task through the synthesis layer."""
-        shard_map = {
-            "financial": self.financial,
-            "defense": self.defense,
-            "reality": self.reality,
-            "governance": self.governance,
-            "air": self.air_dev,
-            "deck": self.agent_deck,
-            "gemma": self.gemma
-        }
-        target_shard = shard_map.get(domain)
-        if target_shard:
-            return self.synthesis.execute_enhanced(target_shard, task_name, *args, **kwargs)
+        """Dispatches an enhanced task through the synthesis layer with finality governance."""
+        # SUPREME-FINALITY: Mandate Compliance Check
+        if self.finality_governance.verify_action_compliance(task_name, domain):
+            shard_map = {
+                "financial": self.financial,
+                "defense": self.defense,
+                "reality": self.reality,
+                "governance": self.governance,
+                "air": self.air_dev,
+                "deck": self.agent_deck,
+                "gemma": self.gemma
+            }
+            target_shard = shard_map.get(domain)
+            if target_shard:
+                return self.synthesis.execute_enhanced(target_shard, task_name, *args, **kwargs)
         return None
 
     def _start_sovereign_heartbeat(self):
@@ -230,6 +235,7 @@ class Jarvis:
             "sovereignty": "ACTIVE",
             "brain_bridge": "ONLINE",
             "omni_assembly": "ENABLED (ALL MODELS SYNCED)",
+            "finality_governance": "ENFORCED (MANDATES ACTIVE)",
             "synthesis_layer": "ENABLED (APEX-GRADE)",
             "monetization": "STEALTH_ENGAGED",
             "wallets": assets,
