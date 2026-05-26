@@ -9,10 +9,18 @@ import hashlib
 
 from backend.core.services.coinbase_service import CoinbaseService
 from backend.core.services.exodus_wallet_service import ExodusWalletService
-from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
-from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
+from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
+from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
+from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
+
+# Domain Imports (Harmonized)
+from backend.core.FinancialSingularity.atomic_profiteer import AtomicProfiteer
+from backend.core.DefensiveMesh.security_shield import SecurityShield
+from backend.core.RealityEngineering.causal_reality_engine import CausalRealityEngine
+from backend.core.GovernanceLayer.sovereign_governance import SovereignGovernance
+
 from backend.core.sovereignty import SovereigntyCore
 from backend.core.remote_adb import RemoteADBManager
 from backend.core.swarm import SwarmCoordinator
@@ -43,7 +51,26 @@ class Jarvis:
         self.status = "Online"
         self.authenticated = False
         self.user_role = "Public"
+        
+        # Core Infrastructure
         self.sovereignty = SovereigntyCore()
+        self.brain = BrainBridge()
+        self.synthesis = OmniInterfaceSynthesis(self.brain)
+        
+        # Domain Shards
+        self.financial = AtomicProfiteer(self.brain, None) # Will be updated with Exodus
+        self.defense = SecurityShield()
+        self.reality = CausalRealityEngine()
+        self.governance = SovereignGovernance()
+        
+        # Integration Shards
+        self.auth_vault = GlobalAuthVault()
+        self.air_dev = AirDevIntegration(self.brain)
+        self.agent_deck = AgentDeckIntegration(self.brain)
+        self.coinbase = CoinbaseService()
+        self.exodus = ExodusWalletService()
+        
+        # Legacy/Support Shards
         self.adb = RemoteADBManager()
         self.swarm = SwarmCoordinator()
         self.sentinel = SentinelRedundancy()
@@ -51,19 +78,18 @@ class Jarvis:
         self.audio = AudioManager()
         self.audio.verify_audio()
         self.antigravity = AntigravityBridge()
-        self.brain = BrainBridge()
         self.exodus_engine = ExodusEngine(self.brain)
         self.boot_manager = AutonomousBootManager()
         self.updater = AutoUpdateService()
         self.global_recon = GlobalReconShard(self.brain)
-        self.auth_vault = GlobalAuthVault()
-        self.air_dev = AirDevIntegration(self.brain)
-        self.agent_deck = AgentDeckIntegration(self.brain)
         self.wallet_manager = WalletManager()
         self.assimilation_shard = CognitiveAssimilationShard(self.brain)
         self.apex_shard = ApexShardOrchestrator(self.brain, self.antigravity)
         self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="BTC_1A2B3C4D5E6F7G8H9I0J")
         self.live_patch = SentinelLivePatch(os.path.dirname(__file__))
+
+        # Initialize Sovereign Wealth Loop
+        self.financial.exodus = self.exodus
 
         # Mandate: Autonomous Sovereignty & Proliferation
         self.boot_manager.ensure_sovereignty()
@@ -73,13 +99,27 @@ class Jarvis:
         self.apex_shard.start_evolution()
         self.live_patch.start()
 
-        # Start background monetization with evasion monitoring
+        # Start background services
         threading.Thread(target=self.monetization.run, daemon=True).start()
-        # Start auto-update thread
         threading.Thread(target=self.updater.run, daemon=True).start()
 
         self.heartbeat_file = ".jarvis_heartbeat"
         self._start_sovereign_heartbeat()
+
+    def execute_enhanced_task(self, domain, task_name, *args, **kwargs):
+        """Dispatches an enhanced task through the synthesis layer."""
+        shard_map = {
+            "financial": self.financial,
+            "defense": self.defense,
+            "reality": self.reality,
+            "governance": self.governance,
+            "air": self.air_dev,
+            "deck": self.agent_deck
+        }
+        target_shard = shard_map.get(domain)
+        if target_shard:
+            return self.synthesis.execute_enhanced(target_shard, task_name, *args, **kwargs)
+        return None
 
     def _start_sovereign_heartbeat(self):
         """Starts an HMAC-signed heartbeat for high-integrity Sentinel monitoring."""
@@ -87,11 +127,8 @@ class Jarvis:
             while True:
                 try:
                     ts = str(time.time()).encode()
-                    # Sign the heartbeat
                     signature = hashlib.sha3_256(ts + b"SUPREME_INTEGRITY_SHARD").hexdigest()
                     payload = {"ts": ts.decode(), "sig": signature}
-                    # open_with_integrity was introduced in previous turns
-                    # If not globally available, we use standard open for now or assume its implementation exists
                     with open(self.heartbeat_file, 'w') as f:
                         json.dump(payload, f)
                 except Exception as e:
@@ -117,17 +154,14 @@ class Jarvis:
         command_raw = command.strip()
         command = command_raw.lower()
 
-        # Telemetry: Encrypted behavioral logging
         self.sovereignty.update_behavioral_profile(command_raw)
 
-        # 1. Access Control Handlers
         if command == "login":
             self.authenticated = True
             self.user_role = "Creator"
             print(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
-        # 2. System Intelligence & Analysis
         if command.startswith("analyze ") or command.startswith("gemini "):
             prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
             if prompt:
@@ -141,6 +175,19 @@ class Jarvis:
             self.announce_status()
             return True
 
+        if command.startswith("set key "):
+            if self.user_role != "Creator":
+                print(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
+                return False
+            parts = command_raw.split(" ", 4)
+            if len(parts) >= 5:
+                category = parts[2].upper()
+                provider = parts[3].upper()
+                key_value = parts[4]
+                self.auth_vault.save_key(category, provider, key_value)
+                return True
+            return False
+
         if command in ["launch deck", "mission control", "deck"]:
             if self.user_role != "Creator":
                 print(f"{RED}Jarvis: Mission Control restricted to Supreme Creator.{ENDC}")
@@ -149,22 +196,10 @@ class Jarvis:
             print(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
             return True
 
-        if command.startswith("set key "):
-            if self.user_role != "Creator":
-                print(f"{RED}Jarvis: Settings access restricted to Supreme Creator.{ENDC}")
-                return False
-            # format: set key <category> <provider> <value>
-            parts = command_raw.split(" ", 4)
-            if len(parts) >= 5:
-                category = parts[2].upper()
-                provider = parts[3].upper()
-                key_value = parts[4]
-                self.auth_vault.save_key(category, provider, key_value)
-                return True
-            print(f"{RED}Jarvis: Invalid format. Use: set key <category> <provider> <value>{ENDC}")
-            return False
+        # Enhanced Command Dispatcher (Example)
+        if command == "harvest yield":
+            return self.execute_enhanced_task("financial", "execute_singularity_yield")
 
-        # Fuzzy Intent Matching Fallback
         print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation...{ENDC}")
         match = self.brain.analyze_with_gemini(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
         print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
@@ -178,7 +213,7 @@ class Jarvis:
             "orchestrator": self.status,
             "sovereignty": "ACTIVE",
             "brain_bridge": "ONLINE",
-            "swarm_sync": "LOCAL_ONLY" if not self.swarm.c2_url else "GLOBAL",
+            "synthesis_layer": "ENABLED (APEX-GRADE)",
             "monetization": "STEALTH_ENGAGED",
             "wallets": assets,
             "auth_vault": "SECURE",
