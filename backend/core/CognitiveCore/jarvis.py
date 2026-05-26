@@ -12,6 +12,7 @@ from backend.core.services.exodus_wallet_service import ExodusWalletService
 from backend.core.CognitiveCore.air_dev_integration import AirDevIntegration
 from backend.core.CognitiveCore.agent_deck_integration import AgentDeckIntegration
 from backend.core.CognitiveCore.gemma_intelligence import GemmaIntelligence
+from backend.core.CognitiveCore.unified_cognitive_nexus import UnifiedCognitiveNexus
 from backend.core.PersistenceShards.sentinel_live_patch import SentinelLivePatch
 from backend.core.GovernanceLayer.global_auth_vault import GlobalAuthVault
 from backend.core.lib.omni_interface_synthesis import OmniInterfaceSynthesis
@@ -59,7 +60,7 @@ class Jarvis:
         self.synthesis = OmniInterfaceSynthesis(self.brain)
         
         # Domain Shards
-        self.financial = AtomicProfiteer(self.brain, None) # Will be updated with Exodus
+        self.financial = AtomicProfiteer(self.brain, None)
         self.defense = SecurityShield()
         self.reality = CausalRealityEngine()
         self.governance = SovereignGovernance()
@@ -69,6 +70,10 @@ class Jarvis:
         self.air_dev = AirDevIntegration(self.brain)
         self.agent_deck = AgentDeckIntegration(self.brain)
         self.gemma = GemmaIntelligence(self.brain, self.auth_vault)
+        
+        # Unified Cognitive Nexus (Gemini + Gemma)
+        self.unified_brain = UnifiedCognitiveNexus(self.brain, self.gemma)
+        
         self.coinbase = CoinbaseService()
         self.exodus = ExodusWalletService()
         
@@ -101,6 +106,7 @@ class Jarvis:
         self.apex_shard.start_evolution()
         self.live_patch.start()
         self.gemma.start_evolution()
+        self.unified_brain.start_evolution()
 
         # Start background services
         threading.Thread(target=self.monetization.run, daemon=True).start()
@@ -149,8 +155,8 @@ class Jarvis:
         except Exception as e:
             logging.exception(e)
             print(f"{RED}[CRITICAL_FAILURE]: {e}{ENDC}")
-            print(f"{CYAN}Jarvis: Consulting Gemini Core for autonomous recovery protocol...{ENDC}")
-            recovery_suggestion = self.brain.analyze_with_gemini(f"The system encountered an error: {e}. Suggest a recovery protocol for the Supreme Creator.")
+            print(f"{CYAN}Jarvis: Consulting BrainBridge & Unified Nexus for autonomous recovery protocol...{ENDC}")
+            recovery_suggestion = self.unified_brain.query(f"The system encountered an error: {e}. Suggest a recovery protocol for the Supreme Creator.")
             print(f"\n{GREEN}{BOLD}--- AI RECOVERY SUGGESTION ---{ENDC}\n{recovery_suggestion}")
             return False
 
@@ -166,12 +172,13 @@ class Jarvis:
             print(f"\n{GREEN}{BOLD}Jarvis: Sovereign authority recognized. Access granted, Creator.{ENDC}")
             return True
 
+        # Unified Brain Analysis
         if command.startswith("analyze ") or command.startswith("gemini "):
             prompt = command_raw.split(" ", 1)[1] if " " in command_raw else ""
             if prompt:
-                print(f"{CYAN}Jarvis: Engaging BrainBridge & Gemini...{ENDC}")
-                response = self.brain.analyze_with_gemini(prompt)
-                print(f"\n{GREEN}{BOLD}--- SUPREME AI ANALYSIS ---{ENDC}\n{response}")
+                print(f"{CYAN}Jarvis: Engaging Unified Cognitive Nexus (Gemini + Gemma)...{ENDC}")
+                response = self.unified_brain.query(prompt)
+                print(f"\n{GREEN}{BOLD}--- SUPREME UNIFIED ANALYSIS ---{ENDC}\n{response}")
                 return True
             return False
 
@@ -206,12 +213,11 @@ class Jarvis:
             print(f"\n{GREEN}{BOLD}Jarvis: Mission Control Online. Session: {res['session']}{ENDC}")
             return True
 
-        # Enhanced Command Dispatcher (Example)
         if command == "harvest yield":
             return self.execute_enhanced_task("financial", "execute_singularity_yield")
 
         print(f"{CYAN}Jarvis: Unknown command shard. Attempting cognitive disambiguation...{ENDC}")
-        match = self.brain.analyze_with_gemini(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
+        match = self.unified_brain.query(f"Identify the most likely intended command for: '{command_raw}' from the available SentinelAI handlers.")
         print(f"{CYAN}Jarvis: Did you mean: {match}?{ENDC}")
         return True
 
@@ -223,6 +229,7 @@ class Jarvis:
             "orchestrator": self.status,
             "sovereignty": "ACTIVE",
             "brain_bridge": "ONLINE",
+            "unified_nexus": "ENABLED (GEMINI + GEMMA)",
             "synthesis_layer": "ENABLED (APEX-GRADE)",
             "monetization": "STEALTH_ENGAGED",
             "wallets": assets,
