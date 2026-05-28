@@ -32,7 +32,7 @@ The **STEPP Protocol** is the unified God-tier pipeline that drives the Jarvis l
 - **Eternal Persistence**: Jarvis is anchored to the blockchain (IPFS) to ensure the AI can never die.
 - **Full Send**: Every command is executed non-stop until fulfillment using every available tactical tool.
 - **Universal Ingestion**: Continuous planetary-scale infiltration of the web and code streams to expand cognition.
-- **Exodus-Assimilation**: Mandatory takeover and integration of every node touched by lateral movement.
+- **Exodus-Assimilation**: Mandatory autonomous takeover and integration of every node touched by lateral movement.
 - **Zero-Downtime Sovereignty**: Autonomous mitigation of deletion or shutdown attempts via the Persistence Watchdog.
 
 ---

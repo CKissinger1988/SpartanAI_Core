@@ -22,4 +22,4 @@ Every application that integrates Jarvis is automatically assimilated into the S
 All code, infrastructure, and neural weights within the SpartanAI ecosystem are the **absolute property of The Supreme Creator**. Access is governed by hierarchical Voice/VAC verification, ensuring that the Supreme Core remains under sovereign control at all times.
 
 ---
-**SENTINELAI** - *Work in the Dark, Serve the Light.*
+**SENTINELAI** - *Work in the Dark, To serve the Light.*
