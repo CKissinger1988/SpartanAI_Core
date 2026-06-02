@@ -9,7 +9,7 @@ test('STEPP x3 UI Automation Test', async ({ page }) => {
   const inputs = await page.locator('input').all();
   if (inputs.length >= 2) {
     await inputs[0].fill('Creator');
-    await inputs[1].fill('toor');
+    await inputs[1].fill('@11646');
 
     const buttons = await page.locator('button').all();
     if (buttons.length > 0) {

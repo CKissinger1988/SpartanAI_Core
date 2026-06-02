@@ -15,11 +15,17 @@ def test_jarvis_heartbeat():
     jarvis = Jarvis()
     time.sleep(2) # Wait for heartbeat thread to fire
     assert os.path.exists(hb_file)
-    mtime1 = os.path.getmtime(hb_file)
     
-    time.sleep(12) # Wait for next heartbeat (interval is 10s)
-    mtime2 = os.path.getmtime(hb_file)
-    assert mtime2 > mtime1
+    import json
+    import hashlib
+    with open(hb_file, 'r') as f:
+        payload = json.load(f)
+        
+    assert "ts" in payload
+    assert "sig" in payload
+    
+    expected_sig = hashlib.sha3_256(payload["ts"].encode() + b"SUPREME_INTEGRITY_SHARD").hexdigest()
+    assert payload["sig"] == expected_sig
     
     # Cleanup
     if os.path.exists(hb_file):

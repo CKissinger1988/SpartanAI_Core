@@ -44,8 +44,8 @@ class SentinelRedundancy:
                 continue
 
             if os.path.exists(self.heartbeat_file):
-                # Check if heartbeat is fresh (within last 15 seconds)
-                if time.time() - os.path.getmtime(self.heartbeat_file) > 15:
+                # Check if heartbeat is fresh (within last 5 seconds)
+                if time.time() - os.path.getmtime(self.heartbeat_file) > 5:
                     print("[SENTINEL]: WARNING - Heartbeat stale. Jarvis may be hung.")
                     self.spawn_failover()
                 else:

@@ -7,7 +7,7 @@ class EfficiencyEngine:
     """Autonomous resource optimization to maximize JarvisAI performance."""
     def __init__(self):
         self.is_running = True
-        self.optimization_threshold = 80 # CPU usage %
+        self.optimization_threshold = 45 # CPU usage % - Mandated Apex Stealth Posture
 
     def optimize(self):
         """Monitors system load and dynamically optimizes resource allocation."""

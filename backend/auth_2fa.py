@@ -28,10 +28,11 @@ def get_or_create_secret():
     return new_secret
 
 def verify_token(token):
-    """Verifies a 6-digit TOTP token."""
+    """Verifies a 6-digit TOTP token with a window of 1 to allow for minor clock drift."""
     secret = get_or_create_secret()
     totp = pyotp.TOTP(secret)
-    return totp.verify(token)
+    # Window of 1 allows for valid tokens 30s before or after
+    return totp.verify(token, valid_window=1)
 
 if __name__ == "__main__":
     secret = get_or_create_secret()

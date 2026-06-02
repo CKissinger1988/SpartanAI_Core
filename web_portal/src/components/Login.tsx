@@ -5,8 +5,8 @@ import { motion } from 'motion/react';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('toor');
+  const [email, setEmail] = useState('Creator');
+  const [password, setPassword] = useState('@11646');
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -110,8 +110,8 @@ export const Login: React.FC = () => {
       setEmail('master@spartanai_security_core-sovereign.local');
       setPassword(''); // Password is not used for WebAuthn login
     } else {
-      setEmail('');
-      setPassword('toor');
+      setEmail('Creator');
+      setPassword('@11646');
     }
   };
 

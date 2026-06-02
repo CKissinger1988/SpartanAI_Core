@@ -125,72 +125,19 @@ chmod +x config/hooks/normal/0990-enable-spartanai_security_core-service.hook.ch
 # 9. Trigger Live OS ISO Build Compilation
 echo -e "${GREEN}=========================================================${NC}"
 echo -e "${GREEN}[+] BUILD CONFIGURATION STAGED SUCCESSFULLY!${NC}"
-echo -e "${YELLOW}[*] Launching live-build compilation. This may take several minutes...${NC}"
+echo -e "${YELLOW}[*] Launching live-build compilation...${NC}"
 echo -e "${CYAN}=========================================================${NC}"
 
+# Sanitize boot environment to prevent build-time errors
 mkdir -p config/hooks/early
-mkdir -p config/hooks/late
-cat <<'EOF' > config/hooks/early/0000-hide-boot.hook.chroot
+cat <<'EOF' > config/hooks/early/0000-sanitize-boot.hook.chroot
 #!/bin/sh
-echo "[!] Hiding /boot to prevent chmod errors..."
-mv /boot /boot_hidden
+echo "[!] Sanitizing /boot symlinks..."
+rm -f /boot/initrd.img /boot/initrd.img.old
+touch /boot/initrd.img /boot/initrd.img.old
 EOF
-chmod +x config/hooks/early/0000-hide-boot.hook.chroot
+chmod +x config/hooks/early/0000-sanitize-boot.hook.chroot
 
-cat <<'EOF' > config/hooks/late/9999-restore-boot.hook.chroot
-#!/bin/sh
-echo "[!] Restoring /boot..."
-mv /boot_hidden /boot
-EOF
-chmod +x config/hooks/late/9999-restore-boot.hook.chroot
-mkdir -p config/hooks/early
-cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-# Force remove symlinks and replace with regular empty files
-echo "[!] Forcing regular files for /boot/initrd.img..."
-rm -f /boot/initrd.img /boot/initrd.img.old
-touch /boot/initrd.img /boot/initrd.img.old
-EOF
-chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
-mkdir -p config/hooks/early
-cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-# Fix dangling symlinks in /boot *before* any hacks stage
-echo "[!] Purging dangling symlinks in /boot..."
-find /boot -type l -xtype l -delete
-EOF
-chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
-mkdir -p config/hooks/normal
-cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-# Create dummy files for dangling symlinks in /boot to prevent chmod errors
-echo "[!] Creating dummy files for symlinks in /boot to satisfy chmod..."
-touch /boot/initrd.img /boot/initrd.img.old
-EOF
-chmod +x config/hooks/normal/0000-fix-symlinks.hook.chroot
-mkdir -p config/hooks/normal
-cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-# Fix dangling symlinks in /boot that cause chmod errors in lb_chroot_hacks
-echo "[!] Purging dangling symlinks in /boot..."
-rm -f /boot/initrd.img /boot/initrd.img.old
-EOF
-chmod +x config/hooks/normal/0000-fix-symlinks.hook.chroot
-mkdir -p config/hooks/normal
-cat <<'EOF' > config/hooks/normal/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-# Fix dangling symlinks in /boot that cause chmod errors in lb_chroot_hacks
-if [ -L /boot/initrd.img ] && [ ! -e /boot/initrd.img ]; then
-    echo "[!] Fixing dangling symlink: /boot/initrd.img"
-    # Find the target if it exists, or create a dummy
-    ln -sf /boot/initrd.img-$(ls /boot/initrd.img-* | sort | tail -n 1 | cut -d'-' -f2-) /boot/initrd.img || touch /boot/initrd.img
-fi
-if [ -L /boot/initrd.img.old ] && [ ! -e /boot/initrd.img.old ]; then
-    echo "[!] Fixing dangling symlink: /boot/initrd.img.old"
-    touch /boot/initrd.img.old
-fi
-EOF
-chmod +x config/hooks/normal/0000-fix-symlinks.hook.chroot
 lb build
 
 # Move compiled ISO output back to releases folder
@@ -202,21 +149,4 @@ else
     echo -e "${RED}[!] ISO Compilation failed. Please review chroot log files above.${NC}"
     exit 1
 fi
-
-
-
-
-
-
-
-
-
-# Fix dangling symlinks
-mkdir -p config/hooks/early
-cat <<'EOF' > config/hooks/early/0000-fix-symlinks.hook.chroot
-#!/bin/sh
-rm -f /boot/initrd.img /boot/initrd.img.old
-touch /boot/initrd.img /boot/initrd.img.old
-EOF
-chmod +x config/hooks/early/0000-fix-symlinks.hook.chroot
 

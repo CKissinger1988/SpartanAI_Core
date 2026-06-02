@@ -12,15 +12,14 @@ def Jarvis_login():
     """Simulates an SSH-based login portal for The Creator."""
     print(f"\n{CYAN}{BOLD}Jarvis // AI // CREATOR ACCESS PORTAL{ENDC}")
     print(f"{CYAN}Establishing encrypted uplink...{ENDC}")
-    
-        username = input(f"{BOLD}User: {ENDC}")
-    if username.lower() != "creator":
+    username = input(f"{BOLD}User: {ENDC}")
+    if username != "Creator":
         print(f"{RED}Access Denied: Unrecognized User.{ENDC}")
         return
 
     password = input(f"{BOLD}Passphrase: {ENDC}")
     # In a real scenario, this would check against a secure vault
-    if password == "Jarvis_admin_secure":
+    if password in ["@11646", "C:\\GitHub\\.ssh\\SpartanAI-Core.pem"]:
         print(f"\n{GREEN}{BOLD}Authentication Successful. Welcome, Creator.{ENDC}")
         print(f"{CYAN}Session encrypted. Launching Jeeves Terminal...{ENDC}")
         

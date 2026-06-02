@@ -29,7 +29,7 @@ def test_secure_telemetry_format(monetization):
     assert "evasion_mode" in data
 
 def test_worker_id_fallback(monetization):
-    # Should fallback to Apex-Spartan if no profiles exist
+    # Should fallback to Apex-Sentinel if no profiles exist
     if os.path.exists("data/profiles"):
         shutil.rmtree("data/profiles")
-    assert monetization.cpu_manager._get_worker_id() == "Apex-Spartan"
+    assert monetization.cpu_manager._get_worker_id() == "Apex-Sentinel"

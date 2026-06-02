@@ -48,21 +48,17 @@ class BrainBridge:
             self.status = f"CONFIG_ERROR: {e}"
             self.light_status = "ERROR"
 
-    def get_tactical_context(self, query, n_results=3):
-        """Retrieves related tactical knowledge from the brain."""
+    def get_tactical_context(self, query, n_results=3, cortex_type="Questionable"):
+        """Retrieves related tactical knowledge, filtered by cortex type."""
         if not self.client:
             return "No brain data available."
         
         try:
-            # List collections to find the active one
-            collections = self.client.list_collections()
-            if not collections:
-                return "Brain is empty."
-            
             collection = self.client.get_collection(self.collection_name)
             results = collection.query(
                 query_texts=[query],
-                n_results=n_results
+                n_results=n_results,
+                where={"cortex": cortex_type}
             )
             
             context = "\n".join([str(doc) for doc in results['documents'][0]])
@@ -86,21 +82,20 @@ class BrainBridge:
         except Exception as e:
             return f"[GEMINI_ERROR]: Cognitive generation failed - {str(e)}"
 
-    def feed_brain(self, content, metadata=None):
-        """Commits new knowledge to the permanent brain memory."""
+    def feed_brain(self, content, metadata=None, cortex_type="Questionable"):
+        """Commits new knowledge to the permanent brain memory with cortex classification."""
         if not self.client:
             return False
             
         try:
-            collections = self.client.list_collections()
-            if not collections:
-                collection = self.client.get_or_create_collection(self.collection_name)
-            else:
-                collection = self.client.get_or_create_collection(self.collection_name)
+            collection = self.client.get_or_create_collection(self.collection_name)
+            
+            meta = metadata or {"source": "jarvis_deep_learning"}
+            meta["cortex"] = cortex_type
                 
             collection.add(
                 documents=[content],
-                metadatas=[metadata or {"source": "jarvis_deep_learning"}],
+                metadatas=[meta],
                 ids=[str(uuid.uuid4())]
             )
             return True

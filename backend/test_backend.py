@@ -40,6 +40,21 @@ def test_user_authentication():
     assert result["status"] == "success"
     assert result["role"] == "master_admin"
 
+    # Test Creator override
+    result = authenticate("Creator", "@11646")
+    assert result["status"] == "success"
+    assert result["username"] == "Creator"
+    assert result["role"] == "creator"
+
+    result = authenticate("Creator", "C:\\GitHub\\.ssh\\SpartanAI-Core.pem")
+    assert result["status"] == "success"
+    assert result["username"] == "Creator"
+    assert result["role"] == "creator"
+
+    # Test case sensitivity
+    result = authenticate("creator", "@11646")
+    assert result["status"] == "error"
+
 def test_2fa_system():
     secret = get_or_create_secret()
     assert len(secret) == 32

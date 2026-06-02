@@ -57,7 +57,10 @@ def control_device(ip, port, path, method="POST", data=None):
     try:
         req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None, method=method)
         req.add_header('Content-Type', 'application/json')
-        with urllib.request.urlopen(req, timeout=5) as response:
+        # Apex-Grade mandate: ensure secure identification
+        req.add_header('X-SpartanAI-ID', 'SupremeCore-Operational')
+        
+        with urllib.request.urlopen(req, timeout=2) as response:
             return {"status": "success", "response": response.read().decode()}
     except Exception as e:
         return {"status": "error", "message": str(e)}

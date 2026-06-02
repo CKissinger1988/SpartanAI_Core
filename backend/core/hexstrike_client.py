@@ -13,7 +13,7 @@ class HexstrikeEngine:
     def ensure_active(self):
         """Ensures the Hexstrike server is running in WSL Kali."""
         try:
-            response = requests.get(f"{self.base_url}/process/pool-stats", timeout=2)
+            response = requests.get(f"{self.base_url}/process/pool-stats", timeout=0.5)
             if response.status_code == 200:
                 return True
         except:
@@ -22,11 +22,11 @@ class HexstrikeEngine:
             start_cmd = "cd ~/hexstrike-ai && ./hexstrike-env/bin/python hexstrike_server.py > /dev/null 2>&1 &"
             subprocess.Popen(["wsl", "-d", "kali-linux", "bash", "-c", start_cmd])
             
-            # Wait for startup
-            for _ in range(10):
-                time.sleep(2)
+            # Fast wait for startup (5x1s = 5s total vs 20s)
+            for _ in range(5):
+                time.sleep(1)
                 try:
-                    if requests.get(f"{self.base_url}/process/pool-stats", timeout=1).status_code == 200:
+                    if requests.get(f"{self.base_url}/process/pool-stats", timeout=0.5).status_code == 200:
                         print("[HEXSTRIKE] Offensive Server ONLINE.")
                         return True
                 except:
