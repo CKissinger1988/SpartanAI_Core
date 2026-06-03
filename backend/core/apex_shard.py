@@ -30,10 +30,12 @@ class ApexShardOrchestrator:
         else:
              wsl_root = project_root
              
-        pytest_cmd = [
-            f"{wsl_root}/venv/bin/pytest", f"{wsl_root}/backend/tests/"
-        ]
+        import sys
         import os
+        
+        test_path = os.path.join(self.project_root, "backend", "tests") if sys.platform == "win32" else os.path.join(wsl_root, "backend", "tests")
+        pytest_cmd = [sys.executable, "-m", "pytest", test_path]
+        
         env = os.environ.copy()
         env["PYTHONPATH"] = wsl_root
         res1 = subprocess.run(pytest_cmd, capture_output=True, text=True, env=env)

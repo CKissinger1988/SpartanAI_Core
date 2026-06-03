@@ -5,7 +5,9 @@
   "scripts": {
     "dev:backend": "node backend/server.js",
     "dev:frontend": "vite frontend --port 3000",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
@@ -14,6 +16,7 @@
     "ws": "^8.17.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
     "@vitejs/plugin-react": "^4.3.0",
     "playwright": "^1.44.0",
     "react": "^18.3.1",

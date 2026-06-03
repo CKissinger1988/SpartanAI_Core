@@ -2,7 +2,7 @@ import pytest
 import os
 import time
 import threading
-from backend.core.jarvis import Jarvis
+from backend.core.CognitiveCore.jarvis import Jarvis
 from backend.switcher import ModelSwitcher
 from backend.core.spartan import SpartanRedundancy
 
