@@ -10,7 +10,9 @@ Welcome to the central SpartanAI Security Core of **SpartanAI**. This repository
 
 ### ⚡ Recent System Evolutions
 *   **Native Windows Launcher:** Deployed a high-end C#/.NET 10.0 WPF application (`Supreme_Command_Center.exe`) to the desktop for robust, environment-aware system initialization and real-time logging.
-*   **Supreme Command Unification:** All independent dashboards (Jarvis Supreme, Apex Command, Touch Tactical, Tactical Toolkit) have been unified into a single sovereign interface: the **Supreme SpartanAI Command Center**.
+*   **Supreme Command Unification v6.2:** All independent dashboards (Jarvis Supreme, Apex Command, Touch Tactical, Tactical Toolkit) have been unified into a single sovereign interface: the **Supreme SpartanAI Command Center**.
+*   **Neural Shell Relay:** The command terminal now features a real-time relay to the **Gemini CLI**, enabling Jarvis to leverage supreme cognitive power for system execution.
+*   **Cross-Platform Sovereignty:** Full support for both Windows and Linux (Ubuntu 24.04), including automated GUI environment stabilization on GCP.
 *   **Central Settings Panel:** A unified configuration dashboard covers System Core, Security Protocols, Network Sovereignty, Project Aspects, and Audio/API parameters.
 *   **Spartan Terminal (Ghost Chat):** Upgraded into a glowing Spartan Shield terminal with one-click quick actions (Purify, Unbox, Diagnostics).
 *   **Tactical Hub Integration:** Direct integration of Exploit Manager, IoT Infiltrator, and Neural Game Engine within the main Command Center.
