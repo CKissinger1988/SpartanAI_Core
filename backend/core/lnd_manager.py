@@ -16,7 +16,14 @@ class LNDManager:
     def __init__(self):
         # Default LND REST API port is 8080
         self.lnd_host = os.environ.get("LND_REST_HOST", "127.0.0.1:8080")
-        self.lnd_dir = os.environ.get("LND_DIR", os.path.expanduser("~/.lnd"))
+        
+        # Windows-friendly default path resolution
+        if os.name == 'nt':
+            default_lnd_dir = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Lnd")
+        else:
+            default_lnd_dir = os.path.expanduser("~/.lnd")
+            
+        self.lnd_dir = os.environ.get("LND_DIR", default_lnd_dir)
         self.network = os.environ.get("LND_NETWORK", "mainnet")
         self.MASTER_BTC_ADDRESS = "1Esi1EKp7UqagemAcwySn8m5yJkjyVucHU"
         

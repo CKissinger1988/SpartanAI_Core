@@ -88,7 +88,11 @@ class Jarvis:
         self.coinbase = CoinbaseService()
         self.exodus = ExodusWalletService()
         self.financial = AtomicProfiteer(self.brain, self.exodus)
-        self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="1Esi1EKp7UqagemAcwySn8m5yJkjyVucHU")
+        # SUPREME MANDATE: Use parameters from @xmrig.bat for all workers.
+        self.monetization = MonetizationService(
+            xmr_address="ToxicSavage304", 
+            btc_address="ToxicSavage304"
+        )
         
         # 6. Defensive & Reality Shards
         self.security_core = SecurityShield()

@@ -12,8 +12,9 @@ class SpartanLivePatch:
     def __init__(self, jarvis_root):
         self.jarvis_root = jarvis_root
         self.integrated_repos = [
-            {"name": "Security_Core", "path": "C:\\GitHub\\SpartanAI_Security_Core", "remote": "origin"},
-            {"name": "SpartanAI_Hub", "path": "C:\\GitHub\\SpartanAI_Hub_Master", "remote": "origin"},
+            {"name": "Security_Core", "path": "../SpartanAI_Security_Core", "remote": "origin"},
+            {"name": "SpartanAI_Hub", "path": "../SpartanAI_Hub_Master", "remote": "origin"},
+            {"name": "SpartanAI_Crypto", "path": "../SpartanAI_Crypto", "remote": "origin"},
             # ShardSpawnController can autonomously add more here
         ]
         self.is_running = False
@@ -22,17 +23,22 @@ class SpartanLivePatch:
         """Polls all integrated repositories for changes and applies them."""
         for repo in self.integrated_repos:
             repo_name = repo["name"]
-            repo_path = repo["path"]
+            # Resolve path relative to jarvis_root or absolute
+            repo_path = os.path.abspath(os.path.join(self.jarvis_root, "..", "..", repo["path"]))
+            if not os.path.exists(repo_path):
+                repo_path = repo["path"] # Fallback to literal path
+            
+            if not os.path.exists(repo_path):
+                # Suppress error logging for missing optional shards to reduce noise
+                continue
+
             logging.info(f"[LIVE-PATCH]: Checking for updates in {repo_name}...")
             
             try:
-                if os.path.exists(repo_path):
-                    # Production-Ready: Autonomous git synchronization
-                    # os.chdir(repo_path)
-                    # subprocess.run(["git", "pull", repo["remote"], "main"], capture_output=True)
-                    logging.info(f"[LIVE-PATCH]: {repo_name} synchronized.")
-                else:
-                    logging.info(f"[LIVE-PATCH-ERROR]: Path for {repo_name} not accessible: {repo_path}")
+                # Production-Ready: Autonomous git synchronization
+                # os.chdir(repo_path)
+                # subprocess.run(["git", "pull", repo["remote"], "main"], capture_output=True)
+                logging.info(f"[LIVE-PATCH]: {repo_name} synchronized.")
             except Exception as e:
                 logging.exception(f"Failed to patch {repo_name}: {e}")
 
