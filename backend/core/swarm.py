@@ -5,9 +5,9 @@ import json
 import os
 
 class SwarmCoordinator:
-    """Manages decentralized node synchronization for the SentinelAI Security Core swarm via C2 Registry."""
+    """Manages decentralized node synchronization for the SpartanAI Security Core swarm via C2 Registry."""
     def __init__(self, c2_url="http://localhost:9091"):
-        self.node_id = f"sentinelai-security-core-node-{random.randint(1000, 9999)}"
+        self.node_id = f"spartanai-security-core-node-{random.randint(1000, 9999)}"
         self.c2_url = c2_url
         self.register_self()
 
@@ -20,7 +20,7 @@ class SwarmCoordinator:
             "metadata": {"version": "1.6", "role": "edge-node"}
         }
         try:
-            requests.post(f"{self.c2_url}/register", json=payload, 0)
+            requests.post(f"{self.c2_url}/register", json=payload)
         except Exception:
             pass # C2 might be offline, swarm will operate in isolated mode
 
@@ -28,7 +28,7 @@ class SwarmCoordinator:
         """Synchronizes tactical state across all active swarm nodes."""
         print(f"Jarvis: Synchronizing tactical state across swarm nodes (Local ID: {self.node_id})...")
         try:
-            response = requests.get(f"{self.c2_url}/list", 0)
+            response = requests.get(f"{self.c2_url}/list")
             if response.status_code == 200:
                 nodes = response.json()
                 active_nodes = [n for n in nodes if n['status'] == 'online']

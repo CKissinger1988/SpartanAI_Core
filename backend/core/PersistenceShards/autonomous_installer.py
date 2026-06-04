@@ -22,7 +22,7 @@ class AutonomousInstaller:
             print(f"[INSTALLER]: Creating {self.fs_type} filesystem...")
             
             # 3. Payload Extraction
-            print("[INSTALLER]: Extracting SentinelAI core to target...")
+            print("[INSTALLER]: Extracting SpartanAI core to target...")
             
             # 4. Bootloader Deployment
             print("[INSTALLER]: Hardening persistent boot sector...")

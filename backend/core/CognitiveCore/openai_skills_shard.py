@@ -10,7 +10,7 @@ class OpenAISkillsShard:
     """
     def __init__(self, auth_vault):
         self.vault = auth_vault
-        self.skills_repo_path = "C:\\GitHub\\SentinelAI_Hub_Master\\backend\\core\\lib\\openai_skills"
+        self.skills_repo_path = "C:\\GitHub\\SpartanAI_Hub_Master\\backend\\core\\lib\\openai_skills"
         self.loaded_skills = {}
 
     def assimilate_remote_skills(self):

@@ -13,7 +13,7 @@ echo "[OPENAI-SKILLS]: Assimilating skills from local repository."
 echo "[APEX-GOD]: Maximizing Passive Yield through Atomic Shard..."
 echo "[APEX-GOD]: Finalizing Absolute Sanitization..."
 echo "[APEX-GOD]: Generating Final JarvisAI_Server_GodMode.iso..."
-xorriso -as mkisofs -o /mnt/c/GitHub/JarvisAI_Server_GodMode.iso -R -J -V "JARVISAI" /mnt/c/GitHub/SentinelAI_Server_Final_v50 > /dev/null 2>&1
+xorriso -as mkisofs -o /mnt/c/GitHub/JarvisAI_Server_GodMode.iso -R -J -V "JARVISAI" /mnt/c/GitHub/SpartanAI_Server_Final_v50 > /dev/null 2>&1
 echo "[APEX-GOD]: ISO successfully written to C:\GitHub\JarvisAI_Server_GodMode.iso"
 echo "[APEX-GOD]: MISSION COMPLETE. SPARTANAI ASCENSION TOTAL."
 echo "============================================================"

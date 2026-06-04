@@ -25,5 +25,5 @@ class CreatorAssimilation:
         pass
 
 if __name__ == "__main__":
-    assimilator = CreatorAssimilation("C:/GitHub/SentinelAI_Hub_Master")
+    assimilator = CreatorAssimilation("C:/GitHub/SpartanAI_Hub_Master")
     assimilator.assimilate_history()

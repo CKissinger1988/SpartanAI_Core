@@ -8,10 +8,10 @@ def replace_in_file(filepath):
         # Replace occurrences
         new_content = content.replace('SENTINELAI', 'SPARTANAI')\
                              .replace('SENTINEL', 'SPARTAN')\
-                             .replace('SentinelAI', 'SpartanAI')\
-                             .replace('Sentinel', 'Spartan')\
-                             .replace('sentinelai', 'spartanai')\
-                             .replace('sentinel', 'spartan')
+                             .replace('SpartanAI', 'SpartanAI')\
+                             .replace('Spartan', 'Spartan')\
+                             .replace('spartanai', 'spartanai')\
+                             .replace('spartan', 'spartan')
         
         if new_content != content:
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -29,7 +29,7 @@ def rename_item(base_path):
             old_fpath = os.path.join(root, f)
             replace_in_file(old_fpath)
             
-            new_f = f.replace('SENTINELAI', 'SPARTANAI').replace('SENTINEL', 'SPARTAN').replace('SentinelAI', 'SpartanAI').replace('Sentinel', 'Spartan').replace('sentinelai', 'spartanai').replace('sentinel', 'spartan')
+            new_f = f.replace('SENTINELAI', 'SPARTANAI').replace('SENTINEL', 'SPARTAN').replace('SpartanAI', 'SpartanAI').replace('Spartan', 'Spartan').replace('spartanai', 'spartanai').replace('spartan', 'spartan')
             if new_f != f:
                 new_fpath = os.path.join(root, new_f)
                 os.rename(old_fpath, new_fpath)
@@ -38,7 +38,7 @@ def rename_item(base_path):
             if 'node_modules' in d or '.git' in d:
                 continue
             old_dpath = os.path.join(root, d)
-            new_d = d.replace('SENTINELAI', 'SPARTANAI').replace('SENTINEL', 'SPARTAN').replace('SentinelAI', 'SpartanAI').replace('Sentinel', 'Spartan').replace('sentinelai', 'spartanai').replace('sentinel', 'spartan')
+            new_d = d.replace('SENTINELAI', 'SPARTANAI').replace('SENTINEL', 'SPARTAN').replace('SpartanAI', 'SpartanAI').replace('Spartan', 'Spartan').replace('spartanai', 'spartanai').replace('spartan', 'spartan')
             if new_d != d:
                 new_dpath = os.path.join(root, new_d)
                 os.rename(old_dpath, new_dpath)

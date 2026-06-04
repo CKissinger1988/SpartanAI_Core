@@ -40,7 +40,7 @@ class NetworkDiscoveryShard:
             # This is a simplified check
             pass 
         
-                print("[DISCOVERY]: LAN scan complete. Vectors identified.")
+        print("[DISCOVERY]: LAN scan complete. Vectors identified.")
         return self.lan_targets
 
     def query_wan_vectors(self, brain):

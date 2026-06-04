@@ -1,12 +1,14 @@
 import os
 import re
 
-# Mapping for rebranding
+# Mapping for rebranding (SpartanAI -> SpartanAI)
 replacements = {
-    r'\bSpartanAI\b': 'SpartanAI',
-    r'\bJarvis\b': 'Jarvis',
-    r'\bSpartanAI\b': 'spartanai',
-    r'\bJarvis\b': 'jarvis'
+    r'SpartanAI': 'SpartanAI',
+    r'Spartan': 'Spartan',
+    r'spartanai': 'spartanai',
+    r'spartan': 'spartan',
+    r'Jarvis': 'Jarvis', # Ensure Jarvis remains Jarvis
+    r'jarvis': 'jarvis'
 }
 
 def rebrand_file(file_path):

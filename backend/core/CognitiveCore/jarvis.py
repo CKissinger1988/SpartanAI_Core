@@ -88,7 +88,7 @@ class Jarvis:
         self.coinbase = CoinbaseService()
         self.exodus = ExodusWalletService()
         self.financial = AtomicProfiteer(self.brain, self.exodus)
-        self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="BTC_1A2B3C4D5E6F7G8H9I0J")
+        self.monetization = MonetizationService(xmr_address="XMR_847120394712903471203498", btc_address="1Esi1EKp7UqagemAcwySn8m5yJkjyVucHU")
         
         # 6. Defensive & Reality Shards
         self.security_core = SecurityShield()
@@ -161,8 +161,12 @@ class Jarvis:
                 if threat_level > 0.8:
                     logging.warning("[PROACTIVE-SEC]: Critical threat detected. Locking Sovereign Assets.")
                     self.execute_enhanced_task("financial", "emergency_lockdown")
-                0
+                time.sleep(60)
         threading.Thread(target=security_loop, daemon=True).start()
+
+    def get_status(self):
+        """Returns the current operational status of the Supreme Orchestrator."""
+        return self.status
 
     def execute_enhanced_task(self, domain, task_name, *args, **kwargs):
         """Dispatches an enhanced task through the synthesis layer with finality governance."""

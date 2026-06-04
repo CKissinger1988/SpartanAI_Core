@@ -7,7 +7,7 @@ import json
 class AutoUpdateService:
     """
     Sovereign Real-Time Auto-Update Engine.
-    Ensures all Jarvis/SentinelAI projects are perfectly synchronized with Git.
+    Ensures all Jarvis/SpartanAI projects are perfectly synchronized with Git.
     MANDATE: Full Send Protocol - Zero Delta maintained.
     """
     def __init__(self, projects_root=None):

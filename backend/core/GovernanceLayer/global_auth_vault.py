@@ -8,7 +8,7 @@ class GlobalAuthVault:
     MANDATE: Secure storage and management of all API keys (AI Models, Social Networks).
     """
     def __init__(self):
-        self.vault_path = os.getenv('GLOBAL_VAULT_PATH', 'C:\\GitHub\\SentinelAI_Hub_Master\\backend\\core\\GovernanceLayer\\vault.json')
+        self.vault_path = os.getenv('GLOBAL_VAULT_PATH', 'C:\\GitHub\\SpartanAI_Hub_Master\\backend\\core\\GovernanceLayer\\vault.json')
         self.keys = {
             "AI_MODELS": {
                 "OPENAI": None,

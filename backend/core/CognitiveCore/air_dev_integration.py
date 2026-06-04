@@ -30,7 +30,7 @@ class AirDevIntegration:
         logging.info('[AIR-DEV]: Synchronizing multi-agent worktrees...')
         pass
     
-    def register_sentinel_skill(self, skill_name, manifest):
+    def register_spartan_skill(self, skill_name, manifest):
         logging.info(f'[AIR-DEV]: Registering skill: {skill_name}')
         pass
 

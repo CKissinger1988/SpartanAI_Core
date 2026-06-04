@@ -4,7 +4,7 @@ import re
 def rebrand_path(path):
     # Rebrand file/folder name
     dirname, basename = os.path.split(path)
-    new_basename = basename.replace('SentinelAI', 'SpartanAI').replace('Sentinel', 'Spartan').replace('sentinelai', 'spartanai').replace('sentinel', 'spartan')
+    new_basename = basename.replace('SpartanAI', 'SpartanAI').replace('Spartan', 'Spartan').replace('spartanai', 'spartanai').replace('spartan', 'spartan')
     new_path = os.path.join(dirname, new_basename)
     if path != new_path:
         os.rename(path, new_path)
@@ -16,7 +16,7 @@ def rebrand_content(file_path):
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
         
-        new_content = content.replace('SentinelAI', 'SpartanAI').replace('Sentinel', 'Spartan').replace('sentinelai', 'spartanai').replace('sentinel', 'spartan')
+        new_content = content.replace('SpartanAI', 'SpartanAI').replace('Spartan', 'Spartan').replace('spartanai', 'spartanai').replace('spartan', 'spartan')
         
         if content != new_content:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -36,16 +36,16 @@ def process_recursive(base_dir):
 
 if __name__ == "__main__":
     targets = [
-        'C:\\GitHub\\SentinelAI_Hub_Master',
-        'C:\\GitHub\\SentinelAI_Security_Core',
-        'C:\\GitHub\\SentinelAI_Server_Final_v50'
+        'C:\\GitHub\\SpartanAI_Hub_Master',
+        'C:\\GitHub\\SpartanAI_Security_Core',
+        'C:\\GitHub\\SpartanAI_Server_Final_v50'
     ]
     for target in targets:
         if os.path.exists(target):
             process_recursive(target)
             # Try to rename root
             try:
-                new_root = target.replace('SentinelAI', 'SpartanAI')
+                new_root = target.replace('SpartanAI', 'SpartanAI')
                 os.rename(target, new_root)
                 print(f"Successfully rebranded root: {target} -> {new_root}")
             except Exception as e:

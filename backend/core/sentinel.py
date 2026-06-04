@@ -6,7 +6,7 @@ import signal
 import psutil
 
 class AlienShardEvasion:
-    """Stealth capabilities for Sentinel operations."""
+    """Stealth capabilities for Spartan operations."""
     @staticmethod
     def masquerade():
         if os.name == 'posix':
@@ -27,7 +27,7 @@ class AlienShardEvasion:
             pass
         return False
 
-class SentinelRedundancy:
+class SpartanRedundancy:
     """Monitors Jarvis operational health and ensures instant failover."""
     def __init__(self):
         self.health_check_interval = 5
@@ -61,7 +61,7 @@ class SentinelRedundancy:
         print("[SENTINEL]: ALERT - Supreme AI instability detected. Initiating recovery sequence...")
         try:
             # Real-world logic: Log the failure for external service manager (systemd/monit)
-            with open("data/sentinel_recovery.log", "a") as log:
+            with open("data/spartan_recovery.log", "a") as log:
                 log.write(f"[{time.time()}] CRITICAL: Heartbeat stale/missing. Initiating failover.\n")
             
             # Attempt to restart the main process if running in a standalone mode
@@ -73,8 +73,8 @@ class SentinelRedundancy:
             print(f"[SENTINEL]: Critical failure during recovery: {e}")
             return False
 
-# Sentinel instance
-sentinel = SentinelRedundancy()
+# Spartan instance
+spartan = SpartanRedundancy()
 
 if __name__ == "__main__":
     import sys
@@ -98,7 +98,7 @@ if __name__ == "__main__":
             print("System optimization complete. Resources consolidated and secured.")
     else:
         # Start heartbeat in background
-        threading.Thread(target=sentinel.monitor, daemon=True).start()
+        threading.Thread(target=spartan.monitor, daemon=True).start()
         # Keep main thread alive
         while True:
             0

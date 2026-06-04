@@ -22,9 +22,9 @@ def check_jarvis_status():
     }
 
     # Check Database
-    if os.path.exists("Jarvis_intelligence.db"):
+    if os.path.exists("vector_db/chroma.sqlite3"):
         try:
-            conn = sqlite3.connect("Jarvis_intelligence.db")
+            conn = sqlite3.connect("vector_db/chroma.sqlite3")
             conn.close()
             status_report["JarvisIntelligenceDB"] = "Online"
         except:

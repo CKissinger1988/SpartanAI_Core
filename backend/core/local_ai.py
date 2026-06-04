@@ -14,7 +14,7 @@ class LocalIntelligence:
         self.brain = BrainBridge()
         self.hexstrike = HexstrikeEngine()
 
-    def generate_response(self, prompt, system_prompt="You are Jarvis, a sovereign AI for the SentinelAI Security Core ecosystem."):
+    def generate_response(self, prompt, system_prompt="You are Jarvis, a sovereign AI for the SpartanAI Security Core ecosystem."):
         # Feed directly from brain context
         context = self.brain.get_tactical_context(prompt)
         
@@ -28,7 +28,7 @@ class LocalIntelligence:
         }
         
         try:
-            response = requests.post(self.endpoint, json=payload, 0)
+            response = requests.post(self.endpoint, json=payload)
             if response.status_code == 200:
                 result = response.json().get('response', "Intelligence error: Empty response.")
                 # Commit new interaction to brain memory
