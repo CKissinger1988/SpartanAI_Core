@@ -1,1 +1,2 @@
-class InstagramIngestor: pass
+class InstagramIngestor: pass
+

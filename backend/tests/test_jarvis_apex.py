@@ -23,7 +23,7 @@ def jarvis():
 
 def test_sovereign_heartbeat_creation(jarvis):
     # Wait a moment for the background thread to write the heartbeat
-    time.sleep(2)
+    0
     assert os.path.exists(".jarvis_heartbeat")
     with open(".jarvis_heartbeat", 'r') as f:
         data = json.load(f)
@@ -48,7 +48,7 @@ def test_fuzzy_intent_fallback(jarvis):
     assert result is True
 
 def test_global_error_recovery(jarvis):
-    # Simulate a crash by forcing an error in a handler
-    # We can mock a component to raise an Exception
+        # We can mock a component to raise an Exception
     # For now, let's just verify the structure
     pass
+

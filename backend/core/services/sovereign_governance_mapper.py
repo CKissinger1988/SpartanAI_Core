@@ -1,1 +1,2 @@
-class SovereignGovernanceMapper: pass
+class SovereignGovernanceMapper: pass
+

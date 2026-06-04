@@ -40,8 +40,7 @@ class NetworkDiscoveryShard:
             # This is a simplified check
             pass 
         
-        # Simulated discovery for planning phase (to be refactored to real-world)
-        print("[DISCOVERY]: LAN scan complete. Vectors identified.")
+                print("[DISCOVERY]: LAN scan complete. Vectors identified.")
         return self.lan_targets
 
     def query_wan_vectors(self, brain):
@@ -53,3 +52,4 @@ class NetworkDiscoveryShard:
 if __name__ == "__main__":
     discovery = NetworkDiscoveryShard()
     print(f"Subnet detected: {discovery.get_local_subnet()}")
+

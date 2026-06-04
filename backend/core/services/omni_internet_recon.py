@@ -1,1 +1,2 @@
-class OmniInternetRecon: pass
+class OmniInternetRecon: pass
+

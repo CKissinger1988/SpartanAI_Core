@@ -1,1 +1,2 @@
-class TranscendentLogicShard: pass
+class TranscendentLogicShard: pass
+

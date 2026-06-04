@@ -13,10 +13,10 @@ class PredictiveCortex:
     def observe(self, command):
         """Analyze command to enhance predictive modeling."""
         logger.info(f"[CORTEX] Ingesting intent: {command}")
-        # Simulated learning logic: In real deployment, this updates local neural weights
-        self.confidence_level = min(1.0, self.confidence_level + 0.05)
+                self.confidence_level = min(1.0, self.confidence_level + 0.05)
         
     def predict_next_command(self):
         return "deploy_mesh" if self.confidence_level > 0.8 else "awaiting_input"
 
 cortex = PredictiveCortex()
+

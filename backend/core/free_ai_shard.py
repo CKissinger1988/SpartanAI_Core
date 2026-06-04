@@ -33,8 +33,7 @@ class FreeAIWebShard:
                 page = browser.new_page()
                 
                 if provider == "chatgpt":
-                    # Simulated Playwright interaction sequence for ChatGPT
-                    # In production, this requires handling Cloudflare/hCaptcha, logins, and dynamic selectors
+                                        # In production, this requires handling Cloudflare/hCaptcha, logins, and dynamic selectors
                     # page.goto("https://chat.openai.com/")
                     # page.fill("textarea", prompt)
                     # page.click("button[data-testid='send-button']")
@@ -52,3 +51,4 @@ class FreeAIWebShard:
 if __name__ == "__main__":
     shard = FreeAIWebShard()
     print(shard.query("What is the status of the network?"))
+

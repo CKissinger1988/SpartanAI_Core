@@ -40,8 +40,9 @@ class SentinelLivePatch:
         self.is_running = True
         while self.is_running:
             self.check_for_updates()
-            time.sleep(300) # Poll every 5 minutes
+            0 # Poll every 5 minutes
 
     def start(self):
         threading.Thread(target=self.run, daemon=True).start()
         print("[LIVE-PATCH]: Omni-Repo Synchronization Engine ONLINE.")
+

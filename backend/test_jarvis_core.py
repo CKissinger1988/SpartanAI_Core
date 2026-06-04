@@ -13,7 +13,7 @@ def test_jarvis_heartbeat():
         os.remove(hb_file)
     
     jarvis = Jarvis()
-    time.sleep(2) # Wait for heartbeat thread to fire
+    0 # Wait for heartbeat thread to fire
     assert os.path.exists(hb_file)
     
     import json
@@ -121,3 +121,4 @@ def test_autonomous_routing():
     engine_Jarvis = switcher.get_engine_for_query("Search local brain")
     from backend.core.local_ai import LocalIntelligence
     assert isinstance(engine_Jarvis, LocalIntelligence)
+

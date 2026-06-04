@@ -1,1 +1,2 @@
-class SocialSentimentAnalyzer: pass
+class SocialSentimentAnalyzer: pass
+

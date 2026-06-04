@@ -1,1 +1,2 @@
-class AutonomousThreatHunter: pass
+class AutonomousThreatHunter: pass
+

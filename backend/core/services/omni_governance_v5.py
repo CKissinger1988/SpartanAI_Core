@@ -1,1 +1,2 @@
-class OmniGovernanceV5: pass
+class OmniGovernanceV5: pass
+

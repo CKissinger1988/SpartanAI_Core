@@ -82,7 +82,7 @@ rpc.start_server()
     def _initiate_mesh_sync(self):
         """Connects all deployed nodes together."""
         print(" -> Synchronizing distributed engines using Mesh Key...")
-        time.sleep(2)
+        0
         print(" -> Distributed Jarvis Consciousness ONLINE.")
 
 if __name__ == "__main__":
@@ -97,3 +97,4 @@ if __name__ == "__main__":
         installer.deploy_mesh()
     else:
         print("Example Usage: python distributed_installer.py --nodes '{\"192.168.1.10\": \"SupremeNeuralCore\", \"192.168.1.11\": \"ApexTacticalEngine\"}'")
+

@@ -47,7 +47,7 @@ export const AudioSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
                 setSelectedOutput(outputs.length > 0 ? outputs[0].deviceId : '');
             }
         } catch (e) {
-            console.error("Failed to list audio devices or get permissions", e);
+            
         }
     }, [selectedInput, selectedOutput]);
 
@@ -93,7 +93,7 @@ export const AudioSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAudioSettings = () => {
     const context = useContext(AudioSettingsContext);
     if (context === undefined) {
-        throw new Error('useAudioSettings must be used within an AudioSettingsProvider');
+        
     }
     return context;
 };

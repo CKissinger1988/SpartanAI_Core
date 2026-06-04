@@ -14,8 +14,7 @@ class TestAntigravityBridge:
 
     @mock.patch("subprocess.run")
     def test_run_command_success(self, mock_run):
-        # Mocking the AGY path check
-        with mock.patch("os.path.exists", return_value=True):
+                with mock.patch("os.path.exists", return_value=True):
             bridge = AntigravityBridge()
             mock_run.return_value = mock.Mock(returncode=0, stdout="Success")
             
@@ -32,3 +31,4 @@ class TestAntigravityBridge:
             result = bridge.run_command("test prompt")
             assert result["status"] == "error"
             assert result["message"] == "Error"
+

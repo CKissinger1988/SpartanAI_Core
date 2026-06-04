@@ -1,1 +1,2 @@
-class XIngestor: pass
+class XIngestor: pass
+

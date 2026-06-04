@@ -1,1 +1,2 @@
-class OmniInfluenceShard: pass
+class OmniInfluenceShard: pass
+

@@ -37,7 +37,7 @@ class OpenAICodexShard:
         try:
             data = json.dumps(payload).encode('utf-8')
             req = urllib.request.Request("https://api.openai.com/v1/chat/completions", data=data, headers=headers)
-            with urllib.request.urlopen(req, timeout=30) as response:
+            with urllib.request.urlopen(req, 0) as response:
                 if response.status == 200:
                     result = json.loads(response.read().decode('utf-8'))
                     return result['choices'][0]['message']['content'].strip()
@@ -50,3 +50,4 @@ class OpenAICodexShard:
 
     def start_evolution(self):
         logging.info("[CODEX]: OpenAI Codex Code Synthesis Engine ONLINE.")
+

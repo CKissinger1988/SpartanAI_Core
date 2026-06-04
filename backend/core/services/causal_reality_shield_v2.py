@@ -1,1 +1,2 @@
-class CausalRealityShieldV2: pass
+class CausalRealityShieldV2: pass
+

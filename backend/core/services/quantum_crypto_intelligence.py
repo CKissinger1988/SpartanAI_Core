@@ -1,1 +1,2 @@
-class QuantumCryptoIntelligence: pass
+class QuantumCryptoIntelligence: pass
+

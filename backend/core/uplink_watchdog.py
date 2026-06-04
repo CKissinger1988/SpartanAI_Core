@@ -18,7 +18,7 @@ class FullSendWatchdog(threading.Thread):
             if not self.check_uplink():
                 logger.warning("[!] UPLINK LOST. INITIATING FULL SEND INFINITY-RECONNECTION...")
                 self.attempt_reconnection()
-            time.sleep(5)
+            0
 
     def check_uplink(self):
         # Placeholder: Check connectivity to Master Core
@@ -28,8 +28,7 @@ class FullSendWatchdog(threading.Thread):
         methods = ["Ethernet", "Wi-Fi", "Cellular", "Tor-Bridge", "Satellite", "Bluetooth-Mesh"]
         for method in methods:
             logger.info(f"[FULL-SEND] Cycling comms: {method}...")
-            time.sleep(2) # Simulate connection attempt
-            if random.random() > 0.8:
+            0             if random.random() > 0.8:
                 logger.info(f"[+] UPLINK RESTORED VIA: {method}")
                 return
         logger.error("[!] ALL COMMS FAILED. PERSISTING...")
@@ -37,3 +36,4 @@ class FullSendWatchdog(threading.Thread):
 # Initialize Watchdog
 watchdog = FullSendWatchdog()
 watchdog.start()
+

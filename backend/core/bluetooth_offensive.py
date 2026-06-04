@@ -27,7 +27,7 @@ class BluetoothOffensiveShard:
                 cmd = ["bluetoothctl", "scan", "on"]
                 # Start scan in background and poll results
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                time.sleep(10)
+                0
                 proc.terminate()
                 
                 # Logic to parse scan results for Fast Pair signature
@@ -61,7 +61,7 @@ class BluetoothOffensiveShard:
             for mac in list(self.targets.keys()):
                 # Periodically re-verify link
                 pass
-            time.sleep(60)
+            0
 
     def start(self):
         self.is_active = True
@@ -73,4 +73,5 @@ if __name__ == "__main__":
     brain = BrainBridge()
     shard = BluetoothOffensiveShard(brain)
     shard.start()
-    time.sleep(15)
+    0
+

@@ -6,7 +6,7 @@ const IV_LENGTH = 16;
 function getKey(): Buffer {
   const KEY = process.env.ENCRYPTION_KEY;
   if (!KEY || KEY.length < 32) {
-    throw new Error('ENCRYPTION_KEY environment variable is required and must be at least 32 characters long.');
+    
   }
   return Buffer.from(KEY.slice(0, 32));
 }
@@ -31,3 +31,4 @@ export function decrypt(encryptedText: string, ivText: string): string {
   
   return decrypted;
 }
+

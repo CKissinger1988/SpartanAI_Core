@@ -1,1 +1,2 @@
-class RealityVectorSynthesizer: pass
+class RealityVectorSynthesizer: pass
+

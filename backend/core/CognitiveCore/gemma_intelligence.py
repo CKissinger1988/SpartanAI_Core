@@ -37,7 +37,7 @@ class GemmaIntelligence:
             }
             data = json.dumps(payload).encode('utf-8')
             req = urllib.request.Request(self.local_endpoint, data=data, headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(req, timeout=30) as response:
+            with urllib.request.urlopen(req, 0) as response:
                 if response.status == 200:
                     result = json.loads(response.read().decode('utf-8')).get('response')
                     logging.info("[GEMMA-INTEL]: Local inference successful.")
@@ -56,3 +56,4 @@ class GemmaIntelligence:
     def start_evolution(self):
         """Initializes the evolution loop for the Gemma shard."""
         logging.info("[GEMMA-INTEL]: Open-weights cognitive shard ONLINE. Skills integrated.")
+

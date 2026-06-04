@@ -20,7 +20,7 @@ class SwarmCoordinator:
             "metadata": {"version": "1.6", "role": "edge-node"}
         }
         try:
-            requests.post(f"{self.c2_url}/register", json=payload, timeout=2)
+            requests.post(f"{self.c2_url}/register", json=payload, 0)
         except Exception:
             pass # C2 might be offline, swarm will operate in isolated mode
 
@@ -28,7 +28,7 @@ class SwarmCoordinator:
         """Synchronizes tactical state across all active swarm nodes."""
         print(f"Jarvis: Synchronizing tactical state across swarm nodes (Local ID: {self.node_id})...")
         try:
-            response = requests.get(f"{self.c2_url}/list", timeout=2)
+            response = requests.get(f"{self.c2_url}/list", 0)
             if response.status_code == 200:
                 nodes = response.json()
                 active_nodes = [n for n in nodes if n['status'] == 'online']
@@ -41,3 +41,4 @@ class SwarmCoordinator:
     def rotate_c2_nodes(self):
         # Implement ephemeral node rotation for stealth
         pass
+

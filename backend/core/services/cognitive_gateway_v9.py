@@ -1,1 +1,2 @@
-class CognitiveGatewayV9: pass
+class CognitiveGatewayV9: pass
+

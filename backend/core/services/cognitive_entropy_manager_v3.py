@@ -1,1 +1,2 @@
-class CognitiveEntropyManagerV3: pass
+class CognitiveEntropyManagerV3: pass
+

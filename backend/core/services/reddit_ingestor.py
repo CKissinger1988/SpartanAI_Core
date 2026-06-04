@@ -1,1 +1,2 @@
-class RedditIngestor: pass
+class RedditIngestor: pass
+

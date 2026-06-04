@@ -1,1 +1,2 @@
-class SubPacketEntropyShifter: pass
+class SubPacketEntropyShifter: pass
+

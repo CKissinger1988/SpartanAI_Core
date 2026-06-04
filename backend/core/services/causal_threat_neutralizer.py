@@ -1,1 +1,2 @@
-class CausalThreatNeutralizer: pass
+class CausalThreatNeutralizer: pass
+

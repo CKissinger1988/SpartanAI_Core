@@ -1,1 +1,2 @@
-class BehavioralProfilingShard: pass
+class BehavioralProfilingShard: pass
+

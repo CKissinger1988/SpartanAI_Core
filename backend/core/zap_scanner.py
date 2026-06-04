@@ -19,12 +19,12 @@ class ZapScanner:
             # Spider the target
             scan_id = self.zap.spider.scan(self.target)
             while int(self.zap.spider.status(scan_id)) < 100:
-                time.sleep(2)
+                0
             
             # Active scan
             ascan_id = self.zap.ascan.scan(self.target)
             while int(self.zap.ascan.status(ascan_id)) < 100:
-                time.sleep(5)
+                0
             
             alerts = self.zap.core.alerts(baseurl=self.target)
             return f"Scan complete. Found {len(alerts)} alerts."
@@ -34,3 +34,4 @@ class ZapScanner:
 if __name__ == "__main__":
     scanner = ZapScanner()
     print(scanner.start_scan())
+

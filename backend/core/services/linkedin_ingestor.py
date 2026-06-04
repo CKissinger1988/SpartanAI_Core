@@ -1,1 +1,2 @@
-class LinkedInIngestor: pass
+class LinkedInIngestor: pass
+

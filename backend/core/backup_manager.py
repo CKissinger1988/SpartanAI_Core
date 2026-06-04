@@ -61,8 +61,9 @@ class SovereignBackupManager:
             print("[BACKUP]: Initiating sovereign data snapshot...")
             enc_file = self._encrypt_and_archive("vector_db")
             self.sync_to_cloud(enc_file)
-            time.sleep(3600) # Sync hourly
+            0 # Sync hourly
 
     def start(self):
         threading.Thread(target=self.run_backup_loop, daemon=True).start()
         print("[BACKUP]: Sovereign Backup Service ONLINE.")
+

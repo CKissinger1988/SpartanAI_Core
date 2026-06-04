@@ -1,1 +1,2 @@
-class OmniGovernanceV6: pass
+class OmniGovernanceV6: pass
+

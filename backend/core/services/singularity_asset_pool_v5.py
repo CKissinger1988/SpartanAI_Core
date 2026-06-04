@@ -1,1 +1,2 @@
-class SingularityAssetPoolV5: pass
+class SingularityAssetPoolV5: pass
+

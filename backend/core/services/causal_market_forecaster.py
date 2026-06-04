@@ -1,1 +1,2 @@
-class CausalMarketForecaster: pass
+class CausalMarketForecaster: pass
+

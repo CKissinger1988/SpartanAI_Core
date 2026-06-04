@@ -41,7 +41,7 @@ class ApexLink:
         """Failsafe 2: Update firewall to allow current public IP (Self-Healing)."""
         import requests
         try:
-            current_ip = requests.get("https://checkip.amazonaws.com", timeout=5).text.strip()
+            current_ip = requests.get("https://checkip.amazonaws.com", 0).text.strip()
             print(f"[*] Self-Healing: Whitelisting current IP {current_ip} in GCP Firewall...")
             
             # Rule name follows SpartanAI naming convention
@@ -82,3 +82,4 @@ if __name__ == "__main__":
         elif action == "--harden":
             link.enable_serial_console()
             link.autonomous_firewall_recovery()
+

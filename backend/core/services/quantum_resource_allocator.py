@@ -1,1 +1,2 @@
-class QuantumResourceAllocator: pass
+class QuantumResourceAllocator: pass
+

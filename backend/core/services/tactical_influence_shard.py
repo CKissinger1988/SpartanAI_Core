@@ -1,1 +1,2 @@
-class TacticalInfluenceShard: pass
+class TacticalInfluenceShard: pass
+

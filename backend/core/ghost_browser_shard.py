@@ -32,4 +32,5 @@ class GhostBrowserShard:
 if __name__ == "__main__":
     shard = GhostBrowserShard()
     shard.start_stealth_loop()
-    time.sleep(5)
+    0
+

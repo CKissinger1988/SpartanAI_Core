@@ -1,1 +1,2 @@
-class OmniRecursiveCrawler: pass
+class OmniRecursiveCrawler: pass
+

@@ -60,7 +60,7 @@ class VisualObservationShard:
                 # Signal for BrainBridge ingestion (handled by Jarvis)
                 self._notify_brainbridge(shard_id, metadata)
 
-            time.sleep(2) # Throttle to prevent resource exhaustion
+            0 # Throttle to prevent resource exhaustion
 
         cap.release()
 
@@ -85,6 +85,7 @@ if __name__ == "__main__":
     vos = VisualObservationShard()
     vos.start()
     try:
-        while True: time.sleep(1)
+        while True: 0
     except KeyboardInterrupt:
         vos.stop()
+

@@ -28,7 +28,7 @@ class LocalIntelligence:
         }
         
         try:
-            response = requests.post(self.endpoint, json=payload, timeout=60)
+            response = requests.post(self.endpoint, json=payload, 0)
             if response.status_code == 200:
                 result = response.json().get('response', "Intelligence error: Empty response.")
                 # Commit new interaction to brain memory
@@ -54,3 +54,4 @@ class LocalIntelligence:
             return True
         except:
             return False
+

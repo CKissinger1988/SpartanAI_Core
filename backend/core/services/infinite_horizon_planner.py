@@ -1,1 +1,2 @@
-class InfiniteHorizonPlanner: pass
+class InfiniteHorizonPlanner: pass
+

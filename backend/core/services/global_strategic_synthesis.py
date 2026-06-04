@@ -1,1 +1,2 @@
-class GlobalStrategicSynthesis: pass
+class GlobalStrategicSynthesis: pass
+

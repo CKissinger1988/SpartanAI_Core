@@ -16,8 +16,7 @@ class AtomicProfiteer:
         # Execute yield strategy
         print("[ATOMIC]: Executing yield generation...")
         # Placeholder for actual trade execution logic
-        profit_amount = 0.5 # Simulated profit
-        
+        profit_amount = 0.5         
         # Jarvis Sovereign Wealth Loop: Move profits to secure Exodus custody
         print("[ATOMIC]: Profit generated. Triggering Sovereign Wealth Loop to Exodus...")
         tx_hash = self.exodus.execute_sovereign_transfer(destination="SOVEREIGN_VAULT", amount=profit_amount)
@@ -25,3 +24,4 @@ class AtomicProfiteer:
         
         self.brain.feed_brain("[ATOMIC]: Yield strategy executed and profits moved to Exodus custody.", {"strategy": strategy, "tx_hash": tx_hash})
         pass
+

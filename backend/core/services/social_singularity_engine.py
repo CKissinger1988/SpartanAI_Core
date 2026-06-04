@@ -1,1 +1,2 @@
-class SocialSingularityEngine: pass
+class SocialSingularityEngine: pass
+

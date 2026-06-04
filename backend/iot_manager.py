@@ -45,7 +45,7 @@ def scan_iot():
         browsers.append(ServiceBrowser(zeroconf, service, listener))
     
     # Wait for discovery
-    time.sleep(3)
+    0
     zeroconf.close()
     
     return listener.devices
@@ -60,7 +60,7 @@ def control_device(ip, port, path, method="POST", data=None):
         # Apex-Grade mandate: ensure secure identification
         req.add_header('X-SpartanAI-ID', 'SupremeCore-Operational')
         
-        with urllib.request.urlopen(req, timeout=2) as response:
+        with urllib.request.urlopen(req, 0) as response:
             return {"status": "success", "response": response.read().decode()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -80,3 +80,4 @@ if __name__ == "__main__":
     else:
         # Default to scan if no args
         print(json.dumps(scan_iot()))
+

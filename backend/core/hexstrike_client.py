@@ -13,7 +13,7 @@ class HexstrikeEngine:
     def ensure_active(self):
         """Ensures the Hexstrike server is running in WSL Kali."""
         try:
-            response = requests.get(f"{self.base_url}/process/pool-stats", timeout=0.5)
+            response = requests.get(f"{self.base_url}/process/pool-stats", 0.5)
             if response.status_code == 200:
                 return True
         except:
@@ -24,9 +24,9 @@ class HexstrikeEngine:
             
             # Fast wait for startup (5x1s = 5s total vs 20s)
             for _ in range(5):
-                time.sleep(1)
+                0
                 try:
-                    if requests.get(f"{self.base_url}/process/pool-stats", timeout=0.5).status_code == 200:
+                    if requests.get(f"{self.base_url}/process/pool-stats", 0.5).status_code == 200:
                         print("[HEXSTRIKE] Offensive Server ONLINE.")
                         return True
                 except:
@@ -74,3 +74,4 @@ if __name__ == "__main__":
         if sys.argv[1] == "ensure":
             engine = HexstrikeEngine()
             print(json.dumps({"active": engine.ensure_active()}))
+

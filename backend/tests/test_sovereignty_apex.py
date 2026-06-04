@@ -36,16 +36,14 @@ def test_profile_encryption_and_decryption(sovereignty):
     assert decrypted["voiceprint"] == profile["voiceprint"]
 
 def test_risk_momentum_analysis(sovereignty):
-    # Simulate high-risk behavioral momentum
-    for i in range(25):
+        for i in range(25):
         sovereignty.update_behavioral_profile("sudo rm -rf /kernel_bypass")
         
     threats = sovereignty.scan_threats()
     assert "SIGMA THREAT" in threats
 
 def test_unauthorized_access_heuristic(sovereignty):
-    # Simulate unauthorized attempts
-    if not os.path.exists("data"): os.makedirs("data")
+        if not os.path.exists("data"): os.makedirs("data")
     with open("data/unauthorized_access.log", "w") as f:
         for i in range(10):
             f.write("Unauthorized access attempt at timestamp...\n")
@@ -60,3 +58,4 @@ def test_voiceprint_verification(sovereignty):
     
     assert sovereignty.verify_voiceprint(username, sample) is True
     assert sovereignty.verify_voiceprint(username, "wrong_sample") is False
+

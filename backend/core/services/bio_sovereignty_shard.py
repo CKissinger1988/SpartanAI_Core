@@ -1,1 +1,2 @@
-class BioSovereigntyShard: pass
+class BioSovereigntyShard: pass
+

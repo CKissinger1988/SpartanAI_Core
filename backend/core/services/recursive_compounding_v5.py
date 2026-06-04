@@ -1,1 +1,2 @@
-class RecursiveCompoundingV5: pass
+class RecursiveCompoundingV5: pass
+

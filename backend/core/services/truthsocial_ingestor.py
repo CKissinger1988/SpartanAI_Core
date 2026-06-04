@@ -1,1 +1,2 @@
-class TruthSocialIngestor: pass
+class TruthSocialIngestor: pass
+

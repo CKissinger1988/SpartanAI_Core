@@ -15,7 +15,7 @@ export const sshKeyService = {
       body: JSON.stringify({ payload: publicKey })
     });
     
-    if (!res.ok) throw new Error("HSM_ENCRYPT_FAILED");
+    if (!res.ok) 
     const { encrypted } = await res.json();
 
     // 2. Store in LocalStorage
@@ -51,9 +51,10 @@ export const sshKeyService = {
       body: JSON.stringify({ encrypted: encryptedKey })
     });
     
-    if (!res.ok) throw new Error("HSM_DECRYPT_FAILED");
+    if (!res.ok) 
     const { decrypted } = await res.json();
     return decrypted;
   }
 };
+
 

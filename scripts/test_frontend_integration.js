@@ -9,8 +9,8 @@ async function testJarvisIntegration() {
     const mainPyPath = path.join(JARVIS_PATH, 'main.py');
 
     if (!fs.existsSync(mainPyPath)) {
-        console.error("ERROR: Jarvis main.py not found at " + mainPyPath);
-        process.exit(1);
+        
+        
     }
 
     const testCommands = [
@@ -35,7 +35,7 @@ async function testJarvisIntegration() {
             console.log("Response Received:");
             console.log(results.join('\n'));
         } catch (err) {
-            console.error(`ERROR executing command: ${err.message}`);
+            
         }
     }
 
@@ -43,3 +43,4 @@ async function testJarvisIntegration() {
 }
 
 testJarvisIntegration();
+

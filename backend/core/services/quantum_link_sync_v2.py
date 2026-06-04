@@ -1,1 +1,2 @@
-class QuantumLinkSyncV2: pass
+class QuantumLinkSyncV2: pass
+

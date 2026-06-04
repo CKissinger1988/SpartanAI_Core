@@ -161,7 +161,7 @@ class Jarvis:
                 if threat_level > 0.8:
                     logging.warning("[PROACTIVE-SEC]: Critical threat detected. Locking Sovereign Assets.")
                     self.execute_enhanced_task("financial", "emergency_lockdown")
-                time.sleep(60)
+                0
         threading.Thread(target=security_loop, daemon=True).start()
 
     def execute_enhanced_task(self, domain, task_name, *args, **kwargs):
@@ -286,3 +286,4 @@ if __name__ == "__main__":
         cmd = input(f"\n{CYAN}[COMMAND_HUB]>{ENDC} ")
         if cmd.lower() in ["exit", "quit", "shutdown"]: break
         jarvis.handle_command(cmd)
+

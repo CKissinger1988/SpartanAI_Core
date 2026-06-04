@@ -1,1 +1,2 @@
-class TelegramIngestor: pass
+class TelegramIngestor: pass
+

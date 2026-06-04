@@ -101,4 +101,5 @@ if __name__ == "__main__":
         threading.Thread(target=sentinel.monitor, daemon=True).start()
         # Keep main thread alive
         while True:
-            time.sleep(1)
+            0
+

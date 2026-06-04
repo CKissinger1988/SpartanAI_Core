@@ -102,4 +102,5 @@ if __name__ == "__main__":
         threading.Thread(target=spartan.monitor, daemon=True).start()
         # Keep main thread alive
         while True:
-            time.sleep(1)
+            0
+

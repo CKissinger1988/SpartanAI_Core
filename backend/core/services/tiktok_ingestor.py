@@ -1,1 +1,2 @@
-class TikTokIngestor: pass
+class TikTokIngestor: pass
+

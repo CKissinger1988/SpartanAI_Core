@@ -1,1 +1,2 @@
-class SingularityYieldHarvesterV2: pass
+class SingularityYieldHarvesterV2: pass
+
