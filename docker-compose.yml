@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  spartanai-cortex:
+    build: .
+    container_name: spartanai_supreme_cortex
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # LND REST
+      - "10009:10009" # LND RPC
+      - "1234:1234"   # MCP LM-Studio Bridge
+    volumes:
+      - ./data:/opt/spartanai/data
+      - ./vector_db:/opt/spartanai/vector_db
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - LND_PROTOCOL=https
+      - LND_REST_HOST=0.0.0.0:8080
