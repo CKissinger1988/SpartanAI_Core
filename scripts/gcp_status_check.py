@@ -2,7 +2,7 @@ import paramiko
 import sys
 import os
 
-hostname = "34.182.160.186"
+hostname = "136.107.205.246"
 username = "ubuntu"
 passphrase = "@11646"
 key_path = r"C:\GitHub\.ssh\SpartanAI-Core.pem"
@@ -21,7 +21,7 @@ def check_remote_status():
         
         commands = [
             "pgrep -f lms",
-            "netstat -tuln | grep 1234",
+            "ss -tuln | grep 1234",
             "export PATH=$PATH:$HOME/.lmstudio/bin; lms ps"
         ]
         
@@ -34,7 +34,7 @@ def check_remote_status():
             
         print("\n--- GCP Cognitive Node Status ---")
         lms_proc = "ACTIVE" if results["pgrep -f lms"]["exit"] == 0 else "OFFLINE"
-        port_1234 = "LISTENING" if results["netstat -tuln | grep 1234"]["out"] else "CLOSED"
+        port_1234 = "LISTENING" if results["ss -tuln | grep 1234"]["out"] else "CLOSED"
         
         print(f"LM-Studio Process : {lms_proc}")
         print(f"API Port (1234)   : {port_1234}")

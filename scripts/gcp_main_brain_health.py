@@ -1,7 +1,7 @@
 import paramiko
 import sys
 
-hostname = "34.182.160.186"
+hostname = "136.107.205.246"
 username = "ubuntu"
 passphrase = "@11646"
 key_path = r"C:\GitHub\.ssh\SpartanAI-Core.pem"

@@ -2,10 +2,14 @@ import os
 import json
 import codecs
 import requests
+from dotenv import load_dotenv
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Suppress insecure request warnings for self-signed LND certs
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# Load Sovereign Environment
+load_dotenv()
 
 class LNDManager:
     """
@@ -52,7 +56,8 @@ class LNDManager:
         if not self.headers:
             return {"error": "LND credentials not loaded"}
             
-        url = f"https://{self.lnd_host}/v1/{endpoint}"
+        protocol = os.environ.get("LND_PROTOCOL", "https")
+        url = f"{protocol}://{self.lnd_host}/v1/{endpoint}"
         
         # Use TLS cert if it exists, otherwise disable verification (risky, but standard for local lnd)
         verify = self.tls_cert_path if os.path.exists(self.tls_cert_path) else False

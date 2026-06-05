@@ -3,7 +3,7 @@ import sys
 import os
 import time
 
-hostname = "34.182.160.186"
+hostname = "136.107.205.246"
 username = "ubuntu"
 passphrase = "@11646"
 key_path = r"C:\GitHub\.ssh\SpartanAI-Core.pem"
@@ -11,8 +11,9 @@ key_path = r"C:\GitHub\.ssh\SpartanAI-Core.pem"
 # Installation and Configuration commands
 commands = [
     "sudo apt-get update",
-    "sudo apt-get install -y curl fuse libfuse2 libasound2t64",
+    "sudo apt-get install -y curl fuse libfuse2 libasound2t64 libatomic1",
     "curl -fsSL https://lmstudio.ai/install.sh | bash",
+    "curl -fsSL https://lmstudio.ai/install.sh | bash", # Run again to ensure completion after deps
     # Wait for installation to settle
     "export PATH=$PATH:$HOME/.lmstudio/bin; nohup lms daemon up > lms_daemon.log 2>&1 &",
     "sleep 10",

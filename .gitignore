@@ -1,0 +1,23 @@
+# Security & Credentials
+.env
+gate.key
+backend/core/GovernanceLayer/vault.json
+
+# Data & State
+data/
+.jarvis_heartbeat
+
+# Third-party Source & Binaries
+tools/lnd/
+tools/lnd_source/
+tools/miner/*.exe
+tools/miner/*.cmd
+tools/miner/*.log
+tools/miner/SHA256SUMS
+
+# Python & DBs
+__pycache__/
+*.pyc
+*.sqlite3
+*.bin
+*.pickle
